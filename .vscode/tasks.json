@@ -1,0 +1,52 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Conan Install",
+            "type": "shell",
+            "command": "conan",
+            "args": [
+                "install", ".",
+                "--output-folder=build",
+                "-s", "build_type=${input:buildType}",
+                "--build=missing",
+                "--profile:host=binanceconnectorcpp",
+                "--profile:build=binanceconnectorcpp"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build",
+                "-DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+            ],
+            "group": "build",
+            "dependsOn": "Conan Install"
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": "Configure"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "buildType",
+            "type": "pickString",
+            "description": "Select Build Type",
+            "options": ["Debug", "Release"],
+            "default": "Debug"
+        }
+    ]
+}
