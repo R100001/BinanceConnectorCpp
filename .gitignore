@@ -1,3 +1,6 @@
 
 # Ignore build output
 build/
+
+# Ignore main file
+main.cpp

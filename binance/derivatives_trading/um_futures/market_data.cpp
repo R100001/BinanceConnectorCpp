@@ -875,7 +875,7 @@ TestConnectivityResponse test_connectivity(DerivativesTrading &api) {
 
     std::string response = api.query(url);
 
-    return parse_api_response<TestConnectivityObject>(api.get_parser(), response);
+    return api.parse_response<TestConnectivityObject>(response);
 }
 
 CheckServerTimeResponse check_server_time(DerivativesTrading &api) {
@@ -883,7 +883,7 @@ CheckServerTimeResponse check_server_time(DerivativesTrading &api) {
 
     std::string response = api.query(url);
 
-    return parse_api_response<CheckServerTimeObject>(api.get_parser(), response);
+    return api.parse_response<CheckServerTimeObject>(response);
 }
 
 ExchangeInformationResponse exchange_information(DerivativesTrading &api) {
@@ -891,7 +891,7 @@ ExchangeInformationResponse exchange_information(DerivativesTrading &api) {
 
     std::string response = api.query(url);
 
-    return parse_api_response<ExchangeInformationObject>(api.get_parser(), response);
+    return api.parse_response<ExchangeInformationObject>(response);
 }
 
 OrderBookResponse order_book(DerivativesTrading &api, std::string const &symbol, int16_t const limit) {
@@ -903,7 +903,7 @@ OrderBookResponse order_book(DerivativesTrading &api, std::string const &symbol,
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<OrderBookObject>(api.get_parser(), response);
+    return api.parse_response<OrderBookObject>(response);
 }
 
 RecentTradesListResponse recent_trades_list(DerivativesTrading &api, std::string const &symbol, int16_t const limit) {
@@ -915,7 +915,7 @@ RecentTradesListResponse recent_trades_list(DerivativesTrading &api, std::string
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<RecentTradesListObject>(api.get_parser(), response);
+    return api.parse_response<RecentTradesListObject>(response);
 }
 
 OldTradesLookupResponse old_trades_lookup(DerivativesTrading &api, std::string const &symbol, int16_t const limit, int64_t const from_id) {
@@ -928,7 +928,7 @@ OldTradesLookupResponse old_trades_lookup(DerivativesTrading &api, std::string c
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<OldTradesLookupObject>(api.get_parser(), response);
+    return api.parse_response<OldTradesLookupObject>(response);
 }
 
 CompressedAggregateTradesListResponse compressed_aggregate_trades_list(DerivativesTrading &api, std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -943,7 +943,7 @@ CompressedAggregateTradesListResponse compressed_aggregate_trades_list(Derivativ
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<CompressedAggregateTradesListObject>(api.get_parser(), response);
+    return api.parse_response<CompressedAggregateTradesListObject>(response);
 }
 
 KlineCandlestickDataResponse kline_candlestick_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -958,7 +958,7 @@ KlineCandlestickDataResponse kline_candlestick_data(DerivativesTrading &api, std
     
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<KlineCandlestickDataObject>(api.get_parser(), response);
+    return api.parse_response<KlineCandlestickDataObject>(response);
 }
 
 ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -974,7 +974,7 @@ ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candles
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<ContinuousContractKlineCandlestickDataObject>(api.get_parser(), response);
+    return api.parse_response<ContinuousContractKlineCandlestickDataObject>(response);
 }
 
 IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -989,7 +989,7 @@ IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(Deriva
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<IndexPriceKlineCandlestickDataObject>(api.get_parser(), response);
+    return api.parse_response<IndexPriceKlineCandlestickDataObject>(response);
 }
 
 MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -1004,7 +1004,7 @@ MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(Derivati
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<MarkPriceKlineCandlestickDataObject>(api.get_parser(), response);
+    return api.parse_response<MarkPriceKlineCandlestickDataObject>(response);
 }
 
 PremiumIndexKlineDataResponse premium_index_kline_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -1019,7 +1019,7 @@ PremiumIndexKlineDataResponse premium_index_kline_data(DerivativesTrading &api, 
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<PremiumIndexKlineDataObject>(api.get_parser(), response);
+    return api.parse_response<PremiumIndexKlineDataObject>(response);
 }
 
 MarkPriceResponse mark_price(DerivativesTrading &api, std::string const &symbol) {
@@ -1030,7 +1030,7 @@ MarkPriceResponse mark_price(DerivativesTrading &api, std::string const &symbol)
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<MarkPriceObject>(api.get_parser(), response);
+    return api.parse_response<MarkPriceObject>(response);
 }
 
 GetFundingRateHistoryResponse get_funding_rate_history(DerivativesTrading &api, std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
@@ -1044,7 +1044,7 @@ GetFundingRateHistoryResponse get_funding_rate_history(DerivativesTrading &api, 
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<GetFundingRateHistoryObject>(api.get_parser(), response);
+    return api.parse_response<GetFundingRateHistoryObject>(response);
 }
 
 GetFundingRateInfoResponse get_funding_rate_info(DerivativesTrading &api) {
@@ -1052,7 +1052,7 @@ GetFundingRateInfoResponse get_funding_rate_info(DerivativesTrading &api) {
 
     std::string response = api.query(url);
 
-    return parse_api_response<GetFundingRateInfoObject>(api.get_parser(), response);
+    return api.parse_response<GetFundingRateInfoObject>(response);
 }
 
 Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(DerivativesTrading &api, std::string const &symbol) {
@@ -1063,7 +1063,7 @@ Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(Deri
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<Ticker24hrPriceChangeStatisticsObject>(api.get_parser(), response);
+    return api.parse_response<Ticker24hrPriceChangeStatisticsObject>(response);
 }
 
 SymbolPriceTickerResponse symbol_price_ticker(DerivativesTrading &api, std::string const &symbol) {
@@ -1074,7 +1074,7 @@ SymbolPriceTickerResponse symbol_price_ticker(DerivativesTrading &api, std::stri
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<SymbolPriceTickerObject>(api.get_parser(), response);
+    return api.parse_response<SymbolPriceTickerObject>(response);
 }
 
 SymbolPriceTickerV2Response symbol_price_ticker_v2(DerivativesTrading &api, std::string const &symbol) {
@@ -1085,7 +1085,7 @@ SymbolPriceTickerV2Response symbol_price_ticker_v2(DerivativesTrading &api, std:
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<SymbolPriceTickerV2Object>(api.get_parser(), response);
+    return api.parse_response<SymbolPriceTickerV2Object>(response);
 }
 
 SymbolOrderBookTickerResponse symbol_order_book_ticker(DerivativesTrading &api, std::string const &symbol) {
@@ -1096,7 +1096,7 @@ SymbolOrderBookTickerResponse symbol_order_book_ticker(DerivativesTrading &api, 
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<SymbolOrderBookTickerObject>(api.get_parser(), response);
+    return api.parse_response<SymbolOrderBookTickerObject>(response);
 }
 
 QueryDeliveryPriceResponse query_delivery_price(DerivativesTrading &api, std::string const &pair) {
@@ -1107,7 +1107,7 @@ QueryDeliveryPriceResponse query_delivery_price(DerivativesTrading &api, std::st
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<QueryDeliveryPriceObject>(api.get_parser(), response);
+    return api.parse_response<QueryDeliveryPriceObject>(response);
 }
 
 OpenInterestResponse open_interest(DerivativesTrading &api, std::string const &symbol) {
@@ -1118,7 +1118,7 @@ OpenInterestResponse open_interest(DerivativesTrading &api, std::string const &s
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<OpenInterestObject>(api.get_parser(), response);
+    return api.parse_response<OpenInterestObject>(response);
 }
 
 OpenInterestStatisticsResponse open_interest_statistics(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1133,7 +1133,7 @@ OpenInterestStatisticsResponse open_interest_statistics(DerivativesTrading &api,
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<OpenInterestStatisticsObject>(api.get_parser(), response);
+    return api.parse_response<OpenInterestStatisticsObject>(response);
 }
 
 TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1148,7 +1148,7 @@ TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(Der
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<TopTraderLongShortPositionRatioObject>(api.get_parser(), response);
+    return api.parse_response<TopTraderLongShortPositionRatioObject>(response);
 }
 
 TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1163,7 +1163,7 @@ TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(Deriv
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<TopTraderLongShortAccountRatioObject>(api.get_parser(), response);
+    return api.parse_response<TopTraderLongShortAccountRatioObject>(response);
 }
 
 LongShortRatioResponse long_short_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1178,7 +1178,7 @@ LongShortRatioResponse long_short_ratio(DerivativesTrading &api, std::string con
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<LongShortRatioObject>(api.get_parser(), response);
+    return api.parse_response<LongShortRatioObject>(response);
 }
 
 TakerBuySellVolumeResponse taker_buy_sell_volume(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1193,7 +1193,7 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(DerivativesTrading &api, std::s
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<TakerBuySellVolumeObject>(api.get_parser(), response);
+    return api.parse_response<TakerBuySellVolumeObject>(response);
 }
 
 BasisResponse basis(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
@@ -1209,7 +1209,7 @@ BasisResponse basis(DerivativesTrading &api, std::string const &pair, std::strin
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<BasisObject>(api.get_parser(), response);
+    return api.parse_response<BasisObject>(response);
 }
 
 CompositeIndexSymbolInformationResponse composite_index_symbol_information(DerivativesTrading &api, std::string const &symbol) {
@@ -1220,7 +1220,7 @@ CompositeIndexSymbolInformationResponse composite_index_symbol_information(Deriv
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<CompositeIndexSymbolInformationObject>(api.get_parser(), response);
+    return api.parse_response<CompositeIndexSymbolInformationObject>(response);
 }
 
 MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(DerivativesTrading &api, std::string const &symbol) {
@@ -1231,7 +1231,7 @@ MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(DerivativesTradi
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<MultiAssetsModeAssetIndexObject>(api.get_parser(), response);
+    return api.parse_response<MultiAssetsModeAssetIndexObject>(response);
 }
 
 QueryIndexPriceConstituentsResponse query_index_price_constituents(DerivativesTrading &api, std::string const &symbol) {
@@ -1242,7 +1242,7 @@ QueryIndexPriceConstituentsResponse query_index_price_constituents(DerivativesTr
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<QueryIndexPriceConstituentsObject>(api.get_parser(), response);
+    return api.parse_response<QueryIndexPriceConstituentsObject>(response);
 }
 
 } // namespace RestAPI

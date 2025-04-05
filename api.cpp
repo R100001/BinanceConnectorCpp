@@ -95,7 +95,6 @@ std::string API::prepare_params(Parameters const &params, bool const special) co
     if (!params_str.empty()) {
         params_str.pop_back();
     }
-    std::cout << "Params: " << params_str << std::endl;
 
     return params_str;
 }
@@ -130,38 +129,50 @@ std::string API::dispach_request(std::string const &http_method, std::string con
 
 //------------------------------------------------------------------------------------
 
-API::APIResponse API::handle_exception(std::string &response)
-{
-    simdjson::ondemand::parser &parser = this->get_parser();
-    auto doc = parser.iterate(response);
-    DEBUG_ASSERT(!doc.error());
+std::optional<API::ServerMessageResponse> API::read_server_message(simdjson::ondemand::object &obj) const {
 
-    simdjson::ondemand::object obj;
-    auto error = doc.get_object().get(obj);
-    DEBUG_ASSERT(!error);
+    auto iterator = obj.begin();
+    if (iterator != obj.end() && (*iterator).key() == "code") {
+        
+        ServerMessage server_error;
+        auto code = (*iterator).value().get_int64();
+        DEBUG_ASSERT(!code.error());
+        server_error.code = static_cast<int>(code.value_unsafe());
+        
+        ++iterator;
+        DEBUG_ASSERT(iterator != obj.end());
+        DEBUG_ASSERT((*iterator).key() == "msg");
 
-    auto code_result = obj.find_field("code");
-    if (!code_result.error()) {
-        int64_t code;
-        auto code_error = code_result.get_int64().get(code);
-        DEBUG_ASSERT(!code_error);
+        std::string_view msg;
+        auto error = (*iterator).value().get_string().get(msg);
+        DEBUG_ASSERT(!error);
+        server_error.msg = std::string(msg);
 
-        std::string_view msg_sv;
-        auto msg_error = obj["msg"].get_string().get(msg_sv);
-        DEBUG_ASSERT(!msg_error);
-
-        return ServerError(code, std::string(msg_sv));
+        return server_error;
     }
 
-    obj.reset();
-    return std::move(obj);
+    return std::nullopt;
 }
 
 //------------------------------------------------------------------------------------
 
-API::Parameters API::handle_response(std::string const &response) const
-{
-    return {};
+API::ServerMessageResponse API::parse_response(std::string &response, ResponseIsServerMessage const) {
+   
+    auto doc = get_parser().iterate(response);
+    DEBUG_ASSERT(!doc.error());
+
+#ifndef NDEBUG
+    simdjson_print_json_tree(doc);
+    doc.rewind();
+#endif
+
+    auto obj = doc.get_object();
+    DEBUG_ASSERT(!obj.error());
+
+    std::optional<ServerMessageResponse> const res = read_server_message(obj.value_unsafe());
+    DEBUG_ASSERT(res.has_value());
+
+    return res.value();
 }
 
 //------------------------------------------------------------------------------------

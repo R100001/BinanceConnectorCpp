@@ -263,12 +263,12 @@ struct Constituent {
 // Response Structs
 
 struct TestConnectivityObject {};
-using TestConnectivityResponse = std::variant<TestConnectivityObject, ServerError>;
+using TestConnectivityResponse = API::ResponseOrError<TestConnectivityObject>;
 
 struct CheckServerTimeObject {
     int64_t server_time;
 };
-using CheckServerTimeResponse = std::variant<CheckServerTimeObject, ServerError>;
+using CheckServerTimeResponse = API::ResponseOrError<CheckServerTimeObject>;
 
 struct ExchangeInformationObject {
     std::vector<ExchangeFilter> exchange_filters;
@@ -279,7 +279,7 @@ struct ExchangeInformationObject {
     int64_t server_time;
     std::string timezone;
 };
-using ExchangeInformationResponse = std::variant<ExchangeInformationObject, ServerError>;
+using ExchangeInformationResponse = API::ResponseOrError<ExchangeInformationObject>;
 
 struct OrderBookObject {
     uint64_t last_update_id;
@@ -288,119 +288,119 @@ struct OrderBookObject {
     std::vector<BidAskEntry> bids;
     std::vector<BidAskEntry> asks;
 };
-using OrderBookResponse = std::variant<OrderBookObject, ServerError>;
+using OrderBookResponse = API::ResponseOrError<OrderBookObject>;
 
 struct RecentTradesListObject {
     std::vector<Trade> trades;
 };
-using RecentTradesListResponse = std::variant<RecentTradesListObject, ServerError>;
+using RecentTradesListResponse = API::ResponseOrError<RecentTradesListObject>;
 
 struct OldTradesLookupObject {
     std::vector<Trade> trades;
 };
-using OldTradesLookupResponse = std::variant<OldTradesLookupObject, ServerError>;
+using OldTradesLookupResponse = API::ResponseOrError<OldTradesLookupObject>;
 
 struct CompressedAggregateTradesListObject {
     std::vector<AggregatedTrade> trades;
 };
-using CompressedAggregateTradesListResponse = std::variant<CompressedAggregateTradesListObject, ServerError>;
+using CompressedAggregateTradesListResponse = API::ResponseOrError<CompressedAggregateTradesListObject>;
 
 struct KlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using KlineCandlestickDataResponse = std::variant<KlineCandlestickDataObject, ServerError>;
+using KlineCandlestickDataResponse = API::ResponseOrError<KlineCandlestickDataObject>;
 
 struct ContinuousContractKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using ContinuousContractKlineCandlestickDataResponse = std::variant<ContinuousContractKlineCandlestickDataObject, ServerError>;
+using ContinuousContractKlineCandlestickDataResponse = API::ResponseOrError<ContinuousContractKlineCandlestickDataObject>;
 
 struct IndexPriceKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using IndexPriceKlineCandlestickDataResponse = std::variant<IndexPriceKlineCandlestickDataObject, ServerError>;
+using IndexPriceKlineCandlestickDataResponse = API::ResponseOrError<IndexPriceKlineCandlestickDataObject>;
 
 struct MarkPriceKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using MarkPriceKlineCandlestickDataResponse = std::variant<MarkPriceKlineCandlestickDataObject, ServerError>;
+using MarkPriceKlineCandlestickDataResponse = API::ResponseOrError<MarkPriceKlineCandlestickDataObject>;
 
 struct PremiumIndexKlineDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using PremiumIndexKlineDataResponse = std::variant<PremiumIndexKlineDataObject, ServerError>;
+using PremiumIndexKlineDataResponse = API::ResponseOrError<PremiumIndexKlineDataObject>;
 
 struct MarkPriceObject {
     MarkPriceData data;
 };
-using MarkPriceResponse = std::variant<MarkPriceObject, ServerError>;
+using MarkPriceResponse = API::ResponseOrError<MarkPriceObject>;
 
 struct GetFundingRateHistoryObject {
     std::vector<FundingRate> funding_rates;
 };
-using GetFundingRateHistoryResponse = std::variant<GetFundingRateHistoryObject, ServerError>;
+using GetFundingRateHistoryResponse = API::ResponseOrError<GetFundingRateHistoryObject>;
 
 struct GetFundingRateInfoObject {
     std::vector<FundingRateAdjustments> funding_rate_adjustments;
 };
-using GetFundingRateInfoResponse = std::variant<GetFundingRateInfoObject, ServerError>;
+using GetFundingRateInfoResponse = API::ResponseOrError<GetFundingRateInfoObject>;
 
 struct Ticker24hrPriceChangeStatisticsObject {
     Ticker24hrPriceChangeStatistics data;
 };
-using Ticker24hrPriceChangeStatisticsResponse = std::variant<Ticker24hrPriceChangeStatisticsObject, ServerError>;
+using Ticker24hrPriceChangeStatisticsResponse = API::ResponseOrError<Ticker24hrPriceChangeStatisticsObject>;
 
 struct SymbolPriceTickerObject {
     SymbolPriceTicker data;
 };
-using SymbolPriceTickerResponse = std::variant<SymbolPriceTickerObject, ServerError>;
+using SymbolPriceTickerResponse = API::ResponseOrError<SymbolPriceTickerObject>;
 
 struct SymbolPriceTickerV2Object {
     SymbolPriceTicker data;
 };
-using SymbolPriceTickerV2Response = std::variant<SymbolPriceTickerV2Object, ServerError>;
+using SymbolPriceTickerV2Response = API::ResponseOrError<SymbolPriceTickerV2Object>;
 
 struct SymbolOrderBookTickerObject {
     SymbolOrderBookTicker data;
 };
-using SymbolOrderBookTickerResponse = std::variant<SymbolOrderBookTickerObject, ServerError>;
+using SymbolOrderBookTickerResponse = API::ResponseOrError<SymbolOrderBookTickerObject>;
 
 struct QueryDeliveryPriceObject {
     std::vector<DeliveryPrice> delivery_prices;
 };
-using QueryDeliveryPriceResponse = std::variant<QueryDeliveryPriceObject, ServerError>;
+using QueryDeliveryPriceResponse = API::ResponseOrError<QueryDeliveryPriceObject>;
 
 struct OpenInterestObject {
     std::string open_interest;
     std::string symbol;
     int64_t time;
 };
-using OpenInterestResponse = std::variant<OpenInterestObject, ServerError>;
+using OpenInterestResponse = API::ResponseOrError<OpenInterestObject>;
 
 struct OpenInterestStatisticsObject {
     std::vector<OpenInterestStatistics> open_interest_statistics;
 };
-using OpenInterestStatisticsResponse = std::variant<OpenInterestStatisticsObject, ServerError>;
+using OpenInterestStatisticsResponse = API::ResponseOrError<OpenInterestStatisticsObject>;
 
 struct TopTraderLongShortPositionRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using TopTraderLongShortPositionRatioResponse = std::variant<TopTraderLongShortPositionRatioObject, ServerError>;
+using TopTraderLongShortPositionRatioResponse = API::ResponseOrError<TopTraderLongShortPositionRatioObject>;
 
 struct TopTraderLongShortAccountRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using TopTraderLongShortAccountRatioResponse = std::variant<TopTraderLongShortAccountRatioObject, ServerError>;
+using TopTraderLongShortAccountRatioResponse = API::ResponseOrError<TopTraderLongShortAccountRatioObject>;
 
 struct LongShortRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using LongShortRatioResponse = std::variant<LongShortRatioObject, ServerError>;
+using LongShortRatioResponse = API::ResponseOrError<LongShortRatioObject>;
 
 struct TakerBuySellVolumeObject {
     std::vector<BuySellVolume> buy_sell_volumes;
 };
-using TakerBuySellVolumeResponse = std::variant<TakerBuySellVolumeObject, ServerError>;
+using TakerBuySellVolumeResponse = API::ResponseOrError<TakerBuySellVolumeObject>;
 
 struct Basis {
     std::string index_price;
@@ -415,24 +415,24 @@ struct Basis {
 struct BasisObject {
     std::vector<Basis> basis;
 };
-using BasisResponse = std::variant<BasisObject, ServerError>;
+using BasisResponse = API::ResponseOrError<BasisObject>;
 
 struct CompositeIndexSymbolInformationObject {
     std::vector<CompositeIndexSymbolInformation> composite_index_symbol_information;
 };
-using CompositeIndexSymbolInformationResponse = std::variant<CompositeIndexSymbolInformationObject, ServerError>;
+using CompositeIndexSymbolInformationResponse = API::ResponseOrError<CompositeIndexSymbolInformationObject>;
 
 struct MultiAssetsModeAssetIndexObject {
     MultiAssetsModeAssetIndexData data;
 };
-using MultiAssetsModeAssetIndexResponse = std::variant<MultiAssetsModeAssetIndexObject, ServerError>;
+using MultiAssetsModeAssetIndexResponse = API::ResponseOrError<MultiAssetsModeAssetIndexObject>;
 
 struct QueryIndexPriceConstituentsObject {
     std::string symbol;
     std::vector<Constituent> constituents;
     int64_t time;
 };
-using QueryIndexPriceConstituentsResponse = std::variant<QueryIndexPriceConstituentsObject, ServerError>;
+using QueryIndexPriceConstituentsResponse = API::ResponseOrError<QueryIndexPriceConstituentsObject>;
 
 //------------------------------------------------------------------------------------
 

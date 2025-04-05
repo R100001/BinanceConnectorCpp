@@ -49,113 +49,131 @@ simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &o
     return simdjson::SUCCESS;
 }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, double &value, bool const any_order) {
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, double &value, bool const any_order) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
     
-    if (auto error = field.get(value)) return error;
+//     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+//     if(any_order) obj.reset();
 
-    return simdjson::SUCCESS;
-}
+//     return simdjson::SUCCESS;
+// }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, uint64_t &value, bool const any_order) {
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, uint64_t &value, bool const any_order) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
     
-    if (auto error = field.get(value)) return error;
+//     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+//     if(any_order) obj.reset();
 
-    return simdjson::SUCCESS;
-}
+//     return simdjson::SUCCESS;
+// }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int64_t &value, bool const any_order) {
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int64_t &value, bool const any_order) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
     
-    if (auto error = field.get(value)) return error;
+//     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+//     if(any_order) obj.reset();
 
-    return simdjson::SUCCESS;
-}
+//     return simdjson::SUCCESS;
+// }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int32_t &value, bool const any_order) {
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int32_t &value, bool const any_order) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
     
-    if (auto error = field.get(value)) return error;
+//     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+//     if(any_order) obj.reset();
 
-    return simdjson::SUCCESS;
-}
+//     return simdjson::SUCCESS;
+// }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int8_t &value, bool const any_order) {
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int16_t &value, bool const any_order) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
     
-    if (auto error = field.get(value)) return error;
+//     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+//     if(any_order) obj.reset();
 
-    return simdjson::SUCCESS;
-}
+//     return simdjson::SUCCESS;
+// }
 
-simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, bool &value, bool const any_order) {
-
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
-    else field = obj[field_name];
-
-    if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
-        return field.error();
-    }
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, int8_t &value, bool const any_order) {
     
-    if (auto error = field.get(value)) return error;
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
 
-    if(any_order) obj.reset();
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
+    
+//     if (auto error = field.get(value)) return error;
 
-    return simdjson::SUCCESS;
-}
+//     if(any_order) obj.reset();
+
+//     return simdjson::SUCCESS;
+// }
+
+// simdjson::error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, bool &value, bool const any_order) {
+
+//     simdjson::simdjson_result<simdjson::ondemand::value> field;
+//     if (!any_order) field = obj.find_field(field_name);
+//     else field = obj[field_name];
+
+//     if (field.error()) {
+//         std::cout << simdjson::error_message(field.error()) << std::endl;
+//         return field.error();
+//     }
+    
+//     if (auto error = field.get(value)) return error;
+
+//     if(any_order) obj.reset();
+
+//     return simdjson::SUCCESS;
+// }
 
 void simdjson_print_json_tree(simdjson::ondemand::value element) {
     bool add_comma;

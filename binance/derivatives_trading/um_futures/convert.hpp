@@ -31,7 +31,7 @@ struct ConvertPairs {
 struct ListAllConvertedPairsObject {
     std::vector<ConvertPairs> pairs;
 };
-using ListAllConvertedPairsResponse = std::variant<ListAllConvertedPairsObject, ServerError>;
+using ListAllConvertedPairsResponse = API::ResponseOrError<ListAllConvertedPairsObject>;
 
 struct SendQuoteRequestObject {
     std::string quote_id;
@@ -41,14 +41,14 @@ struct SendQuoteRequestObject {
     std::string to_amount;
     int64_t valid_timestamp;
 };
-using SendQuoteRequestResponse = std::variant<SendQuoteRequestObject, ServerError>;
+using SendQuoteRequestResponse = API::ResponseOrError<SendQuoteRequestObject>;
 
 struct AcceptQuoteObject {
     std::string order_id;
     std::string order_status;
     int64_t create_time;
 };
-using AcceptQuoteResponse = std::variant<AcceptQuoteObject, ServerError>;
+using AcceptQuoteResponse = API::ResponseOrError<AcceptQuoteObject>;
 
 struct OrderStatusObject {
     int64_t order_id;
@@ -61,7 +61,7 @@ struct OrderStatusObject {
     std::string inverse_ratio;
     int64_t create_time;
 };
-using OrderStatusResponse = std::variant<OrderStatusObject, ServerError>;
+using OrderStatusResponse = API::ResponseOrError<OrderStatusObject>;
 
 //------------------------------------------------------------------------------------
 

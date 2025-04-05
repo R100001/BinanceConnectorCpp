@@ -20,7 +20,7 @@ struct ClientError {
 
 //------------------------------------------------------------------------------------
 
-struct ServerError {
+struct ServerMessage {
     int16_t code;
     std::string msg;
 };

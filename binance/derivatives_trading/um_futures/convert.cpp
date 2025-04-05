@@ -7,87 +7,87 @@
 
 namespace simdjson {
 
-    using namespace Convert;
+using namespace Convert;
 
-    // ---------- List All Converted Pairs ----------
-    template <typename simdjson_value>
-    auto tag_invoke(deserialize_tag, simdjson_value &val, ConvertPairs &convert_pairs) {
+// ---------- List All Converted Pairs ----------
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, ConvertPairs &convert_pairs) {
 
-        ondemand::object obj;
-        if (auto error = val.get_object().get(obj)) return error;
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
 
-        if (auto error = simdjson_get_value_field_name(obj, "fromAsset", convert_pairs.from_asset)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAsset", convert_pairs.to_asset)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "fromAssetMinAmount", convert_pairs.from_asset_min_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "fromAssetMaxAmount", convert_pairs.from_asset_max_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAssetMinAmount", convert_pairs.to_asset_min_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAssetMaxAmount", convert_pairs.to_asset_max_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAsset", convert_pairs.from_asset)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAsset", convert_pairs.to_asset)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAssetMinAmount", convert_pairs.from_asset_min_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAssetMaxAmount", convert_pairs.from_asset_max_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAssetMinAmount", convert_pairs.to_asset_min_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAssetMaxAmount", convert_pairs.to_asset_max_amount)) return error;
 
-        return SUCCESS;
-    }
+    return SUCCESS;
+}
 
-    template <typename simdjson_value>
-    auto tag_invoke(deserialize_tag, simdjson_value &val, ListAllConvertedPairsObject &response) {
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, ListAllConvertedPairsObject &response) {
 
-        if (auto error = val.get(response.pairs)) return error;
+    if (auto error = val.get(response.pairs)) return error;
 
-        return SUCCESS;
-    }
-    // ----------------------------------------------
+    return SUCCESS;
+}
+// ----------------------------------------------
 
-    // ---------- Send Quote Request ----------
-    template <typename simdjson_value>
-    auto tag_invoke(deserialize_tag, simdjson_value &val, SendQuoteRequestObject &response) {
+// ---------- Send Quote Request ----------
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, SendQuoteRequestObject &response) {
 
-        ondemand::object obj;
-        if (auto error = val.get_object().get(obj)) return error;
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
 
-        if (auto error = simdjson_get_value_field_name(obj, "quoteId", response.quote_id)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "ratio", response.ratio)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "inverseRatio", response.inverse_ratio)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "validTimestamp", response.valid_timestamp)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAmount", response.to_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "fromAmount", response.from_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "quoteId", response.quote_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "ratio", response.ratio)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "inverseRatio", response.inverse_ratio)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "validTimestamp", response.valid_timestamp)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAmount", response.to_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAmount", response.from_amount)) return error;
 
-        return SUCCESS;
-    }
-    // ----------------------------------------
+    return SUCCESS;
+}
+// ----------------------------------------
 
-    // ---------- Accept Quote ----------
-    template <typename simdjson_value>
-    auto tag_invoke(deserialize_tag, simdjson_value &val, AcceptQuoteObject &response) {
+// ---------- Accept Quote ----------
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, AcceptQuoteObject &response) {
 
-        ondemand::object obj;
-        if (auto error = val.get_object().get(obj)) return error;
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
 
-        if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "createTime", response.create_time)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "orderStatus", response.order_status)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "createTime", response.create_time)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderStatus", response.order_status)) return error;
 
-        return SUCCESS;
-    }
-    // ----------------------------------
+    return SUCCESS;
+}
+// ----------------------------------
 
-    // ---------- Order Status ----------
-    template <typename simdjson_value>
-    auto tag_invoke(deserialize_tag, simdjson_value &val, OrderStatusObject &response) {
+// ---------- Order Status ----------
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, OrderStatusObject &response) {
 
-        ondemand::object obj;
-        if (auto error = val.get_object().get(obj)) return error;
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
 
-        if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "orderStatus", response.order_status)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "fromAsset", response.from_asset)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "fromAmount", response.from_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAsset", response.to_asset)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "toAmount", response.to_amount)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "ratio", response.ratio)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "inverseRatio", response.inverse_ratio)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "createTime", response.create_time)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderStatus", response.order_status)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAsset", response.from_asset)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "fromAmount", response.from_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAsset", response.to_asset)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "toAmount", response.to_amount)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "ratio", response.ratio)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "inverseRatio", response.inverse_ratio)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "createTime", response.create_time)) return error;
 
-        return SUCCESS;
-    }
-    // ----------------------------------
+    return SUCCESS;
+}
+// ----------------------------------
 
 } // namespace simdjson
 
@@ -110,7 +110,7 @@ ListAllConvertedPairsResponse list_all_converted_pairs(DerivativesTrading &api, 
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<ListAllConvertedPairsObject>(api.get_parser(), response);
+    return api.parse_response<ListAllConvertedPairsObject>(response);
 }
 
 SendQuoteRequestResponse send_quote_request(DerivativesTrading &api, std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
@@ -126,7 +126,7 @@ SendQuoteRequestResponse send_quote_request(DerivativesTrading &api, std::string
 
     std::string response = api.sign_request("POST", url, params);
 
-    return parse_api_response<SendQuoteRequestObject>(api.get_parser(), response);
+    return api.parse_response<SendQuoteRequestObject>(response);
 }
 
 AcceptQuoteResponse accept_quote(DerivativesTrading &api, std::string const &quote_id, int32_t const recv_window) {
@@ -138,7 +138,7 @@ AcceptQuoteResponse accept_quote(DerivativesTrading &api, std::string const &quo
 
     std::string response = api.sign_request("POST", url, params);
 
-    return parse_api_response<AcceptQuoteObject>(api.get_parser(), response);
+    return api.parse_response<AcceptQuoteObject>(response);
 }
 
 OrderStatusResponse order_status(DerivativesTrading &api, std::string const &order_id, std::string const &quote_id) {
@@ -150,7 +150,7 @@ OrderStatusResponse order_status(DerivativesTrading &api, std::string const &ord
 
     std::string response = api.send_request("GET", url, params);
 
-    return parse_api_response<OrderStatusObject>(api.get_parser(), response);
+    return api.parse_response<OrderStatusObject>(response);
 }
 
 } // namespace RestAPI
