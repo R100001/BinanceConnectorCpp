@@ -738,7 +738,7 @@ NewOrderResponse new_order(DerivativesTrading &api, NewOrder const &order, bool 
     if (close_position) params.emplace_back("closePosition", close_position);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<NewOrderObject>(response);
 }
@@ -750,7 +750,7 @@ PlaceMultipleOrdersResponse place_multiple_orders(DerivativesTrading &api, std::
     params.emplace_back("batchOrders", orders_to_json(orders));
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<PlaceMultipleOrdersObject>(response, API::ArrayErrors{});
 }
@@ -768,7 +768,7 @@ ModifyOrderResponse modify_order(DerivativesTrading &api, ModifyOrder const &ord
     if (order.price_match != "") params.emplace_back("priceMatch", order.price_match);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("PUT", url, params);
+    std::string response = api.sign_request<API::RequestType::PUT>(url, params);
 
     return api.parse_response<ModifyOrderObject>(response);
 }
@@ -780,7 +780,7 @@ ModifyMultipleOrdersResponse modify_multiple_orders(DerivativesTrading &api, std
     params.emplace_back("batchOrders", orders_to_json(orders));
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("PUT", url, params);
+    std::string response = api.sign_request<API::RequestType::PUT>(url, params);
 
     return api.parse_response<ModifyMultipleOrdersObject>(response, API::ArrayErrors{});
 }
@@ -797,7 +797,7 @@ GetOrderModifyHistoryResponse get_order_modify_history(DerivativesTrading &api, 
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetOrderModifyHistoryObject>(response);
 }
@@ -811,7 +811,7 @@ CancelOrderResponse cancel_order(DerivativesTrading &api, std::string const &sym
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("DELETE", url, params);
+    std::string response = api.sign_request<API::RequestType::DELETE>(url, params);
 
     return api.parse_response<CancelOrderObject>(response);
 }
@@ -825,7 +825,7 @@ CancelMultipleOrdersResponse cancel_multiple_orders(DerivativesTrading &api, std
     if (!orig_client_order_ids.empty()) params.emplace_back("origClientOrderIdList", data_to_list(orig_client_order_ids));
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("DELETE", url, params);
+    std::string response = api.sign_request<API::RequestType::DELETE>(url, params);
 
     return api.parse_response<CancelMultipleOrdersObject>(response, API::ArrayErrors{});
 }
@@ -837,7 +837,7 @@ CancelAllOpenOrdersResponse cancel_all_open_orders(DerivativesTrading &api, std:
     params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("DELETE", url, params);
+    std::string response = api.sign_request<API::RequestType::DELETE>(url, params);
 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
@@ -850,7 +850,7 @@ AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(DerivativesTrading &
     params.emplace_back("countdownTime", countdown_time);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<AutoCancelAllOpenOrdersObject>(response);
 }
@@ -864,7 +864,7 @@ QueryOrderResponse query_order(DerivativesTrading &api, std::string const &symbo
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryOrderObject>(response);
 }
@@ -880,7 +880,7 @@ QueryAllOrdersResponse query_all_orders(DerivativesTrading &api, std::string con
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryAllOrdersObject>(response);
 }
@@ -892,7 +892,7 @@ QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(DerivativesTradi
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryCurrentAllOpenOrdersObject>(response);
 }
@@ -906,7 +906,7 @@ QueryCurrentOpenOrderResponse query_current_open_order(DerivativesTrading &api, 
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryCurrentOpenOrderObject>(response);
 }
@@ -922,7 +922,7 @@ QueryUsersForceOrdersResponse query_users_force_orders(DerivativesTrading &api, 
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryUsersForceOrdersObject>(response);
 }
@@ -939,7 +939,7 @@ QueryAccountTradeListResponse query_account_trade_list(DerivativesTrading &api, 
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryAccountTradeListObject>(response);
 }
@@ -952,7 +952,7 @@ ChangeMarginTypeResponse change_margin_type(DerivativesTrading &api, std::string
     params.emplace_back("marginType", margin_type);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
@@ -964,7 +964,7 @@ ChangePositionModeResponse change_position_mode(DerivativesTrading &api, std::st
     params.emplace_back("dualSidePosition", dual_side_position);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
@@ -977,7 +977,7 @@ ChangeInitialLeverageResponse change_initial_leverage(DerivativesTrading &api, s
     params.emplace_back("leverage", leverage);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<ChangeInitialLeverageObject>(response);
 }
@@ -989,7 +989,7 @@ ChangeMultiAssetsModeResponse change_multi_assets_mode(DerivativesTrading &api, 
     params.emplace_back("multiAssetsMargin", multi_assets_margin);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
@@ -1004,7 +1004,7 @@ ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(Derivatives
     if (position_side != "") params.emplace_back("positionSide", position_side);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<ModifyIsolatedPositionMarginObject>(response);
 }
@@ -1016,7 +1016,7 @@ PositionInformationV2Response position_information_v2(DerivativesTrading &api, s
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<PositionInformationV2Object>(response);
 }
@@ -1028,7 +1028,7 @@ PositionInformationV3Response position_information_v3(DerivativesTrading &api, s
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<PositionInformationV3Object>(response);
 }
@@ -1040,7 +1040,7 @@ PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(Derivativ
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<PositionAdlQuantileEstimationObject>(response);
 }
@@ -1056,7 +1056,7 @@ GetPositionMarginChangeHistoryResponse get_position_margin_change_history(Deriva
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetPositionMarginChangeHistoryObject>(response);
 }
@@ -1086,7 +1086,7 @@ TestNewOrderResponse test_new_order(DerivativesTrading &api, NewOrder const &ord
     if (close_position) params.emplace_back("closePosition", close_position);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<TestNewOrderObject>(response);
 }

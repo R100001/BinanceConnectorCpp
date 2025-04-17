@@ -3,10 +3,10 @@ add_library(openssllib STATIC
 )
 target_link_libraries(openssllib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
-add_library(curllib STATIC
+add_library(httplib STATIC
     HTTPClient.cpp
 )
-target_link_libraries(curllib PRIVATE CURL::libcurl)
+target_link_libraries(httplib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto)
 
 add_library(utils STATIC
     utils.cpp

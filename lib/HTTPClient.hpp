@@ -5,20 +5,19 @@
 //------------------------------------------------------------------------------------
 
 #include <memory>
-#include <string>
-#include <vector>
+#include <string_view>
 
 //------------------------------------------------------------------------------------
 
 class HTTPClient {
 public:
-    HTTPClient(std::string const &apiKey);
+    HTTPClient(std::string_view apiKey);
     ~HTTPClient();
 
-    std::string get(std::string const &url, int32_t const timeout = 60, std::string const &proxy = "") const;
-    std::string post(std::string const &url, int32_t const timeout = 60, std::string const &proxy = "") const;
-    std::string put(std::string const &url, int32_t const timeout = 60, std::string const &proxy = "") const;
-    std::string del(std::string const &url, int32_t const timeout = 60, std::string const &proxy = "") const;
+    std::string get(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string post(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string put(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string del(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
 
 private:
     class HTTPClientImpl;

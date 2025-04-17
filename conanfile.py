@@ -5,8 +5,20 @@ class BinanceConnectorCppConan(ConanFile):
     name = "binanceconnectorcpp"
     version = "1.0"
     settings = "os", "arch", "compiler", "build_type"
-    requires = "openssl/3.4.1", "libcurl/8.11.1", "simdjson/3.11.5"
+    requires = [
+        "boost/1.87.0",
+        "openssl/3.4.1",
+        "simdjson/3.11.5"
+    ]
     generators = "CMakeDeps", "CMakeToolchain"
+    options = {
+        "shared": [True, False]
+    }
+    default_options = {
+        "shared": False,
+        "boost/*:without_test": True,
+        "boost/*:without_python": True
+    }
 
     def build(self):
         cmake = CMake(self)

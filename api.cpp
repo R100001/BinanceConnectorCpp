@@ -37,50 +37,12 @@ API::API(
 
 std::string API::query(std::string const &url, Parameters const &payload)
 {
-    return this->send_request("GET", url, payload);
+    return this->send_request<API::RequestType::GET>(url, payload);
 }
 
 //------------------------------------------------------------------------------------
 
-std::string API::limit_request(std::string const &http_method, std::string const &url, Parameters const &payload)
-{
-    check_required_parameter(this->_key, "apiKey");
-    return this->send_request(http_method, url, payload);
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::sign_request(std::string const &http_method, std::string const &url, Parameters &payload, bool const special)
-{
-    payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
-    payload.emplace_back(std::make_pair("signature", this->get_sign(this->prepare_params(payload, special))));
-    return this->send_request(http_method, url, payload, special);
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::limited_encoded_sign_request(std::string const &http_method, std::string &url, Parameters &payload)
-{
-    payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp()))); 
-    std::string params = this->prepare_params(payload);
-    url += "?" + params + "&signature=" + this->get_sign(params);
-    return this->send_request(http_method, url);
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::send_request(std::string const &http_method, std::string const &url, Parameters const &payload, bool const special)
-{
-    std::string const full_url = this->_base_url + url;
-
-    std::string response = this->dispach_request(http_method, full_url, this->prepare_params(payload, special));
-    
-    return response;
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::prepare_params(Parameters const &params, bool const special) const
+std::string API::prepare_params(Parameters const &params) const
 {
     std::stringstream ss;
     for(auto const &[name, value] : params) {
@@ -101,29 +63,12 @@ std::string API::prepare_params(Parameters const &params, bool const special) co
 
 //------------------------------------------------------------------------------------
 
-std::string API::get_sign(std::string const &payload) const
+std::string API::sign_message(std::string const &message) const
 {
     if(this->_private_key.empty()) {
-        return hmac_hashing(this->_secret, payload);
+        return hmac_hashing(this->_secret, message);
     } else {
-        return rsa_signature(this->_private_key, payload, this->_private_key_passphrase);
-    }
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::dispach_request(std::string const &http_method, std::string const &url, std::string const &payload) const
-{
-    if(http_method == "GET") {
-        return this->_session.get(url + "?" + payload, this->_timeout, this->_proxy);
-    } else if(http_method == "POST") {
-        return this->_session.post(url + "?" + payload, this->_timeout, this->_proxy);
-    } else if(http_method == "PUT") {
-        return this->_session.put(url + "?" + payload, this->_timeout, this->_proxy);
-    } else if(http_method == "DELETE") {
-        return this->_session.del(url + "?" + payload, this->_timeout, this->_proxy);
-    } else {
-        throw std::runtime_error("Unsupported HTTP method: " + http_method);
+        return rsa_signature(this->_private_key, message, this->_private_key_passphrase);
     }
 }
 
@@ -158,7 +103,7 @@ std::optional<API::ServerMessageResponse> API::read_server_message(simdjson::ond
 
 API::ServerMessageResponse API::parse_response(std::string &response, ResponseIsServerMessage const) {
    
-    auto doc = get_parser().iterate(response);
+    auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
 
 #ifndef NDEBUG

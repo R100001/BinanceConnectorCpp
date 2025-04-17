@@ -901,7 +901,7 @@ OrderBookResponse order_book(DerivativesTrading &api, std::string const &symbol,
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<OrderBookObject>(response);
 }
@@ -913,7 +913,7 @@ RecentTradesListResponse recent_trades_list(DerivativesTrading &api, std::string
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<RecentTradesListObject>(response);
 }
@@ -926,7 +926,7 @@ OldTradesLookupResponse old_trades_lookup(DerivativesTrading &api, std::string c
     if (limit != -1) params.emplace_back("limit", limit);
     if (from_id != -1) params.emplace_back("fromId", from_id);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<OldTradesLookupObject>(response);
 }
@@ -941,7 +941,7 @@ CompressedAggregateTradesListResponse compressed_aggregate_trades_list(Derivativ
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<CompressedAggregateTradesListObject>(response);
 }
@@ -956,7 +956,7 @@ KlineCandlestickDataResponse kline_candlestick_data(DerivativesTrading &api, std
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
     
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<KlineCandlestickDataObject>(response);
 }
@@ -972,7 +972,7 @@ ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candles
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<ContinuousContractKlineCandlestickDataObject>(response);
 }
@@ -987,7 +987,7 @@ IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(Deriva
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<IndexPriceKlineCandlestickDataObject>(response);
 }
@@ -1002,7 +1002,7 @@ MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(Derivati
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<MarkPriceKlineCandlestickDataObject>(response);
 }
@@ -1017,7 +1017,7 @@ PremiumIndexKlineDataResponse premium_index_kline_data(DerivativesTrading &api, 
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<PremiumIndexKlineDataObject>(response);
 }
@@ -1028,7 +1028,7 @@ MarkPriceResponse mark_price(DerivativesTrading &api, std::string const &symbol)
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<MarkPriceObject>(response);
 }
@@ -1042,7 +1042,7 @@ GetFundingRateHistoryResponse get_funding_rate_history(DerivativesTrading &api, 
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetFundingRateHistoryObject>(response);
 }
@@ -1061,7 +1061,7 @@ Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(Deri
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<Ticker24hrPriceChangeStatisticsObject>(response);
 }
@@ -1072,7 +1072,7 @@ SymbolPriceTickerResponse symbol_price_ticker(DerivativesTrading &api, std::stri
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<SymbolPriceTickerObject>(response);
 }
@@ -1083,7 +1083,7 @@ SymbolPriceTickerV2Response symbol_price_ticker_v2(DerivativesTrading &api, std:
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<SymbolPriceTickerV2Object>(response);
 }
@@ -1094,7 +1094,7 @@ SymbolOrderBookTickerResponse symbol_order_book_ticker(DerivativesTrading &api, 
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<SymbolOrderBookTickerObject>(response);
 }
@@ -1105,7 +1105,7 @@ QueryDeliveryPriceResponse query_delivery_price(DerivativesTrading &api, std::st
     API::Parameters params;
     params.emplace_back("pair", pair);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryDeliveryPriceObject>(response);
 }
@@ -1116,7 +1116,7 @@ OpenInterestResponse open_interest(DerivativesTrading &api, std::string const &s
     API::Parameters params;
     params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<OpenInterestObject>(response);
 }
@@ -1131,7 +1131,7 @@ OpenInterestStatisticsResponse open_interest_statistics(DerivativesTrading &api,
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<OpenInterestStatisticsObject>(response);
 }
@@ -1146,7 +1146,7 @@ TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(Der
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<TopTraderLongShortPositionRatioObject>(response);
 }
@@ -1161,7 +1161,7 @@ TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(Deriv
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<TopTraderLongShortAccountRatioObject>(response);
 }
@@ -1176,7 +1176,7 @@ LongShortRatioResponse long_short_ratio(DerivativesTrading &api, std::string con
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<LongShortRatioObject>(response);
 }
@@ -1191,7 +1191,7 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(DerivativesTrading &api, std::s
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<TakerBuySellVolumeObject>(response);
 }
@@ -1207,7 +1207,7 @@ BasisResponse basis(DerivativesTrading &api, std::string const &pair, std::strin
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<BasisObject>(response);
 }
@@ -1218,7 +1218,7 @@ CompositeIndexSymbolInformationResponse composite_index_symbol_information(Deriv
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<CompositeIndexSymbolInformationObject>(response);
 }
@@ -1229,7 +1229,7 @@ MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(DerivativesTradi
     API::Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<MultiAssetsModeAssetIndexObject>(response);
 }
@@ -1240,7 +1240,7 @@ QueryIndexPriceConstituentsResponse query_index_price_constituents(DerivativesTr
     API::Parameters params;
     params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryIndexPriceConstituentsObject>(response);
 }

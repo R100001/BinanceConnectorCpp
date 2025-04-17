@@ -4,3 +4,6 @@ build/
 
 # Ignore main file
 main.cpp
+
+# Ignore vscode settings
+.vscode/settings.json

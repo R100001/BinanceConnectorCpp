@@ -26,6 +26,13 @@ public: // Typedefs
     using Parameters = std::vector<std::pair<std::string, Parameter>>;
     using APIResponse = std::variant<simdjson::ondemand::object, ServerMessage>;
 
+    enum class RequestType {
+        GET,
+        POST,
+        PUT,
+        DELETE
+    };
+
 public: // Constructors
 
     API(
@@ -43,10 +50,10 @@ public: // Constructors
 public: // Public requests
 
     std::string query(std::string const &url, Parameters const &payload = {});
-    std::string limit_request(std::string const &http_method, std::string const &url, Parameters const &payload);
-    std::string sign_request(std::string const &http_method, std::string const &url, Parameters &payload, bool const special = false);
-    std::string limited_encoded_sign_request(std::string const &http_method, std::string &url, Parameters &payload);
-    std::string send_request(std::string const &http_method, std::string const &url, Parameters const &payload = {}, bool const special = false);
+    template <RequestType req_type> std::string limit_request(std::string const &url, Parameters const &payload);
+    template <RequestType req_type> std::string sign_request(std::string const &url, Parameters &payload);
+    template <RequestType req_type> std::string limited_encoded_sign_request(std::string &url, Parameters &payload);
+    template <RequestType req_type> std::string send_request(std::string const &url, Parameters const &payload = {});
     
 
 public: // Public message parsing
@@ -73,7 +80,7 @@ public: // Public message parsing
 
     std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj) const;
 
-    simdjson::ondemand::parser &get_parser() { return this->_parser; }
+    simdjson::ondemand::parser &parser() { return this->_parser; }
 
 private: // Private message parsing
 
@@ -82,9 +89,9 @@ private: // Private message parsing
  
 private: // Private methods
 
-    std::string prepare_params(Parameters const &params, bool const special = false) const;
-    std::string get_sign(std::string const &payload) const;
-    std::string dispach_request(std::string const &http_method, std::string const &url, std::string const &payload) const;
+    std::string prepare_params(Parameters const &params) const;
+    std::string sign_message(std::string const &message) const;
+    template<RequestType req_type> std::string dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const;
     
 private: // Private variables
 
@@ -129,7 +136,7 @@ API::ResponseOrError<JsonResponseStructured> API::parse_json_value(simdjson::ond
 template <typename JsonResponseStructured>
 API::ResponseOrError<JsonResponseStructured> API::parse_response(std::string &response) {
     
-    auto doc = get_parser().iterate(response);
+    auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
 
     return parse_json_value<JsonResponseStructured>(doc);
@@ -140,7 +147,7 @@ API::ResponseOrError<JsonResponseStructured> API::parse_response(std::string &re
 template <typename JsonResponseStructured>
 API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string &response, ArrayErrors const) {
 
-    auto doc = get_parser().iterate(response);
+    auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
 
 #ifndef NDEBUG
@@ -169,6 +176,67 @@ API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string
     }
     
     return response_structs;
+}
+
+//------------------------------------------------------------------------------------
+
+template <API::RequestType req_type>
+std::string API::limit_request(std::string const &url, Parameters const &payload)
+{
+    check_required_parameter(this->_key, "apiKey");
+    return this->send_request<req_type>(url, payload);
+}
+
+//------------------------------------------------------------------------------------
+
+template <API::RequestType req_type>
+std::string API::sign_request(std::string const &url, Parameters &payload)
+{
+    payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
+    payload.emplace_back(std::make_pair("signature", this->sign_message(this->prepare_params(payload))));
+    return this->send_request<req_type>(url, payload);
+}
+
+//------------------------------------------------------------------------------------
+
+template <API::RequestType req_type>
+std::string API::limited_encoded_sign_request(std::string &url, Parameters &payload)
+{
+    payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp()))); 
+    std::string params = this->prepare_params(payload);
+    url += "?" + params + "&signature=" + this->sign_message(params);
+    return this->send_request<req_type>(url);
+}
+
+//------------------------------------------------------------------------------------
+
+template <API::RequestType req_type>
+std::string API::send_request(std::string const &endpoint, Parameters const &payload)
+{
+    std::string response = this->dispach_request<req_type>(this->_base_url, endpoint, this->prepare_params(payload));
+    
+    return response;
+}
+
+//------------------------------------------------------------------------------------
+
+template<API::RequestType req_type>
+std::string API::dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const
+{
+    std::string const &request = payload.empty() ? std::string(endpoint) : std::string(endpoint) + "?" + payload;
+
+    switch(req_type) {
+        case API::RequestType::GET:
+            return this->_session.get(url, request, this->_timeout, this->_proxy);
+        case API::RequestType::POST:
+            return this->_session.post(url, request, this->_timeout, this->_proxy);
+        case API::RequestType::PUT:
+            return this->_session.put(url, request, this->_timeout, this->_proxy);
+        case API::RequestType::DELETE:
+            return this->_session.del(url, request, this->_timeout, this->_proxy);
+        default:
+            throw std::runtime_error("Unsupported HTTP method!");
+    }
 }
 
 //------------------------------------------------------------------------------------

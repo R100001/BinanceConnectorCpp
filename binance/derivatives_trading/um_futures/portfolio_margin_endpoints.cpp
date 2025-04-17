@@ -1,0 +1,57 @@
+
+#include "portfolio_margin_endpoints.hpp"
+
+#include "lib/utils.hpp"
+
+//------------------------------------------------------------------------------------
+
+namespace simdjson {
+    
+using namespace PortfolioMarginEndpoints;
+
+// ---------- Classic Portfolio Margin Account Information ----------
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, ClassicPortfolioMarginAccountInformationObject &response) {
+    
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
+
+    if (auto error = simdjson_get_value_field_name(obj, "maxWithdrawalAmountUSD", response.max_withdrawal_amount_usd)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "asset", response.asset)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "maxWithdrawalAmount", response.max_withdrawal_amount)) return error;
+
+    return SUCCESS;
+}
+// ------------------------------------------------------------------
+
+} // namespace simdjson
+
+//------------------------------------------------------------------------------------
+
+namespace PortfolioMarginEndpoints {
+
+//------------------------------------------------------------------------------------
+
+// REST API Endpoints
+
+namespace RestAPI {
+
+ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(DerivativesTrading &api, std::string const &asset, int32_t const recv_window) {
+    std::string const url = "/fapi/v1/pmAccountInfo";
+
+    API::Parameters params;
+    params.emplace_back("asset", asset);
+    if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
+
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
+
+    return api.parse_response<ClassicPortfolioMarginAccountInformationObject>(response);
+}
+
+} // namespace RestAPI
+
+//------------------------------------------------------------------------------------
+
+} // namespace PortfolioMarginEndpoints
+
+//------------------------------------------------------------------------------------

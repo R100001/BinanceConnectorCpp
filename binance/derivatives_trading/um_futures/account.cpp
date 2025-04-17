@@ -604,7 +604,7 @@ NewFutureAccountTransferResponse new_future_account_transfer(DerivativesTrading 
     if (to_symbol != "") params.emplace_back("toSymbol", to_symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<NewFutureAccountTransferObject>(response);
 }
@@ -615,7 +615,7 @@ FuturesAccountBalanceV3Response futures_account_balance_v3(DerivativesTrading &a
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<FuturesAccountBalanceV3Object>(response);
 }
@@ -626,7 +626,7 @@ FuturesAccountBalanceResponse futures_account_balance(DerivativesTrading &api, i
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<FuturesAccountBalanceObject>(response);
 }
@@ -637,7 +637,7 @@ AccountInformationV3Response account_information_v3(DerivativesTrading &api, int
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<AccountInformationV3Object>(response);
 }
@@ -648,7 +648,7 @@ AccountInformationResponse account_information(DerivativesTrading &api, int32_t 
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<AccountInformationObject>(response);
 }
@@ -666,7 +666,7 @@ GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_hi
     if (to_symbol != "") params.emplace_back("toSymbol", to_symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetFutureAccountTransactionHistoryListObject>(response);
 }
@@ -678,7 +678,7 @@ UserCommissionRateResponse user_commission_rate(DerivativesTrading &api, std::st
     params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<UserCommissionRateObject>(response);
 }
@@ -689,7 +689,7 @@ QueryAccountConfigurationResponse query_account_configuration(DerivativesTrading
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryAccountConfigurationObject>(response);
 }
@@ -701,7 +701,7 @@ QuerySymbolConfigurationResponse query_symbol_configuration(DerivativesTrading &
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QuerySymbolConfigurationObject>(response);
 }
@@ -712,7 +712,7 @@ QueryOrderRateLimitResponse query_order_rate_limit(DerivativesTrading &api, int3
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<QueryOrderRateLimitObject>(response);
 }
@@ -724,7 +724,7 @@ NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(DerivativesTr
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<NotionalAndLeverageBracketsObject>(response);
 }
@@ -735,7 +735,7 @@ GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(DerivativesTradi
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetCurrentMultiAssetsModeObject>(response);
 }
@@ -746,7 +746,7 @@ GetCurrentPositionModeResponse get_current_position_mode(DerivativesTrading &api
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetCurrentPositionModeObject>(response);
 }
@@ -763,7 +763,7 @@ GetIncomeHistoryResponse get_income_history(DerivativesTrading &api, std::string
     if (limit != -1) params.emplace_back("limit", limit);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
     
     return api.parse_response<GetIncomeHistoryObject>(response);
 }
@@ -775,7 +775,7 @@ FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_r
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<FuturesTradingQuantitativeRulesIndicatorsObject>(response);
 }
@@ -788,7 +788,7 @@ GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_tr
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetDownloadIdForFuturesTransactionHistoryObject>(response);
 }
@@ -800,7 +800,7 @@ GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_his
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetFuturesTransactionHistoryDownloadLinkByIdObject>(response);
 }
@@ -813,7 +813,7 @@ GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_hi
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetDownloadIdForFuturesOrderHistoryObject>(response);
 }
@@ -825,7 +825,7 @@ GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_downloa
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetFuturesOrderHistoryDownloadLinkByIdObject>(response);
 }
@@ -838,7 +838,7 @@ GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_hi
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetDownloadIdForFuturesTradeHistoryObject>(response);
 }
@@ -850,7 +850,7 @@ GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(De
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetFuturesTradeDownloadLinkByIdObject>(response);
 }
@@ -862,7 +862,7 @@ ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(Derivatives
     params.emplace_back("feeBurn", feeBurn);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
@@ -873,7 +873,7 @@ GetBnbBurnStatusResponse get_bnb_burn_status(DerivativesTrading &api, int32_t co
     API::Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("GET", url, params);
+    std::string response = api.sign_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<GetBnbBurnStatusObject>(response);
 }

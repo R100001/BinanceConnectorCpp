@@ -108,7 +108,7 @@ ListAllConvertedPairsResponse list_all_converted_pairs(DerivativesTrading &api, 
     if (!from_asset.empty()) params.emplace_back("fromAsset", from_asset);
     if (!to_asset.empty()) params.emplace_back("toAsset", to_asset);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<ListAllConvertedPairsObject>(response);
 }
@@ -124,7 +124,7 @@ SendQuoteRequestResponse send_quote_request(DerivativesTrading &api, std::string
     if (!valid_time.empty()) params.emplace_back("validTime", valid_time);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<SendQuoteRequestObject>(response);
 }
@@ -136,7 +136,7 @@ AcceptQuoteResponse accept_quote(DerivativesTrading &api, std::string const &quo
     params.emplace_back("quoteId", quote_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request("POST", url, params);
+    std::string response = api.sign_request<API::RequestType::POST>(url, params);
 
     return api.parse_response<AcceptQuoteObject>(response);
 }
@@ -148,7 +148,7 @@ OrderStatusResponse order_status(DerivativesTrading &api, std::string const &ord
     if (!order_id.empty()) params.emplace_back("orderId", order_id);
     if (!quote_id.empty()) params.emplace_back("quoteId", quote_id);
 
-    std::string response = api.send_request("GET", url, params);
+    std::string response = api.send_request<API::RequestType::GET>(url, params);
 
     return api.parse_response<OrderStatusObject>(response);
 }
