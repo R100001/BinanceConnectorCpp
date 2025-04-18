@@ -31,13 +31,32 @@ int64_t get_timestamp();
 
 using namespace simdjson;
 
-error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::string &value, bool const any_order = false);
-
-template <typename T>
-error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, T &value, bool const any_order = false) {
+template <bool unordered_search = false>
+error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, std::string &value) {
     
     simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
+    if (!unordered_search) field = obj.find_field(field_name);
+    else field = obj[field_name];
+
+    if (field.error()) {
+        std::cout << simdjson::error_message(field.error()) << std::endl;
+        return field.error();
+    }
+
+    std::string_view sv;
+    if (auto error = field.get(sv)) return error;
+    value = std::string(sv);
+
+    if(unordered_search) obj.reset();
+
+    return simdjson::SUCCESS;
+}
+
+template <typename T, bool unordered_search = false>
+error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, T &value) {
+    
+    simdjson::simdjson_result<simdjson::ondemand::value> field;
+    if (!unordered_search) field = obj.find_field(field_name);
     else field = obj[field_name];
 
     if (field.error()) {
@@ -47,16 +66,16 @@ error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view
     
     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+    if(unordered_search) obj.reset();
 
     return simdjson::SUCCESS;
 }
 
-template <typename T>
-error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<T> &value, bool const any_order = false) {
+template <typename T, bool unordered_search = false>
+error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<T> &value) {
 
     simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
+    if (!unordered_search) field = obj.find_field(field_name);
     else field = obj[field_name];
 
     if (field.error()) {
@@ -66,17 +85,17 @@ error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view
 
     if (auto error = field.get(value)) return error;
 
-    if(any_order) obj.reset();
+    if(unordered_search) obj.reset();
 
     return simdjson::SUCCESS;
 
 }
 
-template <>
-inline error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<std::string> &vs, bool const any_order) {
+template <bool unordered_search = false>
+inline error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<std::string> &vs) {
     
     simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!any_order) field = obj.find_field(field_name);
+    if (!unordered_search) field = obj.find_field(field_name);
     else field = obj[field_name];
 
     if (field.error()) {
@@ -94,7 +113,7 @@ inline error_code simdjson_get_value_field_name(ondemand::object &obj, std::stri
         vs.emplace_back(sv);
     }
 
-    if(any_order) obj.reset();
+    if(unordered_search) obj.reset();
 
     return simdjson::SUCCESS;
 }

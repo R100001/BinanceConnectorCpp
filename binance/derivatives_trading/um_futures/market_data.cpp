@@ -77,15 +77,15 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, Filter &filter) {
     if (auto error = val.get_object().get(obj)) return error;
 
     std::string filter_type;
-    if (auto error = simdjson_get_value_field_name(obj, "filterType", filter_type, true)) return error;
+    if (auto error = simdjson_get_value_field_name<true>(obj, "filterType", filter_type)) return error;
 
     if (filter_type == "PRICE_FILTER") {
         
         FilterPriceFilter price_filter;
         price_filter.filter_type = filter_type;
-        if (auto error = simdjson_get_value_field_name(obj, "minPrice", price_filter.min_price, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "maxPrice", price_filter.max_price, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "tickSize", price_filter.tick_size, true)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "minPrice", price_filter.min_price)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "maxPrice", price_filter.max_price)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "tickSize", price_filter.tick_size)) return error;
 
         filter = price_filter;
 
@@ -94,9 +94,9 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, Filter &filter) {
         
         FilterLotSize lot_size;
         lot_size.filter_type = filter_type;
-        if (auto error = simdjson_get_value_field_name(obj, "minQty", lot_size.min_qty, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "maxQty", lot_size.max_qty, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "stepSize", lot_size.step_size, true)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "minQty", lot_size.min_qty)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "maxQty", lot_size.max_qty)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "stepSize", lot_size.step_size)) return error;
 
         filter = lot_size;
 
@@ -105,9 +105,9 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, Filter &filter) {
         
         FilterMarketLotSize market_lot_size;
         market_lot_size.filter_type = filter_type;
-        if (auto error = simdjson_get_value_field_name(obj, "minQty", market_lot_size.min_qty, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "maxQty", market_lot_size.max_qty, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "stepSize", market_lot_size.step_size, true)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "minQty", market_lot_size.min_qty)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "maxQty", market_lot_size.max_qty)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "stepSize", market_lot_size.step_size)) return error;
 
         filter = market_lot_size;
 
@@ -143,9 +143,9 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, Filter &filter) {
         
         FilterPercentPrice percent_price;
         percent_price.filter_type = filter_type;
-        if (auto error = simdjson_get_value_field_name(obj, "multiplierDecimal", percent_price.multiplier_decimal, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "multiplierUp", percent_price.multiplier_up, true)) return error;
-        if (auto error = simdjson_get_value_field_name(obj, "multiplierDown", percent_price.multiplier_down, true)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "multiplierDecimal", percent_price.multiplier_decimal)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "multiplierUp", percent_price.multiplier_up)) return error;
+        if (auto error = simdjson_get_value_field_name<true>(obj, "multiplierDown", percent_price.multiplier_down)) return error;
     
         filter = percent_price;
 
