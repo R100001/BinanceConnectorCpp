@@ -713,7 +713,7 @@ namespace Trade {
 
 namespace RestAPI {
 
-NewOrderResponse new_order(DerivativesTrading &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
+NewOrderResponse new_order(API &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
     API::Parameters params;
@@ -743,7 +743,7 @@ NewOrderResponse new_order(DerivativesTrading &api, NewOrder const &order, bool 
     return api.parse_response<NewOrderObject>(response);
 }
 
-PlaceMultipleOrdersResponse place_multiple_orders(DerivativesTrading &api, std::vector<NewOrder> const &orders, int32_t const recv_window) {
+PlaceMultipleOrdersResponse place_multiple_orders(API &api, std::vector<NewOrder> const &orders, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
     API::Parameters params;
@@ -755,7 +755,7 @@ PlaceMultipleOrdersResponse place_multiple_orders(DerivativesTrading &api, std::
     return api.parse_response<PlaceMultipleOrdersObject>(response, API::ArrayErrors{});
 }
 
-ModifyOrderResponse modify_order(DerivativesTrading &api, ModifyOrder const &order, int32_t const recv_window) {
+ModifyOrderResponse modify_order(API &api, ModifyOrder const &order, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
     API::Parameters params;
@@ -773,7 +773,7 @@ ModifyOrderResponse modify_order(DerivativesTrading &api, ModifyOrder const &ord
     return api.parse_response<ModifyOrderObject>(response);
 }
 
-ModifyMultipleOrdersResponse modify_multiple_orders(DerivativesTrading &api, std::vector<ModifyOrder> const &orders, int32_t const recv_window) {
+ModifyMultipleOrdersResponse modify_multiple_orders(API &api, std::vector<ModifyOrder> const &orders, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
     API::Parameters params;
@@ -785,7 +785,7 @@ ModifyMultipleOrdersResponse modify_multiple_orders(DerivativesTrading &api, std
     return api.parse_response<ModifyMultipleOrdersObject>(response, API::ArrayErrors{});
 }
 
-GetOrderModifyHistoryResponse get_order_modify_history(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
+GetOrderModifyHistoryResponse get_order_modify_history(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/orderAmendment";
 
     API::Parameters params;
@@ -802,7 +802,7 @@ GetOrderModifyHistoryResponse get_order_modify_history(DerivativesTrading &api, 
     return api.parse_response<GetOrderModifyHistoryObject>(response);
 }
 
-CancelOrderResponse cancel_order(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
+CancelOrderResponse cancel_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
     API::Parameters params;
@@ -816,7 +816,7 @@ CancelOrderResponse cancel_order(DerivativesTrading &api, std::string const &sym
     return api.parse_response<CancelOrderObject>(response);
 }
 
-CancelMultipleOrdersResponse cancel_multiple_orders(DerivativesTrading &api, std::string const &symbol, std::vector<int64_t> const &order_ids, std::vector<std::string> const &orig_client_order_ids, int32_t const recv_window) {
+CancelMultipleOrdersResponse cancel_multiple_orders(API &api, std::string const &symbol, std::vector<int64_t> const &order_ids, std::vector<std::string> const &orig_client_order_ids, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
     API::Parameters params;
@@ -830,7 +830,7 @@ CancelMultipleOrdersResponse cancel_multiple_orders(DerivativesTrading &api, std
     return api.parse_response<CancelMultipleOrdersObject>(response, API::ArrayErrors{});
 }
 
-CancelAllOpenOrdersResponse cancel_all_open_orders(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+CancelAllOpenOrdersResponse cancel_all_open_orders(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/allOpenOrders";
 
     API::Parameters params;
@@ -842,7 +842,7 @@ CancelAllOpenOrdersResponse cancel_all_open_orders(DerivativesTrading &api, std:
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
 
-AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(DerivativesTrading &api, std::string const &symbol, int64_t const countdown_time, int32_t const recv_window) {
+AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(API &api, std::string const &symbol, int64_t const countdown_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/countdownCancelAll";
 
     API::Parameters params;
@@ -855,7 +855,7 @@ AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(DerivativesTrading &
     return api.parse_response<AutoCancelAllOpenOrdersObject>(response);
 }
 
-QueryOrderResponse query_order(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
+QueryOrderResponse query_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
     API::Parameters params;
@@ -869,7 +869,7 @@ QueryOrderResponse query_order(DerivativesTrading &api, std::string const &symbo
     return api.parse_response<QueryOrderObject>(response);
 }
 
-QueryAllOrdersResponse query_all_orders(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int16_t const limit, int32_t const recv_window) {
+QueryAllOrdersResponse query_all_orders(API &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/allOrders";
 
     API::Parameters params;
@@ -885,7 +885,7 @@ QueryAllOrdersResponse query_all_orders(DerivativesTrading &api, std::string con
     return api.parse_response<QueryAllOrdersObject>(response);
 }
 
-QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/openOrders";
 
     API::Parameters params;
@@ -897,7 +897,7 @@ QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(DerivativesTradi
     return api.parse_response<QueryCurrentAllOpenOrdersObject>(response);
 }
 
-QueryCurrentOpenOrderResponse query_current_open_order(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
+QueryCurrentOpenOrderResponse query_current_open_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/openOrder";
 
     API::Parameters params;
@@ -911,7 +911,7 @@ QueryCurrentOpenOrderResponse query_current_open_order(DerivativesTrading &api, 
     return api.parse_response<QueryCurrentOpenOrderObject>(response);
 }
 
-QueryUsersForceOrdersResponse query_users_force_orders(DerivativesTrading &api, std::string const &symbol, std::string const &auto_close_type, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
+QueryUsersForceOrdersResponse query_users_force_orders(API &api, std::string const &symbol, std::string const &auto_close_type, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/forceOrders";
 
     API::Parameters params;
@@ -927,7 +927,7 @@ QueryUsersForceOrdersResponse query_users_force_orders(DerivativesTrading &api, 
     return api.parse_response<QueryUsersForceOrdersObject>(response);
 }
 
-QueryAccountTradeListResponse query_account_trade_list(DerivativesTrading &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int64_t const from_id, int16_t const limit, int32_t const recv_window) {
+QueryAccountTradeListResponse query_account_trade_list(API &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int64_t const from_id, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/userTrades";
 
     API::Parameters params;
@@ -944,7 +944,7 @@ QueryAccountTradeListResponse query_account_trade_list(DerivativesTrading &api, 
     return api.parse_response<QueryAccountTradeListObject>(response);
 }
 
-ChangeMarginTypeResponse change_margin_type(DerivativesTrading &api, std::string const &symbol, std::string const &margin_type, int32_t const recv_window) {
+ChangeMarginTypeResponse change_margin_type(API &api, std::string const &symbol, std::string const &margin_type, int32_t const recv_window) {
     std::string const url = "/fapi/v1/marginType";
 
     API::Parameters params;
@@ -957,7 +957,7 @@ ChangeMarginTypeResponse change_margin_type(DerivativesTrading &api, std::string
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
 
-ChangePositionModeResponse change_position_mode(DerivativesTrading &api, std::string const &dual_side_position, int32_t const recv_window) {
+ChangePositionModeResponse change_position_mode(API &api, std::string const &dual_side_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionSide/dual";
 
     API::Parameters params;
@@ -969,7 +969,7 @@ ChangePositionModeResponse change_position_mode(DerivativesTrading &api, std::st
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
 
-ChangeInitialLeverageResponse change_initial_leverage(DerivativesTrading &api, std::string const &symbol, int8_t const leverage, int32_t const recv_window) {
+ChangeInitialLeverageResponse change_initial_leverage(API &api, std::string const &symbol, int8_t const leverage, int32_t const recv_window) {
     std::string const url = "/fapi/v1/leverage";
 
     API::Parameters params;
@@ -982,7 +982,7 @@ ChangeInitialLeverageResponse change_initial_leverage(DerivativesTrading &api, s
     return api.parse_response<ChangeInitialLeverageObject>(response);
 }
 
-ChangeMultiAssetsModeResponse change_multi_assets_mode(DerivativesTrading &api, std::string const &multi_assets_margin, int32_t const recv_window) {
+ChangeMultiAssetsModeResponse change_multi_assets_mode(API &api, std::string const &multi_assets_margin, int32_t const recv_window) {
     std::string const url = "/fapi/v1/multiAssetsMargin";
 
     API::Parameters params;
@@ -994,7 +994,7 @@ ChangeMultiAssetsModeResponse change_multi_assets_mode(DerivativesTrading &api, 
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
 
-ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(DerivativesTrading &api, std::string const &symbol, double const amount, int8_t const type, std::string const &position_side, int32_t const recv_window) {
+ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(API &api, std::string const &symbol, double const amount, int8_t const type, std::string const &position_side, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionMargin";
 
     API::Parameters params;
@@ -1009,7 +1009,7 @@ ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(Derivatives
     return api.parse_response<ModifyIsolatedPositionMarginObject>(response);
 }
 
-PositionInformationV2Response position_information_v2(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+PositionInformationV2Response position_information_v2(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v2/positionRisk";
 
     API::Parameters params;
@@ -1021,7 +1021,7 @@ PositionInformationV2Response position_information_v2(DerivativesTrading &api, s
     return api.parse_response<PositionInformationV2Object>(response);
 }
 
-PositionInformationV3Response position_information_v3(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+PositionInformationV3Response position_information_v3(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v3/positionRisk";
 
     API::Parameters params;
@@ -1033,7 +1033,7 @@ PositionInformationV3Response position_information_v3(DerivativesTrading &api, s
     return api.parse_response<PositionInformationV3Object>(response);
 }
 
-PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/adlQuantile";
 
     API::Parameters params;
@@ -1045,7 +1045,7 @@ PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(Derivativ
     return api.parse_response<PositionAdlQuantileEstimationObject>(response);
 }
 
-GetPositionMarginChangeHistoryResponse get_position_margin_change_history(DerivativesTrading &api, std::string const &symbol, int8_t const type, int64_t const start_time, int64_t const end_time, int32_t const limit, int32_t const recv_window) {
+GetPositionMarginChangeHistoryResponse get_position_margin_change_history(API &api, std::string const &symbol, int8_t const type, int64_t const start_time, int64_t const end_time, int32_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionMargin/history";
 
     API::Parameters params;
@@ -1061,7 +1061,7 @@ GetPositionMarginChangeHistoryResponse get_position_margin_change_history(Deriva
     return api.parse_response<GetPositionMarginChangeHistoryObject>(response);
 }
 
-TestNewOrderResponse test_new_order(DerivativesTrading &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
+TestNewOrderResponse test_new_order(API &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/test";
 
     API::Parameters params;

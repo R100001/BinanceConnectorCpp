@@ -101,7 +101,7 @@ namespace Convert {
 
 namespace RestAPI {
 
-ListAllConvertedPairsResponse list_all_converted_pairs(DerivativesTrading &api, std::string const &from_asset, std::string const &to_asset) {
+ListAllConvertedPairsResponse list_all_converted_pairs(API &api, std::string const &from_asset, std::string const &to_asset) {
     std::string const url = "/fapi/v1/convert/exchangeInfo";
 
     API::Parameters params;
@@ -113,7 +113,7 @@ ListAllConvertedPairsResponse list_all_converted_pairs(DerivativesTrading &api, 
     return api.parse_response<ListAllConvertedPairsObject>(response);
 }
 
-SendQuoteRequestResponse send_quote_request(DerivativesTrading &api, std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
+SendQuoteRequestResponse send_quote_request(API &api, std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/request";
 
     API::Parameters params;
@@ -129,7 +129,7 @@ SendQuoteRequestResponse send_quote_request(DerivativesTrading &api, std::string
     return api.parse_response<SendQuoteRequestObject>(response);
 }
 
-AcceptQuoteResponse accept_quote(DerivativesTrading &api, std::string const &quote_id, int32_t const recv_window) {
+AcceptQuoteResponse accept_quote(API &api, std::string const &quote_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/acceptQuote";
 
     API::Parameters params;
@@ -141,7 +141,7 @@ AcceptQuoteResponse accept_quote(DerivativesTrading &api, std::string const &quo
     return api.parse_response<AcceptQuoteObject>(response);
 }
 
-OrderStatusResponse order_status(DerivativesTrading &api, std::string const &order_id, std::string const &quote_id) {
+OrderStatusResponse order_status(API &api, std::string const &order_id, std::string const &quote_id) {
     std::string const url = "/fapi/v1/convert/orderStatus";
 
     API::Parameters params;

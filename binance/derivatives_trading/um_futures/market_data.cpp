@@ -870,31 +870,31 @@ namespace MarketData {
 
 namespace RestAPI {
 
-TestConnectivityResponse test_connectivity(DerivativesTrading &api) {
+TestConnectivityResponse test_connectivity(API &api) {
     std::string const url = "/fapi/v1/ping";
 
-    std::string response = api.query(url);
+    std::string response = api.send_request<API::RequestType::GET>(url);
 
     return api.parse_response<TestConnectivityObject>(response);
 }
 
-CheckServerTimeResponse check_server_time(DerivativesTrading &api) {
+CheckServerTimeResponse check_server_time(API &api) {
     std::string const url = "/fapi/v1/time";
 
-    std::string response = api.query(url);
+    std::string response = api.send_request<API::RequestType::GET>(url);
 
     return api.parse_response<CheckServerTimeObject>(response);
 }
 
-ExchangeInformationResponse exchange_information(DerivativesTrading &api) {
+ExchangeInformationResponse exchange_information(API &api) {
     std::string const url = "/fapi/v1/exchangeInfo";
 
-    std::string response = api.query(url);
+    std::string response = api.send_request<API::RequestType::GET>(url);
 
     return api.parse_response<ExchangeInformationObject>(response);
 }
 
-OrderBookResponse order_book(DerivativesTrading &api, std::string const &symbol, int16_t const limit) {
+OrderBookResponse order_book(API &api, std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/depth";
 
     API::Parameters params;
@@ -906,7 +906,7 @@ OrderBookResponse order_book(DerivativesTrading &api, std::string const &symbol,
     return api.parse_response<OrderBookObject>(response);
 }
 
-RecentTradesListResponse recent_trades_list(DerivativesTrading &api, std::string const &symbol, int16_t const limit) {
+RecentTradesListResponse recent_trades_list(API &api, std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/trades";
     
     API::Parameters params;
@@ -918,7 +918,7 @@ RecentTradesListResponse recent_trades_list(DerivativesTrading &api, std::string
     return api.parse_response<RecentTradesListObject>(response);
 }
 
-OldTradesLookupResponse old_trades_lookup(DerivativesTrading &api, std::string const &symbol, int16_t const limit, int64_t const from_id) {
+OldTradesLookupResponse old_trades_lookup(API &api, std::string const &symbol, int16_t const limit, int64_t const from_id) {
     std::string const url = "/fapi/v1/historicalTrades";
 
     API::Parameters params;
@@ -931,7 +931,7 @@ OldTradesLookupResponse old_trades_lookup(DerivativesTrading &api, std::string c
     return api.parse_response<OldTradesLookupObject>(response);
 }
 
-CompressedAggregateTradesListResponse compressed_aggregate_trades_list(DerivativesTrading &api, std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+CompressedAggregateTradesListResponse compressed_aggregate_trades_list(API &api, std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/aggTrades";
 
     API::Parameters params;
@@ -946,7 +946,7 @@ CompressedAggregateTradesListResponse compressed_aggregate_trades_list(Derivativ
     return api.parse_response<CompressedAggregateTradesListObject>(response);
 }
 
-KlineCandlestickDataResponse kline_candlestick_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+KlineCandlestickDataResponse kline_candlestick_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/klines";
 
     API::Parameters params;
@@ -961,7 +961,7 @@ KlineCandlestickDataResponse kline_candlestick_data(DerivativesTrading &api, std
     return api.parse_response<KlineCandlestickDataObject>(response);
 }
 
-ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candlestick_data(API &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/continuousKlines";
 
     API::Parameters params;
@@ -977,7 +977,7 @@ ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candles
     return api.parse_response<ContinuousContractKlineCandlestickDataObject>(response);
 }
 
-IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/indexPriceKlines";
 
     API::Parameters params;
@@ -992,7 +992,7 @@ IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(Deriva
     return api.parse_response<IndexPriceKlineCandlestickDataObject>(response);
 }
 
-MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/markPriceKlines";
 
     API::Parameters params;
@@ -1007,7 +1007,7 @@ MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(Derivati
     return api.parse_response<MarkPriceKlineCandlestickDataObject>(response);
 }
 
-PremiumIndexKlineDataResponse premium_index_kline_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+PremiumIndexKlineDataResponse premium_index_kline_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/premiumIndexKlines";
 
     API::Parameters params;
@@ -1022,7 +1022,7 @@ PremiumIndexKlineDataResponse premium_index_kline_data(DerivativesTrading &api, 
     return api.parse_response<PremiumIndexKlineDataObject>(response);
 }
 
-MarkPriceResponse mark_price(DerivativesTrading &api, std::string const &symbol) {
+MarkPriceResponse mark_price(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/premiumIndex";
 
     API::Parameters params;
@@ -1033,7 +1033,7 @@ MarkPriceResponse mark_price(DerivativesTrading &api, std::string const &symbol)
     return api.parse_response<MarkPriceObject>(response);
 }
 
-GetFundingRateHistoryResponse get_funding_rate_history(DerivativesTrading &api, std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+GetFundingRateHistoryResponse get_funding_rate_history(API &api, std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/fundingRate";
 
     API::Parameters params;
@@ -1047,15 +1047,15 @@ GetFundingRateHistoryResponse get_funding_rate_history(DerivativesTrading &api, 
     return api.parse_response<GetFundingRateHistoryObject>(response);
 }
 
-GetFundingRateInfoResponse get_funding_rate_info(DerivativesTrading &api) {
+GetFundingRateInfoResponse get_funding_rate_info(API &api) {
     std::string const url = "/fapi/v1/fundingInfo";
 
-    std::string response = api.query(url);
+    std::string response = api.send_request<API::RequestType::GET>(url);
 
     return api.parse_response<GetFundingRateInfoObject>(response);
 }
 
-Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(DerivativesTrading &api, std::string const &symbol) {
+Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/24hr";
 
     API::Parameters params;
@@ -1066,7 +1066,7 @@ Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(Deri
     return api.parse_response<Ticker24hrPriceChangeStatisticsObject>(response);
 }
 
-SymbolPriceTickerResponse symbol_price_ticker(DerivativesTrading &api, std::string const &symbol) {
+SymbolPriceTickerResponse symbol_price_ticker(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/price";
 
     API::Parameters params;
@@ -1077,7 +1077,7 @@ SymbolPriceTickerResponse symbol_price_ticker(DerivativesTrading &api, std::stri
     return api.parse_response<SymbolPriceTickerObject>(response);
 }
 
-SymbolPriceTickerV2Response symbol_price_ticker_v2(DerivativesTrading &api, std::string const &symbol) {
+SymbolPriceTickerV2Response symbol_price_ticker_v2(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v2/ticker/price";
 
     API::Parameters params;
@@ -1088,7 +1088,7 @@ SymbolPriceTickerV2Response symbol_price_ticker_v2(DerivativesTrading &api, std:
     return api.parse_response<SymbolPriceTickerV2Object>(response);
 }
 
-SymbolOrderBookTickerResponse symbol_order_book_ticker(DerivativesTrading &api, std::string const &symbol) {
+SymbolOrderBookTickerResponse symbol_order_book_ticker(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/bookTicker";
 
     API::Parameters params;
@@ -1099,7 +1099,7 @@ SymbolOrderBookTickerResponse symbol_order_book_ticker(DerivativesTrading &api, 
     return api.parse_response<SymbolOrderBookTickerObject>(response);
 }
 
-QueryDeliveryPriceResponse query_delivery_price(DerivativesTrading &api, std::string const &pair) {
+QueryDeliveryPriceResponse query_delivery_price(API &api, std::string const &pair) {
     std::string const url = "/futures/data/delivery-price";
 
     API::Parameters params;
@@ -1110,7 +1110,7 @@ QueryDeliveryPriceResponse query_delivery_price(DerivativesTrading &api, std::st
     return api.parse_response<QueryDeliveryPriceObject>(response);
 }
 
-OpenInterestResponse open_interest(DerivativesTrading &api, std::string const &symbol) {
+OpenInterestResponse open_interest(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/openInterest";
 
     API::Parameters params;
@@ -1121,7 +1121,7 @@ OpenInterestResponse open_interest(DerivativesTrading &api, std::string const &s
     return api.parse_response<OpenInterestObject>(response);
 }
 
-OpenInterestStatisticsResponse open_interest_statistics(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+OpenInterestStatisticsResponse open_interest_statistics(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/fapi/v1/openInterestHist";
 
     API::Parameters params;
@@ -1136,7 +1136,7 @@ OpenInterestStatisticsResponse open_interest_statistics(DerivativesTrading &api,
     return api.parse_response<OpenInterestStatisticsObject>(response);
 }
 
-TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortPositionRatio";
 
     API::Parameters params;
@@ -1151,7 +1151,7 @@ TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(Der
     return api.parse_response<TopTraderLongShortPositionRatioObject>(response);
 }
 
-TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortAccountRatio";
 
     API::Parameters params;
@@ -1166,7 +1166,7 @@ TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(Deriv
     return api.parse_response<TopTraderLongShortAccountRatioObject>(response);
 }
 
-LongShortRatioResponse long_short_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+LongShortRatioResponse long_short_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/globalLongShortAccountRatio";
 
     API::Parameters params;
@@ -1181,7 +1181,7 @@ LongShortRatioResponse long_short_ratio(DerivativesTrading &api, std::string con
     return api.parse_response<LongShortRatioObject>(response);
 }
 
-TakerBuySellVolumeResponse taker_buy_sell_volume(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/takerlongshortRatio";
 
     API::Parameters params;
@@ -1196,7 +1196,7 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(DerivativesTrading &api, std::s
     return api.parse_response<TakerBuySellVolumeObject>(response);
 }
 
-BasisResponse basis(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+BasisResponse basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/basis";
 
     API::Parameters params;
@@ -1212,7 +1212,7 @@ BasisResponse basis(DerivativesTrading &api, std::string const &pair, std::strin
     return api.parse_response<BasisObject>(response);
 }
 
-CompositeIndexSymbolInformationResponse composite_index_symbol_information(DerivativesTrading &api, std::string const &symbol) {
+CompositeIndexSymbolInformationResponse composite_index_symbol_information(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/indexInfo";
 
     API::Parameters params;
@@ -1223,7 +1223,7 @@ CompositeIndexSymbolInformationResponse composite_index_symbol_information(Deriv
     return api.parse_response<CompositeIndexSymbolInformationObject>(response);
 }
 
-MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(DerivativesTrading &api, std::string const &symbol) {
+MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/assetIndex";
 
     API::Parameters params;
@@ -1234,7 +1234,7 @@ MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(DerivativesTradi
     return api.parse_response<MultiAssetsModeAssetIndexObject>(response);
 }
 
-QueryIndexPriceConstituentsResponse query_index_price_constituents(DerivativesTrading &api, std::string const &symbol) {
+QueryIndexPriceConstituentsResponse query_index_price_constituents(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/constituents";
 
     API::Parameters params;

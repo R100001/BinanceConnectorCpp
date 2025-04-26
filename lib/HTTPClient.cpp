@@ -11,7 +11,6 @@
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
-// Structure to hold parsed URL components
 struct Url {
     std::string_view protocol;
     std::string_view host;
@@ -40,7 +39,6 @@ static Url parse_url(std::string_view url, std::string_view target) {
     return {protocol, host, port, target};
 }
 
-// HTTPClientImpl Definition
 class HTTPClient::HTTPClientImpl {
 public:
     HTTPClientImpl(std::string_view const apiKey) {
@@ -116,7 +114,6 @@ private:
     boost::beast::http::fields _default_headers;
 };
 
-// HTTPClient Implementation
 HTTPClient::HTTPClient(std::string_view apiKey) 
     : _impl(std::make_unique<HTTPClientImpl>(apiKey)) {}
 

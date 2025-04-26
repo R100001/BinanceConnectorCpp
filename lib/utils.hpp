@@ -32,14 +32,14 @@ int64_t get_timestamp();
 using namespace simdjson;
 
 template <bool unordered_search = false>
-error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::string_view const field_name, std::string &value) {
+error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::string &value) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!unordered_search) field = obj.find_field(field_name);
-    else field = obj[field_name];
+    simdjson_result<ondemand::value> field;
+    if (unordered_search) field = obj.find_field_unordered(field_name);
+    else field = obj.find_field(field_name);
 
     if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
+        std::cout << error_message(field.error()) << std::endl;
         return field.error();
     }
 
@@ -49,18 +49,18 @@ error_code simdjson_get_value_field_name(simdjson::ondemand::object &obj, std::s
 
     if(unordered_search) obj.reset();
 
-    return simdjson::SUCCESS;
+    return SUCCESS;
 }
 
 template <typename T, bool unordered_search = false>
 error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, T &value) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!unordered_search) field = obj.find_field(field_name);
-    else field = obj[field_name];
+    simdjson_result<ondemand::value> field;
+    if (unordered_search) field = obj.find_field_unordered(field_name);
+    else field = obj.find_field(field_name);
 
     if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
+        std::cout << error_message(field.error()) << std::endl;
         return field.error();
     }
     
@@ -68,18 +68,18 @@ error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view
 
     if(unordered_search) obj.reset();
 
-    return simdjson::SUCCESS;
+    return SUCCESS;
 }
 
 template <typename T, bool unordered_search = false>
 error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<T> &value) {
 
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!unordered_search) field = obj.find_field(field_name);
-    else field = obj[field_name];
+    simdjson_result<ondemand::value> field;
+    if (unordered_search) field = obj.find_field_unordered(field_name);
+    else field = obj.find_field(field_name);
 
     if (field.error()) {
-        std::cout << "Error: " << simdjson::error_message(field.error()) << std::endl;
+        std::cout << "Error: " << error_message(field.error()) << std::endl;
         return field.error();
     }
 
@@ -87,19 +87,19 @@ error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view
 
     if(unordered_search) obj.reset();
 
-    return simdjson::SUCCESS;
+    return SUCCESS;
 
 }
 
 template <bool unordered_search = false>
 inline error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view const field_name, std::vector<std::string> &vs) {
     
-    simdjson::simdjson_result<simdjson::ondemand::value> field;
-    if (!unordered_search) field = obj.find_field(field_name);
-    else field = obj[field_name];
+    simdjson_result<ondemand::value> field;
+    if (unordered_search) field = obj.find_field_unordered(field_name);
+    else field = obj.find_field(field_name);
 
     if (field.error()) {
-        std::cout << simdjson::error_message(field.error()) << std::endl;
+        std::cout << error_message(field.error()) << std::endl;
         return field.error();
     }
 
@@ -115,10 +115,12 @@ inline error_code simdjson_get_value_field_name(ondemand::object &obj, std::stri
 
     if(unordered_search) obj.reset();
 
-    return simdjson::SUCCESS;
+    return SUCCESS;
 }
 
-void simdjson_print_json_tree(simdjson::ondemand::value element);
+//------------------------------------------------------------------------------------
+
+void simdjson_print_json_tree(ondemand::value element);
 
 //--------------------------------------SIMDJSON--------------------------------------
 //------------------------------------------------------------------------------------

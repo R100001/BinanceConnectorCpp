@@ -24,7 +24,6 @@ public: // Typedefs
 
     using Parameter = std::variant<bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, double, std::string>;
     using Parameters = std::vector<std::pair<std::string, Parameter>>;
-    using APIResponse = std::variant<simdjson::ondemand::object, ServerMessage>;
 
     enum class RequestType {
         GET,

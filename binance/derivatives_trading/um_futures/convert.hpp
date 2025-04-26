@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "derivatives_trading.hpp"
+#include "api.hpp"
 #include "error.hpp"
 
 //------------------------------------------------------------------------------------
@@ -69,10 +69,10 @@ using OrderStatusResponse = API::ResponseOrError<OrderStatusObject>;
 
 namespace RestAPI {
 
-ListAllConvertedPairsResponse   list_all_converted_pairs(DerivativesTrading &api, std::string const &from_asset = "", std::string const &to_asset = "");
-SendQuoteRequestResponse        send_quote_request(DerivativesTrading &api, std::string const &from_asset, std::string const &to_asset, double const from_amount = -1, double const to_amount = -1, std::string const valid_time = "", int32_t const recv_window = -1);
-AcceptQuoteResponse             accept_quote(DerivativesTrading &api, std::string const &quote_id, int32_t const recv_window = -1);
-OrderStatusResponse             order_status(DerivativesTrading &api, std::string const &order_id = "", std::string const &quote_id = "");
+ListAllConvertedPairsResponse   list_all_converted_pairs(API &api, std::string const &from_asset = "", std::string const &to_asset = "");
+SendQuoteRequestResponse        send_quote_request(API &api, std::string const &from_asset, std::string const &to_asset, double const from_amount = -1, double const to_amount = -1, std::string const valid_time = "", int32_t const recv_window = -1);
+AcceptQuoteResponse             accept_quote(API &api, std::string const &quote_id, int32_t const recv_window = -1);
+OrderStatusResponse             order_status(API &api, std::string const &order_id = "", std::string const &quote_id = "");
 
 } // namespace RestAPI
 

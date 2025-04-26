@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "derivatives_trading.hpp"
+#include "api.hpp"
 #include "error.hpp"
 
 //------------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ using ClassicPortfolioMarginAccountInformationResponse = API::ResponseOrError<Cl
 
 namespace RestAPI {
 
-ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(DerivativesTrading &api, std::string const &asset, int32_t const recv_window = -1);
+ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(API &api, std::string const &asset, int32_t const recv_window = -1);
 
 } // namespace RestAPI
 

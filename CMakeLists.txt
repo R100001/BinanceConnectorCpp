@@ -37,7 +37,6 @@ target_link_libraries(BinanceConnectorCpp PRIVATE
     httplib
     api
     utils
-    derivativestrading
     umfutures
     simdjson::simdjson
 )

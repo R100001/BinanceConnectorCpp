@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "derivatives_trading.hpp"
+#include "api.hpp"
 #include "error.hpp"
 
 //------------------------------------------------------------------------------------
@@ -440,36 +440,36 @@ using QueryIndexPriceConstituentsResponse = API::ResponseOrError<QueryIndexPrice
 
 namespace RestAPI {
 
-TestConnectivityResponse                        test_connectivity(DerivativesTrading &api);
-CheckServerTimeResponse                         check_server_time(DerivativesTrading &api);
-ExchangeInformationResponse                     exchange_information(DerivativesTrading &api);
-OrderBookResponse                               order_book(DerivativesTrading &api, std::string const &symbol, int16_t const limit = -1);
-RecentTradesListResponse                        recent_trades_list(DerivativesTrading &api, std::string const &symbol, int16_t const limit = -1);
-OldTradesLookupResponse                         old_trades_lookup(DerivativesTrading &api, std::string const &symbol, int16_t const limit = -1, int64_t const from_id = -1);
-CompressedAggregateTradesListResponse           compressed_aggregate_trades_list(DerivativesTrading &api, std::string const &symbol, int64_t const from_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-KlineCandlestickDataResponse                    kline_candlestick_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-ContinuousContractKlineCandlestickDataResponse  continuous_contract_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-IndexPriceKlineCandlestickDataResponse          index_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-MarkPriceKlineCandlestickDataResponse           mark_price_kline_candlestick_data(DerivativesTrading &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-PremiumIndexKlineDataResponse                   premium_index_kline_data(DerivativesTrading &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-MarkPriceResponse                               mark_price(DerivativesTrading &api, std::string const &symbol = "");
-GetFundingRateHistoryResponse                   get_funding_rate_history(DerivativesTrading &api, std::string const &symbol = "", int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-GetFundingRateInfoResponse                      get_funding_rate_info(DerivativesTrading &api);
-Ticker24hrPriceChangeStatisticsResponse         ticker_24hr_price_change_statistics(DerivativesTrading &api, std::string const &symbol = "");
-SymbolPriceTickerResponse                       symbol_price_ticker(DerivativesTrading &api, std::string const &symbol = "");
-SymbolPriceTickerV2Response                     symbol_price_ticker_v2(DerivativesTrading &api, std::string const &symbol = "");
-SymbolOrderBookTickerResponse                   symbol_order_book_ticker(DerivativesTrading &api, std::string const &symbol = "");
-QueryDeliveryPriceResponse                      query_delivery_price(DerivativesTrading &api, std::string const &pair);
-OpenInterestResponse                            open_interest(DerivativesTrading &api, std::string const &symbol);
-OpenInterestStatisticsResponse                  open_interest_statistics(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TopTraderLongShortPositionRatioResponse         top_trader_long_short_position_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TopTraderLongShortAccountRatioResponse          top_trader_long_short_account_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-LongShortRatioResponse                          long_short_ratio(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TakerBuySellVolumeResponse                      taker_buy_sell_volume(DerivativesTrading &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-BasisResponse                                   basis(DerivativesTrading &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit = -1, int64_t const &start_time = -1, int64_t const &end_time = -1);
-CompositeIndexSymbolInformationResponse         composite_index_symbol_information(DerivativesTrading &api, std::string const &symbol = "");
-MultiAssetsModeAssetIndexResponse               multi_assets_mode_asset_index(DerivativesTrading &api, std::string const &symbol = "");
-QueryIndexPriceConstituentsResponse             query_index_price_constituents(DerivativesTrading &api, std::string const &symbol);
+TestConnectivityResponse                        test_connectivity(API &api);
+CheckServerTimeResponse                         check_server_time(API &api);
+ExchangeInformationResponse                     exchange_information(API &api);
+OrderBookResponse                               order_book(API &api, std::string const &symbol, int16_t const limit = -1);
+RecentTradesListResponse                        recent_trades_list(API &api, std::string const &symbol, int16_t const limit = -1);
+OldTradesLookupResponse                         old_trades_lookup(API &api, std::string const &symbol, int16_t const limit = -1, int64_t const from_id = -1);
+CompressedAggregateTradesListResponse           compressed_aggregate_trades_list(API &api, std::string const &symbol, int64_t const from_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+KlineCandlestickDataResponse                    kline_candlestick_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+ContinuousContractKlineCandlestickDataResponse  continuous_contract_kline_candlestick_data(API &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+IndexPriceKlineCandlestickDataResponse          index_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+MarkPriceKlineCandlestickDataResponse           mark_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+PremiumIndexKlineDataResponse                   premium_index_kline_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+MarkPriceResponse                               mark_price(API &api, std::string const &symbol = "");
+GetFundingRateHistoryResponse                   get_funding_rate_history(API &api, std::string const &symbol = "", int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+GetFundingRateInfoResponse                      get_funding_rate_info(API &api);
+Ticker24hrPriceChangeStatisticsResponse         ticker_24hr_price_change_statistics(API &api, std::string const &symbol = "");
+SymbolPriceTickerResponse                       symbol_price_ticker(API &api, std::string const &symbol = "");
+SymbolPriceTickerV2Response                     symbol_price_ticker_v2(API &api, std::string const &symbol = "");
+SymbolOrderBookTickerResponse                   symbol_order_book_ticker(API &api, std::string const &symbol = "");
+QueryDeliveryPriceResponse                      query_delivery_price(API &api, std::string const &pair);
+OpenInterestResponse                            open_interest(API &api, std::string const &symbol);
+OpenInterestStatisticsResponse                  open_interest_statistics(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+TopTraderLongShortPositionRatioResponse         top_trader_long_short_position_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+TopTraderLongShortAccountRatioResponse          top_trader_long_short_account_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+LongShortRatioResponse                          long_short_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+TakerBuySellVolumeResponse                      taker_buy_sell_volume(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+BasisResponse                                   basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit = -1, int64_t const &start_time = -1, int64_t const &end_time = -1);
+CompositeIndexSymbolInformationResponse         composite_index_symbol_information(API &api, std::string const &symbol = "");
+MultiAssetsModeAssetIndexResponse               multi_assets_mode_asset_index(API &api, std::string const &symbol = "");
+QueryIndexPriceConstituentsResponse             query_index_price_constituents(API &api, std::string const &symbol);
 
 } // namespace RestAPI
 
@@ -479,9 +479,9 @@ QueryIndexPriceConstituentsResponse             query_index_price_constituents(D
 
 namespace WebsocketAPI {
 
-void order_book(DerivativesTrading &api, std::string const &symbol, int16_t const &limit = -1);
-void symbol_ticker_price(DerivativesTrading &api, std::string const &symbol = "");
-void symbol_order_book_ticker(DerivativesTrading &api, std::string const &symbol = "");
+void order_book(API &api, std::string const &symbol, int16_t const &limit = -1);
+void symbol_ticker_price(API &api, std::string const &symbol = "");
+void symbol_order_book_ticker(API &api, std::string const &symbol = "");
 
 } // namespace WebsocketAPI
 

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "derivatives_trading.hpp"
+#include "api.hpp"
 #include "error.hpp"
 
 //------------------------------------------------------------------------------------
@@ -318,29 +318,29 @@ using GetBnbBurnStatusResponse = API::ResponseOrError<GetBnbBurnStatusObject>;
 
 namespace RestAPI {
 
-NewFutureAccountTransferResponse                        new_future_account_transfer(DerivativesTrading &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
-FuturesAccountBalanceV3Response                         futures_account_balance_v3(DerivativesTrading &api, int32_t const recv_window = -1);
-FuturesAccountBalanceResponse                           futures_account_balance(DerivativesTrading &api, int32_t const recv_window = -1);
-AccountInformationV3Response                            account_information_v3(DerivativesTrading &api, int32_t const recv_window = -1);
-AccountInformationResponse                              account_information(DerivativesTrading &api, int32_t const recv_window = -1);
-GetFutureAccountTransactionHistoryListResponse          get_future_account_transaction_history_list(DerivativesTrading &api, std::string const &type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const current = -1, int8_t const size = -1, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
-UserCommissionRateResponse                              user_commission_rate(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window = -1);
-QueryAccountConfigurationResponse                       query_account_configuration(DerivativesTrading &api, int32_t const recv_window = -1);
-QuerySymbolConfigurationResponse                        query_symbol_configuration(DerivativesTrading &api, std::string const &symbol = "", int32_t const recv_window = -1);
-QueryOrderRateLimitResponse                             query_order_rate_limit(DerivativesTrading &api, int32_t const recv_window = -1);
-NotionalAndLeverageBracketsResponse                     notional_and_leverage_brackets(DerivativesTrading &api, std::string const &symbol = "", int32_t const recv_window = -1);
-GetCurrentMultiAssetsModeResponse                       get_current_multi_assets_mode(DerivativesTrading &api, int32_t const recv_window = -1);
-GetCurrentPositionModeResponse                          get_current_position_mode(DerivativesTrading &api, int32_t const recv_window = -1);
-GetIncomeHistoryResponse                                get_income_history(DerivativesTrading &api, std::string const &symbol = "", std::string const &income_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int32_t const page = -1, int16_t const limit = -1, int32_t const recv_window = -1);
-FuturesTradingQuantitativeRulesIndicatorsResponse       futures_trading_quantitative_rules_indicators(DerivativesTrading &api, std::string const &symbol = "", int32_t const recv_window = -1);
-GetDownloadIdForFuturesTransactionHistoryResponse       get_download_id_for_futures_transaction_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesTransactionHistoryDownloadLinkByIdResponse    get_futures_transaction_history_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window = -1);
-GetDownloadIdForFuturesOrderHistoryResponse             get_download_id_for_futures_order_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesOrderHistoryDownloadLinkByIdResponse          get_futures_order_history_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window = -1);
-GetDownloadIdForFuturesTradeHistoryResponse             get_download_if_for_futures_trade_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesTradeDownloadLinkByIdResponse                 get_futures_trade_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window = -1);
-ToggleBnbBurnOnFuturesTradeResponse                     toggle_bnb_burn_on_futures_trade(DerivativesTrading &api, bool const feeBurn, int32_t const recv_window = -1);
-GetBnbBurnStatusResponse                                get_bnb_burn_status(DerivativesTrading &api, int32_t const recv_window = -1);
+NewFutureAccountTransferResponse                        new_future_account_transfer(API &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
+FuturesAccountBalanceV3Response                         futures_account_balance_v3(API &api, int32_t const recv_window = -1);
+FuturesAccountBalanceResponse                           futures_account_balance(API &api, int32_t const recv_window = -1);
+AccountInformationV3Response                            account_information_v3(API &api, int32_t const recv_window = -1);
+AccountInformationResponse                              account_information(API &api, int32_t const recv_window = -1);
+GetFutureAccountTransactionHistoryListResponse          get_future_account_transaction_history_list(API &api, std::string const &type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const current = -1, int8_t const size = -1, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
+UserCommissionRateResponse                              user_commission_rate(API &api, std::string const &symbol, int32_t const recv_window = -1);
+QueryAccountConfigurationResponse                       query_account_configuration(API &api, int32_t const recv_window = -1);
+QuerySymbolConfigurationResponse                        query_symbol_configuration(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
+QueryOrderRateLimitResponse                             query_order_rate_limit(API &api, int32_t const recv_window = -1);
+NotionalAndLeverageBracketsResponse                     notional_and_leverage_brackets(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
+GetCurrentMultiAssetsModeResponse                       get_current_multi_assets_mode(API &api, int32_t const recv_window = -1);
+GetCurrentPositionModeResponse                          get_current_position_mode(API &api, int32_t const recv_window = -1);
+GetIncomeHistoryResponse                                get_income_history(API &api, std::string const &symbol = "", std::string const &income_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int32_t const page = -1, int16_t const limit = -1, int32_t const recv_window = -1);
+FuturesTradingQuantitativeRulesIndicatorsResponse       futures_trading_quantitative_rules_indicators(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
+GetDownloadIdForFuturesTransactionHistoryResponse       get_download_id_for_futures_transaction_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+GetFuturesTransactionHistoryDownloadLinkByIdResponse    get_futures_transaction_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
+GetDownloadIdForFuturesOrderHistoryResponse             get_download_id_for_futures_order_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+GetFuturesOrderHistoryDownloadLinkByIdResponse          get_futures_order_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
+GetDownloadIdForFuturesTradeHistoryResponse             get_download_if_for_futures_trade_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+GetFuturesTradeDownloadLinkByIdResponse                 get_futures_trade_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
+ToggleBnbBurnOnFuturesTradeResponse                     toggle_bnb_burn_on_futures_trade(API &api, bool const feeBurn, int32_t const recv_window = -1);
+GetBnbBurnStatusResponse                                get_bnb_burn_status(API &api, int32_t const recv_window = -1);
 
 } // namespace RestAPI
 
@@ -350,10 +350,10 @@ GetBnbBurnStatusResponse                                get_bnb_burn_status(Deri
 
 namespace WebsocketAPI {
 
-void futures_account_balance_v2(DerivativesTrading &api, int32_t const recv_window = -1);
-void futures_account_balance(DerivativesTrading &api, int32_t const recv_window = -1);
-void account_information_v2(DerivativesTrading &api, int32_t const recv_window = -1);
-void account_information(DerivativesTrading &api, int32_t const recv_window = -1);
+void futures_account_balance_v2(API &api, int32_t const recv_window = -1);
+void futures_account_balance(API &api, int32_t const recv_window = -1);
+void account_information_v2(API &api, int32_t const recv_window = -1);
+void account_information(API &api, int32_t const recv_window = -1);
 
 } // namespace WebsocketAPI
 

@@ -593,7 +593,7 @@ namespace RestAPI {
 
 //--------------------------------------------------------------------------------------
 
-NewFutureAccountTransferResponse new_future_account_transfer(DerivativesTrading &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
+NewFutureAccountTransferResponse new_future_account_transfer(API &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
     std::string const url = "/sapi/v1/asset/transfer";
 
     API::Parameters params;
@@ -609,7 +609,7 @@ NewFutureAccountTransferResponse new_future_account_transfer(DerivativesTrading 
     return api.parse_response<NewFutureAccountTransferObject>(response);
 }
 
-FuturesAccountBalanceV3Response futures_account_balance_v3(DerivativesTrading &api, int32_t const recv_window) {
+FuturesAccountBalanceV3Response futures_account_balance_v3(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v3/balance";
 
     API::Parameters params;
@@ -620,7 +620,7 @@ FuturesAccountBalanceV3Response futures_account_balance_v3(DerivativesTrading &a
     return api.parse_response<FuturesAccountBalanceV3Object>(response);
 }
 
-FuturesAccountBalanceResponse futures_account_balance(DerivativesTrading &api, int32_t const recv_window) {
+FuturesAccountBalanceResponse futures_account_balance(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v2/balance";
 
     API::Parameters params;
@@ -631,7 +631,7 @@ FuturesAccountBalanceResponse futures_account_balance(DerivativesTrading &api, i
     return api.parse_response<FuturesAccountBalanceObject>(response);
 }
 
-AccountInformationV3Response account_information_v3(DerivativesTrading &api, int32_t const recv_window) {
+AccountInformationV3Response account_information_v3(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v3/account";
 
     API::Parameters params;
@@ -642,7 +642,7 @@ AccountInformationV3Response account_information_v3(DerivativesTrading &api, int
     return api.parse_response<AccountInformationV3Object>(response);
 }
 
-AccountInformationResponse account_information(DerivativesTrading &api, int32_t const recv_window) {
+AccountInformationResponse account_information(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v2/account";
 
     API::Parameters params;
@@ -653,7 +653,7 @@ AccountInformationResponse account_information(DerivativesTrading &api, int32_t 
     return api.parse_response<AccountInformationObject>(response);
 }
 
-GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_history_list(DerivativesTrading &api, std::string const &type, int64_t const start_time, int64_t const end_time, int32_t const current, int8_t const size, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
+GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_history_list(API &api, std::string const &type, int64_t const start_time, int64_t const end_time, int32_t const current, int8_t const size, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
     std::string const url = "/sapi/v1/asset/transfer";
 
     API::Parameters params;
@@ -671,7 +671,7 @@ GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_hi
     return api.parse_response<GetFutureAccountTransactionHistoryListObject>(response);
 }
 
-UserCommissionRateResponse user_commission_rate(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+UserCommissionRateResponse user_commission_rate(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/commissionRate";
 
     API::Parameters params;
@@ -683,7 +683,7 @@ UserCommissionRateResponse user_commission_rate(DerivativesTrading &api, std::st
     return api.parse_response<UserCommissionRateObject>(response);
 }
 
-QueryAccountConfigurationResponse query_account_configuration(DerivativesTrading &api, int32_t const recv_window) {
+QueryAccountConfigurationResponse query_account_configuration(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/accountConfig";
 
     API::Parameters params;
@@ -694,7 +694,7 @@ QueryAccountConfigurationResponse query_account_configuration(DerivativesTrading
     return api.parse_response<QueryAccountConfigurationObject>(response);
 }
 
-QuerySymbolConfigurationResponse query_symbol_configuration(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+QuerySymbolConfigurationResponse query_symbol_configuration(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/symbolConfig";
 
     API::Parameters params;
@@ -706,7 +706,7 @@ QuerySymbolConfigurationResponse query_symbol_configuration(DerivativesTrading &
     return api.parse_response<QuerySymbolConfigurationObject>(response);
 }
 
-QueryOrderRateLimitResponse query_order_rate_limit(DerivativesTrading &api, int32_t const recv_window) {
+QueryOrderRateLimitResponse query_order_rate_limit(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/rateLimit/order";
 
     API::Parameters params;
@@ -717,7 +717,7 @@ QueryOrderRateLimitResponse query_order_rate_limit(DerivativesTrading &api, int3
     return api.parse_response<QueryOrderRateLimitObject>(response);
 }
 
-NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/leverageBracket";
 
     API::Parameters params;
@@ -729,7 +729,7 @@ NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(DerivativesTr
     return api.parse_response<NotionalAndLeverageBracketsObject>(response);
 }
 
-GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(DerivativesTrading &api, int32_t const recv_window) {
+GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/multiAssetsMargin";
 
     API::Parameters params;
@@ -740,7 +740,7 @@ GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(DerivativesTradi
     return api.parse_response<GetCurrentMultiAssetsModeObject>(response);
 }
 
-GetCurrentPositionModeResponse get_current_position_mode(DerivativesTrading &api, int32_t const recv_window) {
+GetCurrentPositionModeResponse get_current_position_mode(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionSide/dual";
 
     API::Parameters params;
@@ -751,7 +751,7 @@ GetCurrentPositionModeResponse get_current_position_mode(DerivativesTrading &api
     return api.parse_response<GetCurrentPositionModeObject>(response);
 }
 
-GetIncomeHistoryResponse get_income_history(DerivativesTrading &api, std::string const &symbol, std::string const &income_type, int64_t const start_time, int64_t const end_time, int32_t const page, int16_t const limit, int32_t const recv_window) {
+GetIncomeHistoryResponse get_income_history(API &api, std::string const &symbol, std::string const &income_type, int64_t const start_time, int64_t const end_time, int32_t const page, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income";
 
     API::Parameters params;
@@ -768,7 +768,7 @@ GetIncomeHistoryResponse get_income_history(DerivativesTrading &api, std::string
     return api.parse_response<GetIncomeHistoryObject>(response);
 }
 
-FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_rules_indicators(DerivativesTrading &api, std::string const &symbol, int32_t const recv_window) {
+FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_rules_indicators(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/apiTradingStatus";
 
     API::Parameters params;
@@ -780,7 +780,7 @@ FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_r
     return api.parse_response<FuturesTradingQuantitativeRulesIndicatorsObject>(response);
 }
 
-GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_transaction_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
+GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_transaction_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income/asyn";
 
     API::Parameters params;
@@ -793,7 +793,7 @@ GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_tr
     return api.parse_response<GetDownloadIdForFuturesTransactionHistoryObject>(response);
 }
 
-GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_history_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window) {
+GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income/asyn/id";
 
     API::Parameters params;
@@ -805,7 +805,7 @@ GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_his
     return api.parse_response<GetFuturesTransactionHistoryDownloadLinkByIdObject>(response);
 }
 
-GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
+GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/asyn";
 
     API::Parameters params;
@@ -818,7 +818,7 @@ GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_hi
     return api.parse_response<GetDownloadIdForFuturesOrderHistoryObject>(response);
 }
 
-GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window) {
+GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/asyn/id";
 
     API::Parameters params;
@@ -830,7 +830,7 @@ GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_downloa
     return api.parse_response<GetFuturesOrderHistoryDownloadLinkByIdObject>(response);
 }
 
-GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_history(DerivativesTrading &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
+GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/trade/asyn";
 
     API::Parameters params;
@@ -843,7 +843,7 @@ GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_hi
     return api.parse_response<GetDownloadIdForFuturesTradeHistoryObject>(response);
 }
 
-GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(DerivativesTrading &api, std::string const &download_id, int32_t const recv_window) {
+GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/trade/asyn/id";
 
     API::Parameters params;
@@ -855,7 +855,7 @@ GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(De
     return api.parse_response<GetFuturesTradeDownloadLinkByIdObject>(response);
 }
 
-ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(DerivativesTrading &api, bool const feeBurn, int32_t const recv_window) {
+ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(API &api, bool const feeBurn, int32_t const recv_window) {
     std::string const url = "/fapi/v1/feeBurn";
 
     API::Parameters params;
@@ -867,7 +867,7 @@ ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(Derivatives
     return api.parse_response(response, API::ResponseIsServerMessage{});
 }
 
-GetBnbBurnStatusResponse get_bnb_burn_status(DerivativesTrading &api, int32_t const recv_window) {
+GetBnbBurnStatusResponse get_bnb_burn_status(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/feeBurn";
 
     API::Parameters params;
