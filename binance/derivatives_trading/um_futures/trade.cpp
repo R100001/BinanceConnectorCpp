@@ -176,36 +176,44 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, NewOrderObject &response) 
 
 // ---------- Place Multiple Orders ----------
 template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, PlaceMultipleOrdersObject &order) {
+auto tag_invoke(deserialize_tag, simdjson_value &val, PlaceMultipleOrdersObjectOrError &response_or_error) {
 
     ondemand::object obj;
     if (auto error = val.get_object().get(obj)) return error;
 
-    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", order.client_order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQty", order.cum_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", order.cum_quote)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "executedQty", order.executed_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "orderId", order.order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", order.avg_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origQty", order.orig_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "price", order.price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", order.reduce_only)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "side", order.side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "positionSide", order.position_side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "status", order.status)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", order.stop_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "symbol", order.symbol)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", order.time_in_force)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "type", order.type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origType", order.orig_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "activatePrice", order.activate_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceRate", order.price_rate)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "updateTime", order.update_time)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "workingType", order.working_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", order.price_protect)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", order.price_match)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", order.self_trade_prevention_mode)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", order.good_till_date)) return error;
+    auto const res = API::read_server_message(obj);
+    if (res.has_value()) {
+        response_or_error = res.value();
+        return SUCCESS;
+    }
+
+    PlaceMultipleOrdersObject response;
+    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumQty", response.cum_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", response.cum_quote)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", response.avg_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "activatePrice", response.activate_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceRate", response.price_rate)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", response.price_match)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", response.self_trade_prevention_mode)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", response.good_till_date)) return error;
+    response_or_error = response;
 
     return SUCCESS;
 }
@@ -249,7 +257,48 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, ModifyOrderObject &respons
 // ----------------------------------
 
 // ---------- Modify Multiple Orders ----------
-// ModifyOrderObject
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, ModifyMultipleOrdersObjectOrError &response_or_error) {
+
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
+
+    auto const res = API::read_server_message(obj);
+    if (res.has_value()) {
+        response_or_error = res.value();
+        return SUCCESS;
+    }
+
+    ModifyOrderObject response;
+    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "pair", response.pair)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", response.avg_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumQty", response.cum_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumBase", response.cum_base)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "closePosition", response.close_position)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", response.price_match)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", response.self_trade_prevention_mode)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", response.good_till_date)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
+    response_or_error = response;
+
+    return SUCCESS;
+}
 // -------------------------------------------
 
 // ---------- Get Order Modify History ----------
@@ -342,7 +391,48 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, CancelOrderObject &respons
 // ----------------------------------
 
 // ---------- Cancel Multiple Orders ----------
-// CancelOrderObject
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, CancelMultipleOrdersObjectOrError &response_or_error) {
+    
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
+
+    auto const res = API::read_server_message(obj);
+    if (res.has_value()) {
+        response_or_error = res.value();
+        return SUCCESS;
+    }
+
+    CancelOrderObject response;
+    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumQty", response.cum_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", response.cum_quote)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "closePosition", response.close_position)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "activatePrice", response.activate_price)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceRate", response.price_rate)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", response.price_match)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", response.self_trade_prevention_mode)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", response.good_till_date)) return error;
+    response_or_error = response;
+
+    return SUCCESS;
+}
 // -------------------------------------------
 
 // ---------- Cancel All Open Orders ----------

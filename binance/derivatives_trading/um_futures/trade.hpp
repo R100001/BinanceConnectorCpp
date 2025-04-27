@@ -200,6 +200,7 @@ struct PlaceMultipleOrdersObject {
     bool reduce_only;
     bool price_protect;
 };
+using PlaceMultipleOrdersObjectOrError = API::ResponseOrError<PlaceMultipleOrdersObject>;
 using PlaceMultipleOrdersResponse = API::ArrayErrorsResponse<PlaceMultipleOrdersObject>;
 
 struct ModifyOrderObject {
@@ -232,6 +233,7 @@ struct ModifyOrderObject {
 using ModifyOrderResponse = API::ResponseOrError<ModifyOrderObject>;
 
 using ModifyMultipleOrdersObject = ModifyOrderObject;
+using ModifyMultipleOrdersObjectOrError = API::ResponseOrError<ModifyMultipleOrdersObject>;
 using ModifyMultipleOrdersResponse = API::ArrayErrorsResponse<ModifyMultipleOrdersObject>;
 
 struct GetOrderModifyHistoryObject {
@@ -269,6 +271,7 @@ struct CancelOrderObject {
 using CancelOrderResponse = API::ResponseOrError<CancelOrderObject>;
 
 using CancelMultipleOrdersObject = CancelOrderObject;
+using CancelMultipleOrdersObjectOrError = API::ResponseOrError<CancelMultipleOrdersObject>;
 using CancelMultipleOrdersResponse = API::ArrayErrorsResponse<CancelMultipleOrdersObject>;
 
 using CancelAllOpenOrdersObject = API::ServerMessageResponse;

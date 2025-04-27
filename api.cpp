@@ -74,7 +74,7 @@ std::string API::sign_message(std::string const &message) const
 
 //------------------------------------------------------------------------------------
 
-std::optional<API::ServerMessageResponse> API::read_server_message(simdjson::ondemand::object &obj) const {
+std::optional<API::ServerMessageResponse> API::read_server_message(simdjson::ondemand::object &obj) {
 
     auto iterator = obj.begin();
     if (iterator != obj.end() && (*iterator).key() == "code") {

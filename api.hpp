@@ -77,15 +77,10 @@ public: // Public message parsing
 
     ServerMessageResponse parse_response(std::string &response, ResponseIsServerMessage const);
 
-    std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj) const;
+    static std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj);
 
     simdjson::ondemand::parser &parser() { return this->_parser; }
 
-private: // Private message parsing
-
-    template <typename JsonResponseStructured>
-    ResponseOrError<JsonResponseStructured> parse_json_value(simdjson::ondemand::value value);
- 
 private: // Private methods
 
     std::string prepare_params(Parameters const &params) const;
@@ -113,32 +108,26 @@ private: // Parsing variables
 //------------------------------------------------------------------------------------
 
 template <typename JsonResponseStructured>
-API::ResponseOrError<JsonResponseStructured> API::parse_json_value(simdjson::ondemand::value value) {
-    
-    auto obj = value.get_object();
-    if (!obj.error()) {
-        if (std::optional<ServerMessageResponse> res = read_server_message(obj.value_unsafe())) {
-            return res.value();
-        }
-    }
-    
-    JsonResponseStructured response_struct;
-    auto error = value.get(response_struct);
-    std::cout << "Error: " << simdjson::error_message(error) << std::endl;
-    DEBUG_ASSERT(!error);
-
-    return response_struct;
-}
-
-//------------------------------------------------------------------------------------
-
-template <typename JsonResponseStructured>
 API::ResponseOrError<JsonResponseStructured> API::parse_response(std::string &response) {
     
     auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
 
-    return parse_json_value<JsonResponseStructured>(doc);
+    auto obj = doc.get_object();
+    if (!obj.error()) {
+        std::optional<ServerMessageResponse> const res = read_server_message(obj.value_unsafe());
+
+        if(res.has_value()) return res.value();
+    }
+
+    doc.rewind();
+    
+    JsonResponseStructured response_struct;
+    auto error = doc.get(response_struct);
+    std::cout << "Error: " << simdjson::error_message(error) << std::endl;
+    DEBUG_ASSERT(!error);
+
+    return response_struct;
 }
 
 //------------------------------------------------------------------------------------
@@ -169,9 +158,9 @@ API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string
 
     std::vector<ResponseOrError<JsonResponseStructured>> response_structs;
     for(simdjson::ondemand::value item : arr) {
-        response_structs.push_back(
-            parse_json_value<JsonResponseStructured>(item)
-        );
+        response_structs.emplace_back();
+        auto error = item.get(response_structs.back());
+        DEBUG_ASSERT(!error);
     }
     
     return response_structs;
