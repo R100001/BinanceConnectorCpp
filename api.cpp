@@ -35,13 +35,6 @@ API::API(
 
 //------------------------------------------------------------------------------------
 
-std::string API::query(std::string const &url, Parameters const &payload)
-{
-    return this->send_request<API::RequestType::GET>(url, payload);
-}
-
-//------------------------------------------------------------------------------------
-
 std::string API::prepare_params(Parameters const &params) const
 {
     std::stringstream ss;
