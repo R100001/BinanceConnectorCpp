@@ -8,6 +8,11 @@ add_library(httplib STATIC
 )
 target_link_libraries(httplib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto)
 
+add_library(websocketlib STATIC
+    WebSocketClient.cpp
+)
+target_link_libraries(websocketlib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto)
+
 add_library(utils STATIC
     utils.cpp
 )

@@ -35,6 +35,7 @@ add_executable(BinanceConnectorCpp main.cpp)
 target_link_libraries(BinanceConnectorCpp PRIVATE
     openssllib
     httplib
+    websocketlib
     api
     utils
     umfutures
