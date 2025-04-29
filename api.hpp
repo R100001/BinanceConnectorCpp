@@ -48,10 +48,7 @@ public: // Constructors
 
 public: // Public requests
 
-    std::string query(std::string const &url, Parameters const &payload = {});
-    template <RequestType req_type> std::string limit_request(std::string const &url, Parameters const &payload);
     template <RequestType req_type> std::string sign_request(std::string const &url, Parameters &payload);
-    template <RequestType req_type> std::string limited_encoded_sign_request(std::string &url, Parameters &payload);
     template <RequestType req_type> std::string send_request(std::string const &url, Parameters const &payload = {});
     
 
@@ -79,6 +76,7 @@ public: // Public message parsing
 
     static std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj);
 
+private:
     simdjson::ondemand::parser &parser() { return this->_parser; }
 
 private: // Private methods
@@ -169,31 +167,11 @@ API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string
 //------------------------------------------------------------------------------------
 
 template <API::RequestType req_type>
-std::string API::limit_request(std::string const &url, Parameters const &payload)
-{
-    check_required_parameter(this->_key, "apiKey");
-    return this->send_request<req_type>(url, payload);
-}
-
-//------------------------------------------------------------------------------------
-
-template <API::RequestType req_type>
 std::string API::sign_request(std::string const &url, Parameters &payload)
 {
     payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
     payload.emplace_back(std::make_pair("signature", this->sign_message(this->prepare_params(payload))));
     return this->send_request<req_type>(url, payload);
-}
-
-//------------------------------------------------------------------------------------
-
-template <API::RequestType req_type>
-std::string API::limited_encoded_sign_request(std::string &url, Parameters &payload)
-{
-    payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp()))); 
-    std::string params = this->prepare_params(payload);
-    url += "?" + params + "&signature=" + this->sign_message(params);
-    return this->send_request<req_type>(url);
 }
 
 //------------------------------------------------------------------------------------
