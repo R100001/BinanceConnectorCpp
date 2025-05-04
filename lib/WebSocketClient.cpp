@@ -3,7 +3,6 @@
 
 //---------------------------------------------------------------------------------------
 
-// Define namespaces for brevity
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 namespace beast = boost::beast;
@@ -11,35 +10,45 @@ namespace ws = beast::websocket;
 
 //---------------------------------------------------------------------------------------
 
-WebSocketClient::WebSocketClient(net::io_context& ioc, const std::string& host, const std::string& port)
-    : ioc_(ioc),
-        resolver_(ioc),
-        ws_(ioc),
-        host_(host),
-        port_(port),
-        reconnect_timer_(ioc),
-        ping_timer_(ioc) {}
+WebSocketClient::WebSocketClient(net::io_context& ioc,
+                                 std::string_view host, std::string_view port,
+                                 std::chrono::seconds ping_interval,
+                                 std::chrono::milliseconds initial_reconnect_delay,
+                                 std::chrono::milliseconds max_reconnect_delay)
+    : _ioc(ioc),
+        _resolver(ioc),
+        _ws(ioc),
+        _host(host),
+        _port(port),
+        _reconnect_timer(ioc),
+        _ping_timer(ioc),
+        _ping_interval(ping_interval),
+        _target_changed(false),
+        _initial_reconnect_delay(initial_reconnect_delay),
+        _max_reconnect_delay(max_reconnect_delay),
+        _current_reconnect_delay(initial_reconnect_delay)
+        {}
 
 //---------------------------------------------------------------------------------------
 
-// Virtual destructor for proper cleanup in derived classes
 WebSocketClient::~WebSocketClient() {
     close();
 }
 
 //---------------------------------------------------------------------------------------
 
-// Start connecting to the WebSocket server
-void WebSocketClient::connect() {
+void WebSocketClient::connect(std::string_view target) {
+    _endpoint = target;
+    if (_target_changed) _ws.next_layer().close();
     do_connect();
+    _target_changed = true;
 }
 
 //---------------------------------------------------------------------------------------
 
-// Send a message to the server (e.g., subscription request)
-void WebSocketClient::send(const std::string& message) {
-    ws_.async_write(net::buffer(message),
-        [this](beast::error_code ec, std::size_t /*bytes_transferred*/) {
+void WebSocketClient::send(std::string_view message) {
+    _ws.async_write(net::buffer(message),
+        [this](beast::error_code ec, std::size_t) {
             if (ec) {
                 on_error(ec);
             }
@@ -48,10 +57,9 @@ void WebSocketClient::send(const std::string& message) {
 
 //---------------------------------------------------------------------------------------
 
-// Close the WebSocket connection gracefully
 void WebSocketClient::close() {
-    if (ws_.is_open()) {
-        ws_.async_close(ws::close_code::normal,
+    if (_ws.is_open()) {
+        _ws.async_close(ws::close_code::normal,
             [this](beast::error_code ec) {
                 if (ec) {
                     on_error(ec);
@@ -62,41 +70,35 @@ void WebSocketClient::close() {
 
 //---------------------------------------------------------------------------------------
 
-// Run the I/O context to process asynchronous operations
-// Typically called in main() or a dedicated thread
 void WebSocketClient::run() {
-    ioc_.run();
+    _ioc.run();
 }
 
 //---------------------------------------------------------------------------------------
 
-// Perform asynchronous connection steps
 void WebSocketClient::do_connect() {
-    // Step 1: Resolve host and port to IP endpoints
-    resolver_.async_resolve(host_, port_,
+    _resolver.async_resolve(_host, _port,
         [this](beast::error_code ec, tcp::resolver::results_type results) {
             if (ec) {
                 on_error(ec);
                 do_reconnect();
                 return;
             }
-            // Step 2: Connect the TCP socket
-            net::async_connect(ws_.next_layer(), results,
-                [this](beast::error_code ec, const tcp::endpoint& /*endpoint*/) {
+            net::async_connect(_ws.next_layer(), results,
+                [this](beast::error_code ec, const tcp::endpoint&) {
                     if (ec) {
                         on_error(ec);
                         do_reconnect();
                         return;
                     }
-                    // Step 3: Perform WebSocket handshake
-                    ws_.async_handshake(host_, "/ws",
+                    _ws.async_handshake(_host, _endpoint,
                         [this](beast::error_code ec) {
                             if (ec) {
                                 on_error(ec);
                                 do_reconnect();
                                 return;
                             }
-                            // Connection established: start pinging and reading
+                            _current_reconnect_delay = _initial_reconnect_delay;
                             start_ping();
                             do_read();
                         });
@@ -106,16 +108,14 @@ void WebSocketClient::do_connect() {
 
 //---------------------------------------------------------------------------------------
 
-// Continuously read incoming messages
 void WebSocketClient::do_read() {
-    ws_.async_read(buffer_,
-        [this](beast::error_code ec, std::size_t /*bytes_transferred*/) {
+    _ws.async_read(_buffer,
+        [this](beast::error_code ec, std::size_t ) {
             if (!ec) {
-                // Convert buffer to string and pass to derived class
-                std::string message = beast::buffers_to_string(buffer_.data());
-                buffer_.clear();
+                std::string message = beast::buffers_to_string(_buffer.data());
+                _buffer.clear();
                 on_message(message);
-                do_read(); // Continue reading
+                do_read();
             } else {
                 on_error(ec);
                 do_reconnect();
@@ -125,13 +125,12 @@ void WebSocketClient::do_read() {
 
 //---------------------------------------------------------------------------------------
 
-// Attempt to reconnect after a failure
 void WebSocketClient::do_reconnect() {
-    // Close the socket to reset state
-    ws_.next_layer().close();
-    // Wait 5 seconds before retrying (can be extended to exponential backoff)
-    reconnect_timer_.expires_after(std::chrono::seconds(5));
-    reconnect_timer_.async_wait([this](beast::error_code ec) {
+    _ws.next_layer().close();
+
+    _current_reconnect_delay = std::min(_current_reconnect_delay * 2, _max_reconnect_delay);
+    _reconnect_timer.expires_after(_current_reconnect_delay);
+    _reconnect_timer.async_wait([this](beast::error_code ec) {
         if (!ec) {
             do_connect();
         }
@@ -140,21 +139,18 @@ void WebSocketClient::do_reconnect() {
 
 //---------------------------------------------------------------------------------------
 
-// Send periodic pings to keep the connection alive
 void WebSocketClient::start_ping() {
-    // Ping every 30 seconds (adjustable per exchange)
-    ping_timer_.expires_after(std::chrono::seconds(30));
-    ping_timer_.async_wait([this](beast::error_code ec) {
+    _ping_timer.expires_after(_ping_interval);
+    _ping_timer.async_wait([this](beast::error_code ec) {
         if (ec) {
-            // Timer canceled (e.g., during shutdown)
             return;
         }
-        ws_.async_ping({},
+        _ws.async_ping({},
             [this](beast::error_code ec) {
                 if (ec) {
                     on_error(ec);
                 }
-                start_ping(); // Schedule next ping
+                start_ping();
             });
     });
 }
