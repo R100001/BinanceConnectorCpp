@@ -7,3 +7,6 @@ main.cpp
 
 # Ignore vscode settings
 .vscode/settings.json
+
+# Ignore cmake extra files
+CMakeUserPresets.json
