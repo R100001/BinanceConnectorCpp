@@ -1196,7 +1196,7 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &sy
     return api.parse_response<TakerBuySellVolumeObject>(response);
 }
 
-BasisResponse basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+BasisResponse basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit, int64_t const &start_time, int64_t const &end_time) {
     std::string const url = "/futures/data/basis";
 
     API::Parameters params;

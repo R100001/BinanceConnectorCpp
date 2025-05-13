@@ -35,23 +35,137 @@ API::API(
 
 //------------------------------------------------------------------------------------
 
-std::string API::prepare_params(Parameters const &params) const
+template<typename T>
+inline static void append_number(char* buffer, size_t& pos, T value) 
 {
-    std::stringstream ss;
-    for(auto const &[name, value] : params) {
-        ss << name << "=";
-        std::visit([&ss](auto const &v) {
-            ss << v;
-        }, value);
-        ss << "&";
+    auto result = std::to_chars(buffer + pos, buffer + pos + 32, value);
+    pos = result.ptr - buffer;
+}
+
+//------------------------------------------------------------------------------------
+
+std::string API::prepare_query_string(API::Parameters const &params) const 
+{
+    constexpr size_t buffer_size = 4096;
+    std::array<char, buffer_size> buffer;
+    size_t pos = 0;
+
+    for (const auto& [name, value] : params) {
+        std::memcpy(buffer.data() + pos, name.data(), name.size());
+        pos += name.size();
+        buffer[pos++] = '=';
+
+        switch (static_cast<ParameterTypeIndex>(value.index())) {
+        case ParameterTypeIndex::BOOL:
+            std::memcpy(buffer.data() + pos, std::get<bool>(value) ? "true" : "false", 4);
+            pos += 4;
+            break;
+        case ParameterTypeIndex::INT8:
+            append_number(buffer.data(), pos, std::get<int8_t>(value));
+            break;
+        case ParameterTypeIndex::INT16:
+            append_number(buffer.data(), pos, std::get<int16_t>(value));
+            break;
+        case ParameterTypeIndex::INT32:
+            append_number(buffer.data(), pos, std::get<int32_t>(value));
+            break;
+        case ParameterTypeIndex::INT64:
+            append_number(buffer.data(), pos, std::get<int64_t>(value));
+            break;
+        case ParameterTypeIndex::UINT8:
+            append_number(buffer.data(), pos, std::get<uint8_t>(value));
+            break;
+        case ParameterTypeIndex::UINT16:
+            append_number(buffer.data(), pos, std::get<uint16_t>(value));
+            break;
+        case ParameterTypeIndex::UINT32:
+            append_number(buffer.data(), pos, std::get<uint32_t>(value));
+            break;
+        case ParameterTypeIndex::UINT64:
+            append_number(buffer.data(), pos, std::get<uint64_t>(value));
+            break;
+        case ParameterTypeIndex::DOUBLE:
+            append_number(buffer.data(), pos, std::get<double>(value));
+            break;
+        case ParameterTypeIndex::STRING: {
+            std::string_view str_value = std::get<std::string>(value);
+            std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
+            pos += str_value.size();
+            break;
+            }
+        }
+        buffer[pos++] = '&';
     }
 
-    std::string params_str = ss.str();
-    if (!params_str.empty()) {
-        params_str.pop_back();
+    return std::string(buffer.data(), pos - 1); // -1 to remove the last '&'
+}
+
+//------------------------------------------------------------------------------------
+
+std::string API::prepare_json_string(API::Parameters const &params) const
+{
+    constexpr size_t buffer_size = 4096;
+    std::array<char, buffer_size> buffer;
+    size_t pos = 0;
+
+    buffer[pos++] = '{';
+
+    for (const auto& [name, value] : params) {
+
+        buffer[pos++] = '"';
+        std::memcpy(buffer.data() + pos, name.data(), name.size());
+        pos += name.size();
+        buffer[pos++] = '"';
+        buffer[pos++] = ':';
+
+        switch (static_cast<ParameterTypeIndex>(value.index())) {
+        case ParameterTypeIndex::BOOL:
+            std::memcpy(buffer.data() + pos, std::get<bool>(value) ? "true" : "false", 4);
+            pos += 4;
+            break;
+        case ParameterTypeIndex::INT8:
+            append_number(buffer.data(), pos, std::get<int8_t>(value));
+            break;
+        case ParameterTypeIndex::INT16:
+            append_number(buffer.data(), pos, std::get<int16_t>(value));
+            break;
+        case ParameterTypeIndex::INT32:
+            append_number(buffer.data(), pos, std::get<int32_t>(value));
+            break;
+        case ParameterTypeIndex::INT64:
+            append_number(buffer.data(), pos, std::get<int64_t>(value));
+            break;
+        case ParameterTypeIndex::UINT8:
+            append_number(buffer.data(), pos, std::get<uint8_t>(value));
+            break;
+        case ParameterTypeIndex::UINT16:
+            append_number(buffer.data(), pos, std::get<uint16_t>(value));
+            break;
+        case ParameterTypeIndex::UINT32:
+            append_number(buffer.data(), pos, std::get<uint32_t>(value));
+            break;
+        case ParameterTypeIndex::UINT64:
+            append_number(buffer.data(), pos, std::get<uint64_t>(value));
+            break;
+        case ParameterTypeIndex::DOUBLE:
+            append_number(buffer.data(), pos, std::get<double>(value));
+            break;
+        case ParameterTypeIndex::STRING: {
+            buffer[pos++] = '"';
+            std::string_view str_value = std::get<std::string>(value);
+            std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
+            pos += str_value.size();
+            buffer[pos++] = '"';
+            break;
+            }
+        }
+
+        buffer[pos++] = ',';
     }
 
-    return params_str;
+    if(pos > 1) buffer[pos - 1] = '}';
+
+    return std::string(buffer.data(), pos);
 }
 
 //------------------------------------------------------------------------------------

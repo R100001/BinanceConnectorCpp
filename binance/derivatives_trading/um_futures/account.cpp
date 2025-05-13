@@ -880,8 +880,42 @@ GetBnbBurnStatusResponse get_bnb_burn_status(API &api, int32_t const recv_window
 
 } // namespace RestAPI
 
-//--------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+namespace WebSocketAPI {
+
+//---------------------------------------------------------------------------------------
+
+void futures_account_balance_v2(API &api, int32_t const recv_window) {
+    std::string const method = "v2/account.balance";
+
+
+}
+
+//---------------------------------------------------------------------------------------
+
+void futures_account_balance(API &api, int32_t const recv_window) {
+    std::string const method = "v1/account.balance";
+}
+
+//---------------------------------------------------------------------------------------
+
+void account_information_v2(API &api, int32_t const recv_window) {
+    std::string const method = "v2/account.status";
+}
+
+//---------------------------------------------------------------------------------------
+
+void account_information(API &api, int32_t const recv_window) {
+    std::string const method = "v1/account.status";
+}
+
+//---------------------------------------------------------------------------------------
+
+} // namespace WebSocketAPI
+
+//---------------------------------------------------------------------------------------
 
 } // namespace Account
 
-//------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------

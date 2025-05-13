@@ -5,12 +5,12 @@
 //------------------------------------------------------------------------------------
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include <variant>
 #include <memory>
 
 #include "lib/HTTPClient.hpp"
+#include "lib/WebSocketClient.hpp"
 #include "simdjson.h"
 
 #include "error.hpp"
@@ -25,11 +25,30 @@ public: // Typedefs
     using Parameter = std::variant<bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, double, std::string>;
     using Parameters = std::vector<std::pair<std::string, Parameter>>;
 
+    enum class ParameterTypeIndex {
+        BOOL,
+        INT8,
+        INT16,
+        INT32,
+        INT64,
+        UINT8,
+        UINT16,
+        UINT32,
+        UINT64,
+        DOUBLE,
+        STRING
+    };
+
     enum class RequestType {
         GET,
         POST,
         PUT,
         DELETE
+    };
+
+    enum class RequestFormat {
+        QueryString,
+        JSON
     };
 
 public: // Constructors
@@ -81,7 +100,8 @@ private:
 
 private: // Private methods
 
-    std::string prepare_params(Parameters const &params) const;
+    std::string prepare_query_string(Parameters const &params) const;
+    std::string prepare_json_string(Parameters const &params) const;
     std::string sign_message(std::string const &message) const;
     template<RequestType req_type> std::string dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const;
     
@@ -170,7 +190,7 @@ template <API::RequestType req_type>
 std::string API::sign_request(std::string const &url, Parameters &payload)
 {
     payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
-    payload.emplace_back(std::make_pair("signature", this->sign_message(this->prepare_params(payload))));
+    payload.emplace_back(std::make_pair("signature", this->sign_message(this->prepare_query_string(payload))));
     return this->send_request<req_type>(url, payload);
 }
 
@@ -179,12 +199,13 @@ std::string API::sign_request(std::string const &url, Parameters &payload)
 template <API::RequestType req_type>
 std::string API::send_request(std::string const &endpoint, Parameters const &payload)
 {
-    std::string response = this->dispach_request<req_type>(this->_base_url, endpoint, this->prepare_params(payload));
+    std::string response = this->dispach_request<req_type>(this->_base_url, endpoint, this->prepare_query_string(payload));
     
     return response;
 }
 
 //------------------------------------------------------------------------------------
+
 
 template<API::RequestType req_type>
 std::string API::dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const
