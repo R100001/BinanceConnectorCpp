@@ -39,7 +39,7 @@ namespace RestAPI {
 ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(API &api, std::string const &asset, int32_t const recv_window) {
     std::string const url = "/fapi/v1/pmAccountInfo";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("asset", asset);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 

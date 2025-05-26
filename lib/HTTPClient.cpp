@@ -114,27 +114,27 @@ private:
     boost::beast::http::fields _default_headers;
 };
 
-HTTPClient::HTTPClient(std::string_view apiKey) 
-    : _impl(std::make_unique<HTTPClientImpl>(apiKey)) {}
+HTTPClient::HTTPClient(std::string_view api_key) 
+    : _impl(std::make_unique<HTTPClientImpl>(api_key)) {}
 
 HTTPClient::~HTTPClient() = default;
 
-std::string HTTPClient::get(std::string_view const url, std::string_view const endpoint, int32_t const timeout, 
+std::string HTTPClient::get(std::string_view const endpoint, int32_t const timeout, 
                            std::string_view const proxies) const {
-    return _impl->performRequest(url, endpoint, "GET", timeout, proxies);
+    return _impl->performRequest(HTTPClient::REST_API_URL, endpoint, "GET", timeout, proxies);
 }
 
-std::string HTTPClient::post(std::string_view const url, std::string_view const endpoint, int32_t const timeout, 
+std::string HTTPClient::post(std::string_view const endpoint, int32_t const timeout, 
                             std::string_view const proxies) const {
-    return _impl->performRequest(url, endpoint, "POST", timeout, proxies);
+    return _impl->performRequest(HTTPClient::REST_API_URL, endpoint, "POST", timeout, proxies);
 }
 
-std::string HTTPClient::put(std::string_view const url, std::string_view const endpoint, int32_t const timeout, 
+std::string HTTPClient::put(std::string_view const endpoint, int32_t const timeout, 
                            std::string_view const proxies) const {
-    return _impl->performRequest(url, endpoint, "PUT", timeout, proxies);
+    return _impl->performRequest(HTTPClient::REST_API_URL, endpoint, "PUT", timeout, proxies);
 }
 
-std::string HTTPClient::del(std::string_view const url, std::string_view const endpoint, int32_t const timeout, 
+std::string HTTPClient::del(std::string_view const endpoint, int32_t const timeout, 
                            std::string_view const proxies) const {
-    return _impl->performRequest(url, endpoint, "DELETE", timeout, proxies);
+    return _impl->performRequest(HTTPClient::REST_API_URL, endpoint, "DELETE", timeout, proxies);
 }

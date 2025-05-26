@@ -10,14 +10,20 @@
 //------------------------------------------------------------------------------------
 
 class HTTPClient {
+
+private: // Constants
+
+    static constexpr std::string_view REST_API_URL = "https://fapi.binance.com";
+    static constexpr std::string_view REST_API_TESTNET_URL = "https://testnet.binancefuture.com";
+
 public:
-    HTTPClient(std::string_view apiKey);
+    HTTPClient(std::string_view api_key);
     ~HTTPClient();
 
-    std::string get(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
-    std::string post(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
-    std::string put(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
-    std::string del(std::string_view const url, std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string get(std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string post(std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string put(std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
+    std::string del(std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;
 
 private:
     class HTTPClientImpl;

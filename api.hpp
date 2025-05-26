@@ -17,27 +17,15 @@
 #include "lib/utils.hpp"
 
 //------------------------------------------------------------------------------------
+//----------------------------------------API-----------------------------------------
+//------------------------------------------------------------------------------------
 
 class API {
 
 public: // Typedefs
 
-    using Parameter = std::variant<bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, double, std::string>;
-    using Parameters = std::vector<std::pair<std::string, Parameter>>;
-
-    enum class ParameterTypeIndex {
-        BOOL,
-        INT8,
-        INT16,
-        INT32,
-        INT64,
-        UINT8,
-        UINT16,
-        UINT32,
-        UINT64,
-        DOUBLE,
-        STRING
-    };
+    using MsgCallbackT = std::function<void(std::string_view)>;
+    using ErrCallbackT = std::function<void(std::string_view)>;
 
     enum class RequestType {
         GET,
@@ -54,22 +42,47 @@ public: // Typedefs
 public: // Constructors
 
     API(
-        std::string const &base_url,
-        std::string const &key,
-        std::string const &secret = "",
+        std::string_view key,
+        std::string_view secret = "",
         int32_t const timeout = -1,
-        std::string const &proxy = "",
+        std::string_view proxy = "",
         bool const show_limit_usage = false,
         bool const show_header = false,
-        std::string const &private_key = "",
-        std::string const &private_key_passphrase = ""
+        std::string_view private_key = "",
+        std::string_view private_key_passphrase = ""
     );
 
-public: // Public requests
+public: // REST API request methods
 
-    template <RequestType req_type> std::string sign_request(std::string const &url, Parameters &payload);
-    template <RequestType req_type> std::string send_request(std::string const &url, Parameters const &payload = {});
-    
+    template <RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
+    template <RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
+
+public: // WebSocket API
+
+    void ws_api_connect();
+    void ws_api_disconnect();
+    void ws_api_send_message(std::string_view message);
+
+    void ws_api_message_callback(MsgCallbackT callback);
+    void ws_api_error_callback(ErrCallbackT callback);
+
+public: // Websocket Market Streams
+
+    void ws_market_streams_subscribe(std::string const &stream_name);
+    void ws_market_streams_subscribe(std::vector<std::string> const &stream_names);
+    void ws_market_streams_unsubscribe(std::string const &stream_name);
+    void ws_market_streams_unsubscribe(std::vector<std::string> const &stream_names);
+
+    void ws_market_streams_message_callback(MsgCallbackT callback);
+    void ws_market_streams_error_callback(ErrCallbackT callback);
+
+public: // Websocket User Data Streams
+
+    void ws_user_data_streams_start();
+    void ws_user_data_streams_stop();
+
+    void ws_user_data_streams_message_callback(MsgCallbackT callback);
+    void ws_user_data_streams_error_callback(ErrCallbackT callback);
 
 public: // Public message parsing
 
@@ -100,10 +113,8 @@ private:
 
 private: // Private methods
 
-    std::string prepare_query_string(Parameters const &params) const;
-    std::string prepare_json_string(Parameters const &params) const;
-    std::string sign_message(std::string const &message) const;
-    template<RequestType req_type> std::string dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const;
+    std::string sign_message(std::string_view message) const;
+    template<RequestType req_type> std::string dispach_request(std::string_view const endpoint, std::string const &payload) const;
     
 private: // Private variables
 
@@ -116,13 +127,22 @@ private: // Private variables
     bool _show_header;
     std::string _private_key;
     std::string _private_key_passphrase;
-    HTTPClient _session;
+
+private: // HTTP Client and WebSocket Client
+
+    HTTPClient _rest_api;
+
+    std::shared_ptr<WebSocketAPIClient> _websocket_api;
+    std::shared_ptr<WebSocketMarketStreamsClient> _websocket_market_streams;
+    std::shared_ptr<WebSocketUserDataStreamsClient> _websocket_user_data_streams;
 
 private: // Parsing variables
 
     simdjson::ondemand::parser _parser;
 };
 
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 
 template <typename JsonResponseStructured>
@@ -187,40 +207,37 @@ API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string
 //------------------------------------------------------------------------------------
 
 template <API::RequestType req_type>
-std::string API::sign_request(std::string const &url, Parameters &payload)
+std::string API::sign_request(std::string_view endpoint, Parameters &payload)
 {
     payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
-    payload.emplace_back(std::make_pair("signature", this->sign_message(this->prepare_query_string(payload))));
-    return this->send_request<req_type>(url, payload);
+    payload.emplace_back(std::make_pair("signature", this->sign_message(prepare_query_string(payload))));
+    return this->send_request<req_type>(endpoint, payload);
 }
 
 //------------------------------------------------------------------------------------
 
 template <API::RequestType req_type>
-std::string API::send_request(std::string const &endpoint, Parameters const &payload)
+std::string API::send_request(std::string_view endpoint, Parameters const &payload)
 {
-    std::string response = this->dispach_request<req_type>(this->_base_url, endpoint, this->prepare_query_string(payload));
-    
-    return response;
+    return this->dispach_request<req_type>(endpoint, prepare_query_string(payload));
 }
 
 //------------------------------------------------------------------------------------
 
-
 template<API::RequestType req_type>
-std::string API::dispach_request(std::string_view const url, std::string_view const endpoint, std::string const &payload) const
+std::string API::dispach_request(std::string_view endpoint, std::string const &payload) const
 {
-    std::string const &request = payload.empty() ? std::string(endpoint) : std::string(endpoint) + "?" + payload;
+    std::string_view request = payload.empty() ? endpoint : std::string(endpoint) + "?" + payload;
 
     switch(req_type) {
         case API::RequestType::GET:
-            return this->_session.get(url, request, this->_timeout, this->_proxy);
+            return this->_rest_api.get(request, this->_timeout, this->_proxy);
         case API::RequestType::POST:
-            return this->_session.post(url, request, this->_timeout, this->_proxy);
+            return this->_rest_api.post(request, this->_timeout, this->_proxy);
         case API::RequestType::PUT:
-            return this->_session.put(url, request, this->_timeout, this->_proxy);
+            return this->_rest_api.put(request, this->_timeout, this->_proxy);
         case API::RequestType::DELETE:
-            return this->_session.del(url, request, this->_timeout, this->_proxy);
+            return this->_rest_api.del(request, this->_timeout, this->_proxy);
         default:
             throw std::runtime_error("Unsupported HTTP method!");
     }

@@ -5,8 +5,31 @@
 //------------------------------------------------------------------------------------
 
 #include <string>
+#include <ranges>
 
 #include "simdjson.h"
+
+//------------------------------------------------------------------------------------
+using Parameter = std::variant<bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, double, std::string, std::vector<std::string>>;
+using Parameters = std::vector<std::pair<std::string, Parameter>>;
+
+enum class ParameterTypeIndex {
+    BOOL,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
+    UINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    DOUBLE,
+    STRING,
+    VECTOR_STRING,
+};
+
+std::string prepare_query_string(Parameters const &params);
+std::string prepare_json_string(Parameters const &params);
 
 //------------------------------------------------------------------------------------
 

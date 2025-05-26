@@ -104,7 +104,7 @@ namespace RestAPI {
 ListAllConvertedPairsResponse list_all_converted_pairs(API &api, std::string const &from_asset, std::string const &to_asset) {
     std::string const url = "/fapi/v1/convert/exchangeInfo";
 
-    API::Parameters params;
+    Parameters params;
     if (!from_asset.empty()) params.emplace_back("fromAsset", from_asset);
     if (!to_asset.empty()) params.emplace_back("toAsset", to_asset);
 
@@ -116,7 +116,7 @@ ListAllConvertedPairsResponse list_all_converted_pairs(API &api, std::string con
 SendQuoteRequestResponse send_quote_request(API &api, std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/request";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("fromAsset", from_asset);
     params.emplace_back("toAsset", to_asset);
     if (from_amount != -1) params.emplace_back("fromAmount", from_amount);
@@ -132,7 +132,7 @@ SendQuoteRequestResponse send_quote_request(API &api, std::string const &from_as
 AcceptQuoteResponse accept_quote(API &api, std::string const &quote_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/acceptQuote";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("quoteId", quote_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -144,7 +144,7 @@ AcceptQuoteResponse accept_quote(API &api, std::string const &quote_id, int32_t 
 OrderStatusResponse order_status(API &api, std::string const &order_id, std::string const &quote_id) {
     std::string const url = "/fapi/v1/convert/orderStatus";
 
-    API::Parameters params;
+    Parameters params;
     if (!order_id.empty()) params.emplace_back("orderId", order_id);
     if (!quote_id.empty()) params.emplace_back("quoteId", quote_id);
 

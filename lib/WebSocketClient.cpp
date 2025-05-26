@@ -4,11 +4,14 @@
 #include "WebSocketClient.hpp"
 
 #include <iostream>
+#include <queue>
 
 #include <boost/beast.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/beast/websocket/ssl.hpp>
+
+#include "utils.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -20,6 +23,82 @@ namespace ssl = net::ssl;
 
 //------------------------------------------------------------------------------------
 
+#include <boost/asio.hpp>
+#include <chrono>
+#include <functional>
+#include <memory>
+
+class InvokeTimer : public std::enable_shared_from_this<InvokeTimer> {
+public:
+    using steady_timer = boost::asio::steady_timer;
+    using Duration     = steady_timer::duration;
+    using Callback     = std::function<void()>;
+
+    explicit InvokeTimer(std::shared_ptr<net::io_context> ioc);
+    ~InvokeTimer();
+
+    void start(Duration d, Callback cb);
+    void stop();
+
+private:
+
+    void tick();
+
+private: // Members
+
+    steady_timer _timer;
+    Duration     _interval;
+    Callback     _callback;
+    bool         _running;
+};
+
+//------------------------------------------------------------------------------------
+
+InvokeTimer::InvokeTimer(std::shared_ptr<net::io_context> ioc)
+    : _timer(*ioc), _running(false) {}
+
+//------------------------------------------------------------------------------------
+
+InvokeTimer::~InvokeTimer() {
+    stop();
+}
+
+//------------------------------------------------------------------------------------
+
+void InvokeTimer::stop() {
+    _running = false;
+    _timer.cancel();
+}
+
+//------------------------------------------------------------------------------------
+
+void InvokeTimer::start(Duration d, Callback cb) {
+    _interval = d;
+    _callback = std::move(cb);
+    _running  = true;
+
+    _timer.cancel();
+    _timer.expires_after(_interval);
+    _timer.async_wait([self = shared_from_this()](auto ec){
+        if (!ec) self->tick();
+    });
+}
+
+//------------------------------------------------------------------------------------
+
+void InvokeTimer::tick() {
+    if (!_running) return;
+
+    _callback();
+
+    _timer.expires_after(_interval);
+    _timer.async_wait([self = shared_from_this()](auto ec){
+        if (!ec) self->tick();
+    });
+}
+
+//------------------------------------------------------------------------------------
+
 class WebSocketClientImpl {
 
 private: // Constants
@@ -27,41 +106,62 @@ private: // Constants
     constexpr static uint64_t default_max_reconnect_delay = 60000;
 
 public:
-    WebSocketClientImpl(net::io_context &ioc, net::ssl::context &ctx, 
+    WebSocketClientImpl(std::shared_ptr<net::io_context> ioc, std::shared_ptr<net::ssl::context> ctx, 
                     std::string_view host, std::string_view port = "443",
-                    std::chrono::seconds ping_interval = std::chrono::seconds(0),
                     std::chrono::milliseconds initial_reconnect_delay = std::chrono::milliseconds(default_initial_reconnect_delay),
                     std::chrono::milliseconds max_reconnect_delay = std::chrono::milliseconds(default_max_reconnect_delay));
     ~WebSocketClientImpl();
 
-    WebSocketClientImpl(const WebSocketClientImpl&) = delete;
-    WebSocketClientImpl(WebSocketClientImpl&&) = delete;
-    WebSocketClientImpl& operator=(const WebSocketClientImpl&) = delete;
-    WebSocketClientImpl& operator=(WebSocketClientImpl&&) = delete;
-
-    void connect(std::string_view target);
+    void connect();
     void send(std::string_view message);
     void close();
     void run();
 
+    void set_on_message_callback(std::function<void(std::string_view)> callback);
+    void set_on_error_callback(std::function<void(std::string_view)> callback);
+
     void on_message(std::string_view message);
     void on_error(beast::error_code ec);
 
-private:
+#if 0 // Until queues are ready
+    bool any_message() const;
+    bool any_error() const;
+
+    std::string consume_message();
+    std::string consume_error();
+
+    std::optional<std::string> consume_message_safe();
+    std::optional<std::string> consume_error_safe();
+
+    void drop_all_messages();
+    void drop_all_errors();
+    void drop_all();
+#endif
+
+private: // Functions
     void do_connect();
     void do_read();
     void do_reconnect();
-    void start_ping();
 
-    net::io_context& _ioc;
-    net::ssl::context& _ssl_ctx;
+private: // Message Handlers
+    MsgCallbackT _on_message_callback;
+    ErrCallbackT _on_error_callback;
+
+#if 0 // Until queues are ready
+    std::queue<std::string> _message_queue;
+    std::queue<std::string> _error_queue;
+#endif
+
+protected: // Members
+    std::shared_ptr<net::io_context> _ioc;
+    std::shared_ptr<net::ssl::context> _ssl_ctx;
+
+private:
     tcp::resolver _resolver;
     std::unique_ptr<ws::stream<ssl::stream<beast::tcp_stream>>> _wss;
     std::string _host, _port, _endpoint;
     beast::flat_buffer _buffer;
     net::steady_timer _reconnect_timer;
-    net::steady_timer _ping_timer;
-    std::chrono::seconds _ping_interval;
 
     std::chrono::milliseconds _initial_reconnect_delay;
     std::chrono::milliseconds _max_reconnect_delay;
@@ -76,29 +176,26 @@ namespace beast  = boost::beast;
 namespace ws     = beast::websocket;
 
 //---------------------------------------------------------------------------------------
+//----------------------------------WebSocketClientImpl----------------------------------
+//---------------------------------------------------------------------------------------
 
-WebSocketClientImpl::WebSocketClientImpl(net::io_context &ioc,
-                                 net::ssl::context &ctx,
-                                 std::string_view host,
-                                 std::string_view port,
-                                 std::chrono::seconds ping_interval,
-                                 std::chrono::milliseconds initial_reconnect_delay,
-                                 std::chrono::milliseconds max_reconnect_delay)
+WebSocketClientImpl::WebSocketClientImpl(std::shared_ptr<net::io_context> ioc,
+                                         std::shared_ptr<net::ssl::context> ctx,
+                                         std::string_view host,
+                                         std::string_view port,
+                                         std::chrono::milliseconds initial_reconnect_delay,
+                                         std::chrono::milliseconds max_reconnect_delay)
     : _ioc(ioc),
       _ssl_ctx(ctx),
-      _resolver(ioc),
+      _resolver(*ioc),
       _host(host),
       _port(port),
-      _reconnect_timer(ioc),
-      _ping_timer(ioc),
-      _ping_interval(ping_interval),
+      _reconnect_timer(*ioc),
       _initial_reconnect_delay(initial_reconnect_delay),
       _max_reconnect_delay(max_reconnect_delay),
-      _current_reconnect_delay(initial_reconnect_delay)
-{
-    _wss = std::make_unique<ws::stream<ssl::stream<beast::tcp_stream>>>(
-        net::make_strand(_ioc), _ssl_ctx);
-}
+      _current_reconnect_delay(initial_reconnect_delay),
+      _on_message_callback(nullptr),
+      _on_error_callback(nullptr) {}
 
 //---------------------------------------------------------------------------------------
 
@@ -108,7 +205,7 @@ WebSocketClientImpl::~WebSocketClientImpl() {
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketClientImpl::connect(std::string_view target) {
+void WebSocketClientImpl::connect() {
     do_connect();
 }
 
@@ -135,29 +232,101 @@ void WebSocketClientImpl::close() {
 //---------------------------------------------------------------------------------------
 
 void WebSocketClientImpl::run() {
-    _ioc.run();
+    _ioc->run();
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketClientImpl::set_on_message_callback(std::function<void(std::string_view)> callback) {
+    _on_message_callback = std::move(callback);
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketClientImpl::set_on_error_callback(std::function<void(std::string_view)> callback) {
+    _on_error_callback = std::move(callback);
 }
 
 //---------------------------------------------------------------------------------------
 
 void WebSocketClientImpl::on_message(std::string_view message) {
-    std::cout << "Received message:\n" << message << std::endl;
+    if (_on_message_callback) {
+        _on_message_callback(message);
+    } 
+#if 0 // Until queues are ready
+    else {
+        _message_queue.push(std::string(message));
+    }
+#endif
 }
 
 //---------------------------------------------------------------------------------------
 
 void WebSocketClientImpl::on_error(beast::error_code ec) {
-    std::cerr << "Error:\n" << ec.message() << std::endl;
-    if (ec == ws::error::closed) {
-        std::cout << "Connection closed." << std::endl;
-    } else {
-        std::cerr << "Unexpected error: " << ec.message() << std::endl;
+    if (_on_error_callback) {
+        _on_error_callback(ec.message());
+    } 
+#if 0 // Until queues are ready
+    else {
+        _error_queue.push(ec.message());
     }
+#endif
+}
+#if 0 // Until queues are ready
+//---------------------------------------------------------------------------------------
+
+bool WebSocketClientImpl::any_message() const {
+    return !_message_queue.empty();
 }
 
 //---------------------------------------------------------------------------------------
 
+bool WebSocketClientImpl::any_error() const {
+    return !_error_queue.empty();
+}
+
+//---------------------------------------------------------------------------------------
+
+std::string WebSocketClientImpl::consume_message() {
+    std::string message = std::move(_message_queue.front());
+    _message_queue.pop();
+    return message;
+}
+
+//---------------------------------------------------------------------------------------
+
+std::string WebSocketClientImpl::consume_error() {
+    std::string error = std::move(_error_queue.front());
+    _error_queue.pop();
+    return error;
+}
+
+//---------------------------------------------------------------------------------------
+
+std::optional<std::string> WebSocketClientImpl::consume_message_safe() {
+    if (any_message()) {
+        return consume_message();
+    }
+    return std::nullopt;
+}
+
+//---------------------------------------------------------------------------------------
+
+std::optional<std::string> WebSocketClientImpl::consume_error_safe() {
+    if (any_error()) {
+        return consume_error();
+    }
+    return std::nullopt;
+}
+#endif // Until queues are ready
+//---------------------------------------------------------------------------------------
+
 void WebSocketClientImpl::do_connect() {
+
+    _wss = std::make_unique<ws::stream<ssl::stream<beast::tcp_stream>>>(
+        net::make_strand(*_ioc), *_ssl_ctx);
+
+    // SSL_set_tlsext_host_name(_wss->next_layer().native_handle(), _host.c_str());
 
     _wss->control_callback(
         [this](ws::frame_type type, beast::string_view payload) {
@@ -184,22 +353,30 @@ void WebSocketClientImpl::do_connect() {
                         do_reconnect();
                         return;
                     }
-                    _wss->next_layer().handshake(ssl::stream_base::client, ec);
-                    if (ec) {
-                        on_error(ec);
-                        do_reconnect();
-                        return;
-                    }
-                    _wss->async_handshake(_host, _endpoint,
+                    _wss->next_layer().async_handshake(ssl::stream_base::client,
                         [this](beast::error_code ec) {
                             if (ec) {
                                 on_error(ec);
                                 do_reconnect();
                                 return;
                             }
-                            _current_reconnect_delay = _initial_reconnect_delay;
-                            if(_ping_interval > std::chrono::seconds(0)) start_ping();
-                            do_read();
+                            _wss->async_handshake(_host, _endpoint,
+                                [this](beast::error_code ec) {
+                                    if (ec) {
+                                        on_error(ec);
+                                        do_reconnect();
+                                        return;
+                                    }
+                                    _current_reconnect_delay = _initial_reconnect_delay;
+                                    do_read();
+                                    _reconnect_timer.expires_after(std::chrono::hours(23));
+                                    _reconnect_timer.async_wait(
+                                        [this](beast::error_code ec) {
+                                            if (!ec) {
+                                                close();
+                                            }
+                                        });
+                                });
                         });
                 });
         });
@@ -229,20 +406,303 @@ void WebSocketClientImpl::do_reconnect() {
     _reconnect_timer.expires_after(_current_reconnect_delay);
     _reconnect_timer.async_wait([this](beast::error_code ec) { if (!ec) do_connect(); });
 }
-
+#if 0 // Until queues are ready
 //---------------------------------------------------------------------------------------
 
-void WebSocketClientImpl::start_ping() {
-    _ping_timer.expires_after(_ping_interval);
-    _ping_timer.async_wait([this](beast::error_code ec) {
-        if (ec) return;
-        _wss->async_ping({},
-            [this](beast::error_code ec) {
-                if (ec) on_error(ec);
-                start_ping();
-            });
-    });
+void WebSocketClientImpl::drop_all_messages() {
+    while (!_message_queue.empty()) {
+        _message_queue.pop();
+    }
 }
 
 //---------------------------------------------------------------------------------------
 
+void WebSocketClientImpl::drop_all_errors() {
+    while (!_error_queue.empty()) {
+        _error_queue.pop();
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketClientImpl::drop_all() {
+    drop_all_messages();
+    drop_all_errors();
+}
+#endif // Until queues are ready
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------
+//---------------------------------WebSocketAPIClient------------------------------------
+//---------------------------------------------------------------------------------------
+
+WebSocketAPIClient::WebSocketAPIClient() {
+
+    std::shared_ptr<net::io_context> ioc;
+    std::shared_ptr<net::ssl::context> ctx;
+    ctx->set_options(net::ssl::context::tlsv12);
+    ctx->set_verify_mode(net::ssl::verify_peer);
+    ctx->set_default_verify_paths();
+
+    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_URL);
+}
+
+//---------------------------------------------------------------------------------------
+
+WebSocketAPIClient::~WebSocketAPIClient() = default;
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::connect() {
+    _client->connect();
+    _client->run();
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::disconnect() {
+    _client->close();
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::send_message(std::string_view message) {
+    _client->send(message);
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::set_on_message_callback(MsgCallbackT callback) {
+    _client->set_on_message_callback(std::move(callback));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::set_on_error_callback(ErrCallbackT callback) {
+    _client->set_on_error_callback(std::move(callback));
+}
+#if 0 // Until queues are ready
+//---------------------------------------------------------------------------------------
+
+bool WebSocketAPIClient::any_message() const {
+    return _client->any_message();
+}
+
+//---------------------------------------------------------------------------------------
+
+bool WebSocketAPIClient::any_error() const {
+    return _client->any_error();
+}
+
+//---------------------------------------------------------------------------------------
+
+std::string WebSocketAPIClient::consume_message() {
+    return _client->consume_message();
+}
+
+//---------------------------------------------------------------------------------------
+
+std::string WebSocketAPIClient::consume_error() {
+    return _client->consume_error();
+}
+
+//---------------------------------------------------------------------------------------
+
+std::optional<std::string> WebSocketAPIClient::consume_message_safe() {
+    return _client->consume_message_safe();
+}
+
+//---------------------------------------------------------------------------------------
+
+std::optional<std::string> WebSocketAPIClient::consume_error_safe() {
+    return _client->consume_error_safe();
+}
+#endif // Until queues are ready
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------
+//----------------------------WebSocketMarketStreamsClient-------------------------------
+//---------------------------------------------------------------------------------------
+
+WebSocketMarketStreamsClient::WebSocketMarketStreamsClient() {
+
+    std::shared_ptr<net::io_context> ioc;
+    std::shared_ptr<net::ssl::context> ctx;
+    ctx->set_options(net::ssl::context::tlsv12);
+    ctx->set_verify_mode(net::ssl::verify_peer);
+    ctx->set_default_verify_paths();
+
+    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_MARKET_STREAMS_COMBINED_STREAMS_URL);
+
+    _client->connect();
+    _client->run();
+}
+
+//---------------------------------------------------------------------------------------
+
+WebSocketMarketStreamsClient::~WebSocketMarketStreamsClient() = default;
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::subscribe_to_stream(std::string const &stream_name) {
+    subscribe_to_stream(std::vector<std::string>{stream_name});
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::subscribe_to_stream(std::vector<std::string> const &stream_names) {
+
+    Parameters const params{
+        {"method", "SUBSCRIBE"},
+        {"params", stream_names},
+        {"id", 1}
+    };
+    std::string const message = prepare_json_string(params);
+    _client->send(message);
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::string const &stream_name) {
+    unsubscribe_from_stream(std::vector<std::string>{stream_name});
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::vector<std::string> const &stream_names) {
+
+    Parameters const params{
+        {"method", "UNSUBSCRIBE"},
+        {"params", stream_names},
+        {"id", 2}
+    };
+    std::string const message = prepare_json_string(params);
+    _client->send(message);
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::set_on_message_callback_for_all_streams(MsgCallbackT callback) {
+    _client->set_on_message_callback(std::move(callback));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::set_on_error_callback_for_all_streams(ErrCallbackT callback) {
+    _client->set_on_error_callback(std::move(callback));
+}
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------
+//---------------------------WebSocketUserDataStreamsClient------------------------------
+//---------------------------------------------------------------------------------------
+
+WebSocketUserDataStreamsClient::WebSocketUserDataStreamsClient(std::string_view api_key)
+    : _rest_api(HTTPClient(api_key)),
+      _timer(nullptr),
+      _on_message_callback(nullptr),
+      _on_error_callback(nullptr) {}
+
+//---------------------------------------------------------------------------------------
+
+WebSocketUserDataStreamsClient::~WebSocketUserDataStreamsClient() = default;
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::start() {
+
+    std::string const listen_key_json = _rest_api.post(LISTEN_KEY_ENDPOINT);
+    std::string_view listen_key_json_view(listen_key_json);
+
+    std::string_view listen_key = listen_key_json_view.substr(LISTEN_KEY_JSON_PREFIX_LENGTH, LISTEN_KEY_LENGTH);
+
+    char websocket_url[WS_URL_LENGTH + LISTEN_KEY_LENGTH + 1];
+    snprintf(websocket_url, sizeof(websocket_url), "%s%s", WS_USER_DATA_STREAMS_URL.data(), listen_key.data());
+
+    auto ioc = std::make_shared<net::io_context>();
+    auto ctx = std::make_shared<net::ssl::context>(net::ssl::context::tlsv12_client);
+    ctx->set_verify_mode(net::ssl::verify_peer);
+    ctx->set_default_verify_paths();
+
+    _client = std::make_unique<WebSocketClientImpl>(ioc, ctx, websocket_url);
+    _timer = std::make_shared<InvokeTimer>(ioc);
+
+    if( _on_message_callback ) {
+        _client->set_on_message_callback(_on_message_callback);
+    }
+    if( _on_error_callback ) {
+        _client->set_on_error_callback(_on_error_callback);
+    }
+
+    _client->connect();
+    _client->run();
+
+    _timer->start( std::chrono::minutes(55), [self = shared_from_this()](){ self->ping(); });
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::stop() {
+
+    _rest_api.del(LISTEN_KEY_ENDPOINT);
+
+    if (_client) {
+        _client->close();
+    }
+    _client.reset();
+
+    _timer.reset();
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::ping() {
+
+    std::string const response = _rest_api.put(LISTEN_KEY_ENDPOINT);
+
+    if ( response.substr(0, LISTEN_KEY_JSON_PREFIX_LENGTH) != LISTEN_KEY_JSON_PREFIX ) {
+        stop();
+        start();
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::set_on_message_callback(MsgCallbackT callback) {
+    message_callback(std::move(callback));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::set_on_error_callback(ErrCallbackT callback) {
+    error_callback(std::move(callback));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::message_callback(MsgCallbackT callback) {
+    _on_message_callback = std::move(callback);
+    if (_client) {
+        _client->set_on_message_callback(_on_message_callback);
+    }
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketUserDataStreamsClient::error_callback(ErrCallbackT callback) {
+    _on_error_callback = std::move(callback);
+    if (_client) {
+        _client->set_on_error_callback(_on_error_callback);
+    }
+}
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------

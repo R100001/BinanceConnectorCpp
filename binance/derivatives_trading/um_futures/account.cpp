@@ -596,7 +596,7 @@ namespace RestAPI {
 NewFutureAccountTransferResponse new_future_account_transfer(API &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
     std::string const url = "/sapi/v1/asset/transfer";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("type", type);
     params.emplace_back("asset", asset);
     params.emplace_back("amount", amount);
@@ -612,7 +612,7 @@ NewFutureAccountTransferResponse new_future_account_transfer(API &api, std::stri
 FuturesAccountBalanceV3Response futures_account_balance_v3(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v3/balance";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -623,7 +623,7 @@ FuturesAccountBalanceV3Response futures_account_balance_v3(API &api, int32_t con
 FuturesAccountBalanceResponse futures_account_balance(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v2/balance";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -634,7 +634,7 @@ FuturesAccountBalanceResponse futures_account_balance(API &api, int32_t const re
 AccountInformationV3Response account_information_v3(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v3/account";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -645,7 +645,7 @@ AccountInformationV3Response account_information_v3(API &api, int32_t const recv
 AccountInformationResponse account_information(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v2/account";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -656,7 +656,7 @@ AccountInformationResponse account_information(API &api, int32_t const recv_wind
 GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_history_list(API &api, std::string const &type, int64_t const start_time, int64_t const end_time, int32_t const current, int8_t const size, std::string const &from_symbol, std::string const &to_symbol, int32_t const recv_window) {
     std::string const url = "/sapi/v1/asset/transfer";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("type", type);
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
@@ -674,7 +674,7 @@ GetFutureAccountTransactionHistoryListResponse get_future_account_transaction_hi
 UserCommissionRateResponse user_commission_rate(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/commissionRate";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -686,7 +686,7 @@ UserCommissionRateResponse user_commission_rate(API &api, std::string const &sym
 QueryAccountConfigurationResponse query_account_configuration(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/accountConfig";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -697,7 +697,7 @@ QueryAccountConfigurationResponse query_account_configuration(API &api, int32_t 
 QuerySymbolConfigurationResponse query_symbol_configuration(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/symbolConfig";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -709,7 +709,7 @@ QuerySymbolConfigurationResponse query_symbol_configuration(API &api, std::strin
 QueryOrderRateLimitResponse query_order_rate_limit(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/rateLimit/order";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -720,7 +720,7 @@ QueryOrderRateLimitResponse query_order_rate_limit(API &api, int32_t const recv_
 NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/leverageBracket";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -732,7 +732,7 @@ NotionalAndLeverageBracketsResponse notional_and_leverage_brackets(API &api, std
 GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/multiAssetsMargin";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -743,7 +743,7 @@ GetCurrentMultiAssetsModeResponse get_current_multi_assets_mode(API &api, int32_
 GetCurrentPositionModeResponse get_current_position_mode(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionSide/dual";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);
@@ -754,7 +754,7 @@ GetCurrentPositionModeResponse get_current_position_mode(API &api, int32_t const
 GetIncomeHistoryResponse get_income_history(API &api, std::string const &symbol, std::string const &income_type, int64_t const start_time, int64_t const end_time, int32_t const page, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (income_type != "") params.emplace_back("incomeType", income_type);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -771,7 +771,7 @@ GetIncomeHistoryResponse get_income_history(API &api, std::string const &symbol,
 FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_rules_indicators(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/apiTradingStatus";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -783,7 +783,7 @@ FuturesTradingQuantitativeRulesIndicatorsResponse futures_trading_quantitative_r
 GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_transaction_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income/asyn";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("startTime", start_time);
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
@@ -796,7 +796,7 @@ GetDownloadIdForFuturesTransactionHistoryResponse get_download_id_for_futures_tr
 GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/income/asyn/id";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -808,7 +808,7 @@ GetFuturesTransactionHistoryDownloadLinkByIdResponse get_futures_transaction_his
 GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/asyn";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("startTime", start_time);
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
@@ -821,7 +821,7 @@ GetDownloadIdForFuturesOrderHistoryResponse get_download_id_for_futures_order_hi
 GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/asyn/id";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -833,7 +833,7 @@ GetFuturesOrderHistoryDownloadLinkByIdResponse get_futures_order_history_downloa
 GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/trade/asyn";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("startTime", start_time);
     params.emplace_back("endTime", end_time);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
@@ -846,7 +846,7 @@ GetDownloadIdForFuturesTradeHistoryResponse get_download_if_for_futures_trade_hi
 GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/trade/asyn/id";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("downloadId", download_id);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -858,7 +858,7 @@ GetFuturesTradeDownloadLinkByIdResponse get_futures_trade_download_link_by_id(AP
 ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(API &api, bool const feeBurn, int32_t const recv_window) {
     std::string const url = "/fapi/v1/feeBurn";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("feeBurn", feeBurn);
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
@@ -870,7 +870,7 @@ ToggleBnbBurnOnFuturesTradeResponse toggle_bnb_burn_on_futures_trade(API &api, b
 GetBnbBurnStatusResponse get_bnb_burn_status(API &api, int32_t const recv_window) {
     std::string const url = "/fapi/v1/feeBurn";
 
-    API::Parameters params;
+    Parameters params;
     if (recv_window > 0) params.emplace_back("recvWindow", recv_window);
 
     std::string response = api.sign_request<API::RequestType::GET>(url, params);

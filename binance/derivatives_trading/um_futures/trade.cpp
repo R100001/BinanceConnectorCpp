@@ -806,7 +806,7 @@ namespace RestAPI {
 NewOrderResponse new_order(API &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", order.symbol);
     params.emplace_back("side", order.side);
     params.emplace_back("type", order.type);
@@ -836,7 +836,7 @@ NewOrderResponse new_order(API &api, NewOrder const &order, bool const close_pos
 PlaceMultipleOrdersResponse place_multiple_orders(API &api, std::vector<NewOrder> const &orders, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("batchOrders", orders_to_json(orders));
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -848,7 +848,7 @@ PlaceMultipleOrdersResponse place_multiple_orders(API &api, std::vector<NewOrder
 ModifyOrderResponse modify_order(API &api, ModifyOrder const &order, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", order.symbol);
     params.emplace_back("side", order.side);
     params.emplace_back("quantity", order.quantity);
@@ -866,7 +866,7 @@ ModifyOrderResponse modify_order(API &api, ModifyOrder const &order, int32_t con
 ModifyMultipleOrdersResponse modify_multiple_orders(API &api, std::vector<ModifyOrder> const &orders, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("batchOrders", orders_to_json(orders));
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -878,7 +878,7 @@ ModifyMultipleOrdersResponse modify_multiple_orders(API &api, std::vector<Modify
 GetOrderModifyHistoryResponse get_order_modify_history(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/orderAmendment";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
@@ -895,7 +895,7 @@ GetOrderModifyHistoryResponse get_order_modify_history(API &api, std::string con
 CancelOrderResponse cancel_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
@@ -909,7 +909,7 @@ CancelOrderResponse cancel_order(API &api, std::string const &symbol, int64_t co
 CancelMultipleOrdersResponse cancel_multiple_orders(API &api, std::string const &symbol, std::vector<int64_t> const &order_ids, std::vector<std::string> const &orig_client_order_ids, int32_t const recv_window) {
     std::string const url = "/fapi/v1/batchOrders";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (!order_ids.empty()) params.emplace_back("orderList", data_to_list(order_ids));
     if (!orig_client_order_ids.empty()) params.emplace_back("origClientOrderIdList", data_to_list(orig_client_order_ids));
@@ -923,7 +923,7 @@ CancelMultipleOrdersResponse cancel_multiple_orders(API &api, std::string const 
 CancelAllOpenOrdersResponse cancel_all_open_orders(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/allOpenOrders";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -935,7 +935,7 @@ CancelAllOpenOrdersResponse cancel_all_open_orders(API &api, std::string const &
 AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(API &api, std::string const &symbol, int64_t const countdown_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/countdownCancelAll";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("countdownTime", countdown_time);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
@@ -948,7 +948,7 @@ AutoCancelAllOpenOrdersResponse auto_cancel_all_open_orders(API &api, std::strin
 QueryOrderResponse query_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
@@ -962,7 +962,7 @@ QueryOrderResponse query_order(API &api, std::string const &symbol, int64_t cons
 QueryAllOrdersResponse query_all_orders(API &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/allOrders";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -978,7 +978,7 @@ QueryAllOrdersResponse query_all_orders(API &api, std::string const &symbol, int
 QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/openOrders";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -990,7 +990,7 @@ QueryCurrentAllOpenOrdersResponse query_current_all_open_orders(API &api, std::s
 QueryCurrentOpenOrderResponse query_current_open_order(API &api, std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/openOrder";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (orig_client_order_id != "") params.emplace_back("origClientOrderId", orig_client_order_id);
@@ -1004,7 +1004,7 @@ QueryCurrentOpenOrderResponse query_current_open_order(API &api, std::string con
 QueryUsersForceOrdersResponse query_users_force_orders(API &api, std::string const &symbol, std::string const &auto_close_type, int64_t const start_time, int64_t const end_time, int8_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/forceOrders";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (auto_close_type != "") params.emplace_back("autoCloseType", auto_close_type);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -1020,7 +1020,7 @@ QueryUsersForceOrdersResponse query_users_force_orders(API &api, std::string con
 QueryAccountTradeListResponse query_account_trade_list(API &api, std::string const &symbol, int64_t const order_id, int64_t const start_time, int64_t const end_time, int64_t const from_id, int16_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/userTrades";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (order_id != -1) params.emplace_back("orderId", order_id);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -1037,7 +1037,7 @@ QueryAccountTradeListResponse query_account_trade_list(API &api, std::string con
 ChangeMarginTypeResponse change_margin_type(API &api, std::string const &symbol, std::string const &margin_type, int32_t const recv_window) {
     std::string const url = "/fapi/v1/marginType";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("marginType", margin_type);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
@@ -1050,7 +1050,7 @@ ChangeMarginTypeResponse change_margin_type(API &api, std::string const &symbol,
 ChangePositionModeResponse change_position_mode(API &api, std::string const &dual_side_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionSide/dual";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("dualSidePosition", dual_side_position);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -1062,7 +1062,7 @@ ChangePositionModeResponse change_position_mode(API &api, std::string const &dua
 ChangeInitialLeverageResponse change_initial_leverage(API &api, std::string const &symbol, int8_t const leverage, int32_t const recv_window) {
     std::string const url = "/fapi/v1/leverage";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("leverage", leverage);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
@@ -1075,7 +1075,7 @@ ChangeInitialLeverageResponse change_initial_leverage(API &api, std::string cons
 ChangeMultiAssetsModeResponse change_multi_assets_mode(API &api, std::string const &multi_assets_margin, int32_t const recv_window) {
     std::string const url = "/fapi/v1/multiAssetsMargin";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("multiAssetsMargin", multi_assets_margin);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -1087,7 +1087,7 @@ ChangeMultiAssetsModeResponse change_multi_assets_mode(API &api, std::string con
 ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(API &api, std::string const &symbol, double const amount, int8_t const type, std::string const &position_side, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionMargin";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("amount", amount);
     params.emplace_back("type", type);
@@ -1102,7 +1102,7 @@ ModifyIsolatedPositionMarginResponse modify_isolated_position_margin(API &api, s
 PositionInformationV2Response position_information_v2(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v2/positionRisk";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -1114,7 +1114,7 @@ PositionInformationV2Response position_information_v2(API &api, std::string cons
 PositionInformationV3Response position_information_v3(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v3/positionRisk";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -1126,7 +1126,7 @@ PositionInformationV3Response position_information_v3(API &api, std::string cons
 PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(API &api, std::string const &symbol, int32_t const recv_window) {
     std::string const url = "/fapi/v1/adlQuantile";
 
-    API::Parameters params;
+    Parameters params;
     if (symbol != "") params.emplace_back("symbol", symbol);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
@@ -1138,7 +1138,7 @@ PositionAdlQuantileEstimationResponse position_adl_quantile_estimation(API &api,
 GetPositionMarginChangeHistoryResponse get_position_margin_change_history(API &api, std::string const &symbol, int8_t const type, int64_t const start_time, int64_t const end_time, int32_t const limit, int32_t const recv_window) {
     std::string const url = "/fapi/v1/positionMargin/history";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (type != -1) params.emplace_back("type", type);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -1154,7 +1154,7 @@ GetPositionMarginChangeHistoryResponse get_position_margin_change_history(API &a
 TestNewOrderResponse test_new_order(API &api, NewOrder const &order, bool const close_position, int32_t const recv_window) {
     std::string const url = "/fapi/v1/order/test";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", order.symbol);
     params.emplace_back("side", order.side);
     params.emplace_back("type", order.type);

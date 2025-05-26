@@ -897,7 +897,7 @@ ExchangeInformationResponse exchange_information(API &api) {
 OrderBookResponse order_book(API &api, std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/depth";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
@@ -909,7 +909,7 @@ OrderBookResponse order_book(API &api, std::string const &symbol, int16_t const 
 RecentTradesListResponse recent_trades_list(API &api, std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/trades";
     
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
@@ -921,7 +921,7 @@ RecentTradesListResponse recent_trades_list(API &api, std::string const &symbol,
 OldTradesLookupResponse old_trades_lookup(API &api, std::string const &symbol, int16_t const limit, int64_t const from_id) {
     std::string const url = "/fapi/v1/historicalTrades";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
     if (from_id != -1) params.emplace_back("fromId", from_id);
@@ -934,7 +934,7 @@ OldTradesLookupResponse old_trades_lookup(API &api, std::string const &symbol, i
 CompressedAggregateTradesListResponse compressed_aggregate_trades_list(API &api, std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/aggTrades";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     if (from_id != -1) params.emplace_back("fromId", from_id);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -949,7 +949,7 @@ CompressedAggregateTradesListResponse compressed_aggregate_trades_list(API &api,
 KlineCandlestickDataResponse kline_candlestick_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/klines";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("interval", interval);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -964,7 +964,7 @@ KlineCandlestickDataResponse kline_candlestick_data(API &api, std::string const 
 ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candlestick_data(API &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/continuousKlines";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("pair", pair);
     params.emplace_back("contractType", contract_type);
     params.emplace_back("interval", interval);
@@ -980,7 +980,7 @@ ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candles
 IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/indexPriceKlines";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("pair", pair);
     params.emplace_back("interval", interval);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -995,7 +995,7 @@ IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(API &a
 MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/markPriceKlines";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("pair", pair);
     params.emplace_back("interval", interval);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -1010,7 +1010,7 @@ MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(API &api
 PremiumIndexKlineDataResponse premium_index_kline_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/premiumIndexKlines";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("interval", interval);
     if (start_time != -1) params.emplace_back("startTime", start_time);
@@ -1025,7 +1025,7 @@ PremiumIndexKlineDataResponse premium_index_kline_data(API &api, std::string con
 MarkPriceResponse mark_price(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/premiumIndex";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1036,7 +1036,7 @@ MarkPriceResponse mark_price(API &api, std::string const &symbol) {
 GetFundingRateHistoryResponse get_funding_rate_history(API &api, std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/fundingRate";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
@@ -1058,7 +1058,7 @@ GetFundingRateInfoResponse get_funding_rate_info(API &api) {
 Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/24hr";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1069,7 +1069,7 @@ Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(API 
 SymbolPriceTickerResponse symbol_price_ticker(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/price";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1080,7 +1080,7 @@ SymbolPriceTickerResponse symbol_price_ticker(API &api, std::string const &symbo
 SymbolPriceTickerV2Response symbol_price_ticker_v2(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v2/ticker/price";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1091,7 +1091,7 @@ SymbolPriceTickerV2Response symbol_price_ticker_v2(API &api, std::string const &
 SymbolOrderBookTickerResponse symbol_order_book_ticker(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/bookTicker";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1102,7 +1102,7 @@ SymbolOrderBookTickerResponse symbol_order_book_ticker(API &api, std::string con
 QueryDeliveryPriceResponse query_delivery_price(API &api, std::string const &pair) {
     std::string const url = "/futures/data/delivery-price";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("pair", pair);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1113,7 +1113,7 @@ QueryDeliveryPriceResponse query_delivery_price(API &api, std::string const &pai
 OpenInterestResponse open_interest(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/openInterest";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1124,7 +1124,7 @@ OpenInterestResponse open_interest(API &api, std::string const &symbol) {
 OpenInterestStatisticsResponse open_interest_statistics(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/fapi/v1/openInterestHist";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("period", period);
     if (limit != -1) params.emplace_back("limit", limit);
@@ -1139,7 +1139,7 @@ OpenInterestStatisticsResponse open_interest_statistics(API &api, std::string co
 TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortPositionRatio";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("period", period);
     if (limit != -1) params.emplace_back("limit", limit);
@@ -1154,7 +1154,7 @@ TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(API
 TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortAccountRatio";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("period", period);
     if (limit != -1) params.emplace_back("limit", limit);
@@ -1169,7 +1169,7 @@ TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(API &
 LongShortRatioResponse long_short_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/globalLongShortAccountRatio";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("period", period);
     if (limit != -1) params.emplace_back("limit", limit);
@@ -1184,7 +1184,7 @@ LongShortRatioResponse long_short_ratio(API &api, std::string const &symbol, std
 TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/takerlongshortRatio";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
     params.emplace_back("period", period);
     if (limit != -1) params.emplace_back("limit", limit);
@@ -1199,7 +1199,7 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &sy
 BasisResponse basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit, int64_t const &start_time, int64_t const &end_time) {
     std::string const url = "/futures/data/basis";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("pair", pair);
     params.emplace_back("contractType", contract_type);
     params.emplace_back("period", period);
@@ -1215,7 +1215,7 @@ BasisResponse basis(API &api, std::string const &pair, std::string const &contra
 CompositeIndexSymbolInformationResponse composite_index_symbol_information(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/indexInfo";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1226,7 +1226,7 @@ CompositeIndexSymbolInformationResponse composite_index_symbol_information(API &
 MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/assetIndex";
 
-    API::Parameters params;
+    Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);
@@ -1237,7 +1237,7 @@ MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(API &api, std::s
 QueryIndexPriceConstituentsResponse query_index_price_constituents(API &api, std::string const &symbol) {
     std::string const url = "/fapi/v1/constituents";
 
-    API::Parameters params;
+    Parameters params;
     params.emplace_back("symbol", symbol);
 
     std::string response = api.send_request<API::RequestType::GET>(url, params);

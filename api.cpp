@@ -5,172 +5,44 @@
 
 #include <sstream>
 
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/beast/websocket/ssl.hpp>
+
 #include "lib/utils.hpp"
 #include "lib/authentication.hpp"
 
 //------------------------------------------------------------------------------------
 
+namespace net = boost::asio;
+
+//------------------------------------------------------------------------------------
+
 API::API(
-    std::string const &base_url,
-    std::string const &key,
-    std::string const &secret,
+    std::string_view key,
+    std::string_view secret,
     int32_t const timeout,
-    std::string const &proxy,
+    std::string_view proxy,
     bool const show_limit_usage,
     bool const show_header,
-    std::string const &private_key,
-    std::string const &private_key_passphrase)
+    std::string_view private_key,
+    std::string_view private_key_passphrase)
     : _key(key),
       _secret(secret),
-      _base_url(base_url),
       _timeout(timeout),
       _proxy(proxy),
       _show_limit_usage(show_limit_usage),
       _show_header(show_header),
       _private_key(private_key),
       _private_key_passphrase(private_key_passphrase),
-      _session(HTTPClient(key))
-{
-}
+      _rest_api(HTTPClient(key)),
+      _websocket_api(std::make_shared<WebSocketAPIClient>()),
+      _websocket_market_streams(std::make_shared<WebSocketMarketStreamsClient>()),
+      _websocket_user_data_streams(std::make_shared<WebSocketUserDataStreamsClient>(key)) {}
 
 //------------------------------------------------------------------------------------
 
-template<typename T>
-inline static void append_number(char* buffer, size_t& pos, T value) 
-{
-    auto result = std::to_chars(buffer + pos, buffer + pos + 32, value);
-    pos = result.ptr - buffer;
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::prepare_query_string(API::Parameters const &params) const 
-{
-    constexpr size_t buffer_size = 4096;
-    std::array<char, buffer_size> buffer;
-    size_t pos = 0;
-
-    for (const auto& [name, value] : params) {
-        std::memcpy(buffer.data() + pos, name.data(), name.size());
-        pos += name.size();
-        buffer[pos++] = '=';
-
-        switch (static_cast<ParameterTypeIndex>(value.index())) {
-        case ParameterTypeIndex::BOOL:
-            std::memcpy(buffer.data() + pos, std::get<bool>(value) ? "true" : "false", 4);
-            pos += 4;
-            break;
-        case ParameterTypeIndex::INT8:
-            append_number(buffer.data(), pos, std::get<int8_t>(value));
-            break;
-        case ParameterTypeIndex::INT16:
-            append_number(buffer.data(), pos, std::get<int16_t>(value));
-            break;
-        case ParameterTypeIndex::INT32:
-            append_number(buffer.data(), pos, std::get<int32_t>(value));
-            break;
-        case ParameterTypeIndex::INT64:
-            append_number(buffer.data(), pos, std::get<int64_t>(value));
-            break;
-        case ParameterTypeIndex::UINT8:
-            append_number(buffer.data(), pos, std::get<uint8_t>(value));
-            break;
-        case ParameterTypeIndex::UINT16:
-            append_number(buffer.data(), pos, std::get<uint16_t>(value));
-            break;
-        case ParameterTypeIndex::UINT32:
-            append_number(buffer.data(), pos, std::get<uint32_t>(value));
-            break;
-        case ParameterTypeIndex::UINT64:
-            append_number(buffer.data(), pos, std::get<uint64_t>(value));
-            break;
-        case ParameterTypeIndex::DOUBLE:
-            append_number(buffer.data(), pos, std::get<double>(value));
-            break;
-        case ParameterTypeIndex::STRING: {
-            std::string_view str_value = std::get<std::string>(value);
-            std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
-            pos += str_value.size();
-            break;
-            }
-        }
-        buffer[pos++] = '&';
-    }
-
-    return std::string(buffer.data(), pos - 1); // -1 to remove the last '&'
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::prepare_json_string(API::Parameters const &params) const
-{
-    constexpr size_t buffer_size = 4096;
-    std::array<char, buffer_size> buffer;
-    size_t pos = 0;
-
-    buffer[pos++] = '{';
-
-    for (const auto& [name, value] : params) {
-
-        buffer[pos++] = '"';
-        std::memcpy(buffer.data() + pos, name.data(), name.size());
-        pos += name.size();
-        buffer[pos++] = '"';
-        buffer[pos++] = ':';
-
-        switch (static_cast<ParameterTypeIndex>(value.index())) {
-        case ParameterTypeIndex::BOOL:
-            std::memcpy(buffer.data() + pos, std::get<bool>(value) ? "true" : "false", 4);
-            pos += 4;
-            break;
-        case ParameterTypeIndex::INT8:
-            append_number(buffer.data(), pos, std::get<int8_t>(value));
-            break;
-        case ParameterTypeIndex::INT16:
-            append_number(buffer.data(), pos, std::get<int16_t>(value));
-            break;
-        case ParameterTypeIndex::INT32:
-            append_number(buffer.data(), pos, std::get<int32_t>(value));
-            break;
-        case ParameterTypeIndex::INT64:
-            append_number(buffer.data(), pos, std::get<int64_t>(value));
-            break;
-        case ParameterTypeIndex::UINT8:
-            append_number(buffer.data(), pos, std::get<uint8_t>(value));
-            break;
-        case ParameterTypeIndex::UINT16:
-            append_number(buffer.data(), pos, std::get<uint16_t>(value));
-            break;
-        case ParameterTypeIndex::UINT32:
-            append_number(buffer.data(), pos, std::get<uint32_t>(value));
-            break;
-        case ParameterTypeIndex::UINT64:
-            append_number(buffer.data(), pos, std::get<uint64_t>(value));
-            break;
-        case ParameterTypeIndex::DOUBLE:
-            append_number(buffer.data(), pos, std::get<double>(value));
-            break;
-        case ParameterTypeIndex::STRING: {
-            buffer[pos++] = '"';
-            std::string_view str_value = std::get<std::string>(value);
-            std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
-            pos += str_value.size();
-            buffer[pos++] = '"';
-            break;
-            }
-        }
-
-        buffer[pos++] = ',';
-    }
-
-    if(pos > 1) buffer[pos - 1] = '}';
-
-    return std::string(buffer.data(), pos);
-}
-
-//------------------------------------------------------------------------------------
-
-std::string API::sign_message(std::string const &message) const
+std::string API::sign_message(std::string_view message) const
 {
     if(this->_private_key.empty()) {
         return hmac_hashing(this->_secret, message);
@@ -227,4 +99,102 @@ API::ServerMessageResponse API::parse_response(std::string &response, ResponseIs
     return res.value();
 }
 
+//------------------------------------------------------------------------------------
+//--------------------------------WebSocket API Methods-------------------------------
+//------------------------------------------------------------------------------------
+
+void API::ws_api_connect() {
+    _websocket_api->connect();
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_api_disconnect() {
+    _websocket_api->disconnect();
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_api_send_message(std::string_view message) {
+    _websocket_api->send_message(message);
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_api_message_callback(MsgCallbackT callback) {
+    _websocket_api->set_on_message_callback(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_api_error_callback(ErrCallbackT callback) {
+    _websocket_api->set_on_error_callback(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+//--------------------------WebSocket Market Streams Methods--------------------------
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_subscribe(std::string const &stream_name) {
+    _websocket_market_streams->subscribe_to_stream(stream_name);
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_subscribe(std::vector<std::string> const &stream_names) {
+    _websocket_market_streams->subscribe_to_stream(stream_names);
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_unsubscribe(std::string const &stream_name) {
+    _websocket_market_streams->unsubscribe_from_stream(stream_name);
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_unsubscribe(std::vector<std::string> const &stream_names) {
+    _websocket_market_streams->unsubscribe_from_stream(stream_names);
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_message_callback(MsgCallbackT callback) {
+    _websocket_market_streams->set_on_message_callback_for_all_streams(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_market_streams_error_callback(ErrCallbackT callback) {
+    _websocket_market_streams->set_on_error_callback_for_all_streams(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+//-------------------------WebSocket User Data Streams Methods------------------------
+//------------------------------------------------------------------------------------
+
+void API::ws_user_data_streams_start() {
+    _websocket_user_data_streams->start();
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_user_data_streams_stop() {
+    _websocket_user_data_streams->stop();
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_user_data_streams_message_callback(MsgCallbackT callback) {
+    _websocket_user_data_streams->set_on_message_callback(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+
+void API::ws_user_data_streams_error_callback(ErrCallbackT callback) {
+    _websocket_user_data_streams->set_on_error_callback(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

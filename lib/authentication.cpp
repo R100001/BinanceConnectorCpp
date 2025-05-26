@@ -27,7 +27,7 @@ static std::string to_hex_string(unsigned char const * data, size_t const length
 
 //------------------------------------------------------------------------------------
 
-std::string hmac_hashing(std::string const &secret, std::string const &payload) {
+std::string hmac_hashing(std::string_view secret, std::string_view payload) {
     unsigned char digest[SHA256_DIGEST_LENGTH];
     unsigned int digest_len;
 
@@ -45,7 +45,7 @@ std::string hmac_hashing(std::string const &secret, std::string const &payload) 
 
 //------------------------------------------------------------------------------------
 
-BIO *createBIOForPrivateKey(std::string const &private_key) {
+BIO *createBIOForPrivateKey(std::string_view private_key) {
     BIO *bio = BIO_new_mem_buf(private_key.data(), private_key.size());
     if (!bio) {
         throw std::runtime_error("Failed to create BIO for private key");
@@ -55,14 +55,13 @@ BIO *createBIOForPrivateKey(std::string const &private_key) {
 
 //------------------------------------------------------------------------------------
 
-EVP_PKEY* loadPrivateKeyFromBIO(BIO* bio, const std::string& private_key_pass) {
+EVP_PKEY* loadPrivateKeyFromBIO(BIO* bio, std::string_view private_key_pass) {
     EVP_PKEY* pkey = nullptr;
     
     if (private_key_pass.empty()) {
         pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, nullptr);
     } else {
-        pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, 
-                                      const_cast<char*>(private_key_pass.c_str()));
+        pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, const_cast<char*>(private_key_pass.data()));
     }
     
     BIO_free(bio);
@@ -100,7 +99,7 @@ static std::string base64_encode(unsigned char const * data, size_t const length
 
 //------------------------------------------------------------------------------------
 
-std::string signPayload(EVP_PKEY* pkey, const std::string& payload) {
+std::string signPayload(EVP_PKEY* pkey, std::string_view payload) {
 
     // Create an EVP_MD_CTX for signing
     EVP_MD_CTX* md_ctx = EVP_MD_CTX_new();
@@ -146,9 +145,9 @@ std::string signPayload(EVP_PKEY* pkey, const std::string& payload) {
 
 //------------------------------------------------------------------------------------
 
-std::string rsa_signature(std::string const &private_key, std::string const &payload, 
-                          std::string const &private_key_passphrase = "") {
-    
+std::string rsa_signature(std::string_view private_key, std::string_view payload, 
+                          std::string_view private_key_passphrase = "") {
+
     BIO* bio = createBIOForPrivateKey(private_key);
 
     EVP_PKEY* pkey = loadPrivateKeyFromBIO(bio, private_key_passphrase);
