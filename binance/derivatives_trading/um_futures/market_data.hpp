@@ -1,4 +1,6 @@
 
+//------------------------------------------------------------------------------------
+
 #ifndef MARKET_DATA_HPP
 #define MARKET_DATA_HPP
 
@@ -479,9 +481,13 @@ QueryIndexPriceConstituentsResponse             query_index_price_constituents(A
 
 namespace WebsocketAPI {
 
+//------------------------------------------------------------------------------------
+
 void order_book(API &api, std::string const &symbol, int16_t const &limit = -1);
 void symbol_ticker_price(API &api, std::string const &symbol = "");
 void symbol_order_book_ticker(API &api, std::string const &symbol = "");
+
+//------------------------------------------------------------------------------------
 
 } // namespace WebsocketAPI
 

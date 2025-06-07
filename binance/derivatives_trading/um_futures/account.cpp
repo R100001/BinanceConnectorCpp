@@ -889,7 +889,12 @@ namespace WebSocketAPI {
 void futures_account_balance_v2(API &api, int32_t const recv_window) {
     std::string const method = "v2/account.balance";
 
+    Parameters params{
+        {"apiKey", api.api_key()},
+        {"timestamp", get_timestamp()}
+    };
 
+    // api.ws_api_send_message()
 }
 
 //---------------------------------------------------------------------------------------

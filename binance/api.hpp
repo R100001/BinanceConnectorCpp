@@ -1,4 +1,6 @@
 
+//------------------------------------------------------------------------------------
+
 #ifndef API_HPP
 #define API_HPP
 
@@ -72,6 +74,7 @@ public: // Websocket Market Streams
     void ws_market_streams_subscribe(std::vector<std::string> const &stream_names);
     void ws_market_streams_unsubscribe(std::string const &stream_name);
     void ws_market_streams_unsubscribe(std::vector<std::string> const &stream_names);
+    std::string ws_market_streams_list_subscriptions() const;
 
     void ws_market_streams_message_callback(MsgCallbackT callback);
     void ws_market_streams_error_callback(ErrCallbackT callback);
@@ -116,6 +119,10 @@ private: // Private methods
     std::string sign_message(std::string_view message) const;
     template<RequestType req_type> std::string dispach_request(std::string_view const endpoint, std::string const &payload) const;
     
+public: // Setters Getters
+
+    std::string const &api_key() const { return this->_key; }
+
 private: // Private variables
 
     std::string _key;

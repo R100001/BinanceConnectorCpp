@@ -166,6 +166,9 @@ private:
     std::chrono::milliseconds _initial_reconnect_delay;
     std::chrono::milliseconds _max_reconnect_delay;
     std::chrono::milliseconds _current_reconnect_delay;
+
+    boost::asio::executor_work_guard<net::io_context::executor_type> _work_guard;
+    std::thread _ioc_worker;
 }; // class WebSocketClientImpl
 
 //---------------------------------------------------------------------------------------
@@ -195,12 +198,20 @@ WebSocketClientImpl::WebSocketClientImpl(std::shared_ptr<net::io_context> ioc,
       _max_reconnect_delay(max_reconnect_delay),
       _current_reconnect_delay(initial_reconnect_delay),
       _on_message_callback(nullptr),
-      _on_error_callback(nullptr) {}
+      _on_error_callback(nullptr),
+      _work_guard(boost::asio::make_work_guard(*_ioc)) {
+    std::cout << "WebSocketClientImpl created for host: " << _host << " on port: " << _port << std::endl;
+}
 
 //---------------------------------------------------------------------------------------
 
 WebSocketClientImpl::~WebSocketClientImpl() {
     close();
+    _work_guard.reset();
+    _ioc->stop();
+    if (_ioc_worker.joinable()) {
+        _ioc_worker.join();
+    }
 }
 
 //---------------------------------------------------------------------------------------
@@ -232,7 +243,7 @@ void WebSocketClientImpl::close() {
 //---------------------------------------------------------------------------------------
 
 void WebSocketClientImpl::run() {
-    _ioc->run();
+    _ioc_worker = std::thread([this]() { _ioc->run(); });
 }
 
 //---------------------------------------------------------------------------------------
@@ -440,12 +451,11 @@ void WebSocketClientImpl::drop_all() {
 
 WebSocketAPIClient::WebSocketAPIClient() {
 
-    std::shared_ptr<net::io_context> ioc;
-    std::shared_ptr<net::ssl::context> ctx;
-    ctx->set_options(net::ssl::context::tlsv12);
+    std::shared_ptr<net::io_context> ioc = std::make_shared<net::io_context>();
+    std::shared_ptr<net::ssl::context> ctx = std::make_shared<net::ssl::context>(net::ssl::context::tlsv12_client);
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
-
+    
     _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_URL);
 }
 
@@ -530,9 +540,8 @@ std::optional<std::string> WebSocketAPIClient::consume_error_safe() {
 
 WebSocketMarketStreamsClient::WebSocketMarketStreamsClient() {
 
-    std::shared_ptr<net::io_context> ioc;
-    std::shared_ptr<net::ssl::context> ctx;
-    ctx->set_options(net::ssl::context::tlsv12);
+    std::shared_ptr<net::io_context> ioc = std::make_shared<net::io_context>();
+    std::shared_ptr<net::ssl::context> ctx = std::make_shared<net::ssl::context>(net::ssl::context::tlsv12_client);
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
 

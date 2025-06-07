@@ -203,7 +203,9 @@ std::string prepare_query_string(Parameters const &params)
         }
         buffer[pos++] = '&';
     }
-
+    
+    if(!pos) return {};
+    
     return std::string(buffer.data(), pos - 1); // -1 to remove the last '&'
 }
 
