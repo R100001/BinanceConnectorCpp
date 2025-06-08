@@ -2,6 +2,7 @@
 #include "market_data.hpp"
 
 #include "lib/utils.hpp"
+#include "api.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -244,7 +245,7 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, OrderBookObject& response)
 
 // ---------- Recent Trades List ----------
 template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, Trade &trade) {
+auto tag_invoke(deserialize_tag, simdjson_value &val, MarketData::Trade &trade) {
 
     ondemand::object obj;
     if (auto error = val.get_object().get(obj)) return error;
@@ -862,63 +863,55 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, QueryIndexPriceConstituent
 
 //------------------------------------------------------------------------------------
 
-namespace MarketData {
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-TestConnectivityResponse test_connectivity(API &api) {
+TestConnectivityResponse API::test_connectivity() {
     std::string const url = "/fapi/v1/ping";
 
-    std::string response = api.send_request<API::RequestType::GET>(url);
+    std::string response = send_request<RequestType::GET>(url);
 
-    return api.parse_response<TestConnectivityObject>(response);
+    return parse_response<TestConnectivityObject>(response);
 }
 
-CheckServerTimeResponse check_server_time(API &api) {
+CheckServerTimeResponse API::check_server_time() {
     std::string const url = "/fapi/v1/time";
 
-    std::string response = api.send_request<API::RequestType::GET>(url);
+    std::string response = send_request<RequestType::GET>(url);
 
-    return api.parse_response<CheckServerTimeObject>(response);
+    return parse_response<CheckServerTimeObject>(response);
 }
 
-ExchangeInformationResponse exchange_information(API &api) {
+ExchangeInformationResponse API::exchange_information() {
     std::string const url = "/fapi/v1/exchangeInfo";
 
-    std::string response = api.send_request<API::RequestType::GET>(url);
+    std::string response = send_request<RequestType::GET>(url);
 
-    return api.parse_response<ExchangeInformationObject>(response);
+    return parse_response<ExchangeInformationObject>(response);
 }
 
-OrderBookResponse order_book(API &api, std::string const &symbol, int16_t const limit) {
+OrderBookResponse API::order_book(std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/depth";
 
     Parameters params;
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<OrderBookObject>(response);
+    return parse_response<OrderBookObject>(response);
 }
 
-RecentTradesListResponse recent_trades_list(API &api, std::string const &symbol, int16_t const limit) {
+RecentTradesListResponse API::recent_trades_list(std::string const &symbol, int16_t const limit) {
     std::string const url = "/fapi/v1/trades";
     
     Parameters params;
     params.emplace_back("symbol", symbol);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<RecentTradesListObject>(response);
+    return parse_response<RecentTradesListObject>(response);
 }
 
-OldTradesLookupResponse old_trades_lookup(API &api, std::string const &symbol, int16_t const limit, int64_t const from_id) {
+OldTradesLookupResponse API::old_trades_lookup(std::string const &symbol, int16_t const limit, int64_t const from_id) {
     std::string const url = "/fapi/v1/historicalTrades";
 
     Parameters params;
@@ -926,12 +919,12 @@ OldTradesLookupResponse old_trades_lookup(API &api, std::string const &symbol, i
     if (limit != -1) params.emplace_back("limit", limit);
     if (from_id != -1) params.emplace_back("fromId", from_id);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<OldTradesLookupObject>(response);
+    return parse_response<OldTradesLookupObject>(response);
 }
 
-CompressedAggregateTradesListResponse compressed_aggregate_trades_list(API &api, std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+CompressedAggregateTradesListResponse API::compressed_aggregate_trades_list(std::string const &symbol, int64_t const from_id, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/aggTrades";
 
     Parameters params;
@@ -941,12 +934,12 @@ CompressedAggregateTradesListResponse compressed_aggregate_trades_list(API &api,
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<CompressedAggregateTradesListObject>(response);
+    return parse_response<CompressedAggregateTradesListObject>(response);
 }
 
-KlineCandlestickDataResponse kline_candlestick_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+KlineCandlestickDataResponse API::kline_candlestick_data(std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/klines";
 
     Parameters params;
@@ -956,12 +949,12 @@ KlineCandlestickDataResponse kline_candlestick_data(API &api, std::string const 
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
     
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<KlineCandlestickDataObject>(response);
+    return parse_response<KlineCandlestickDataObject>(response);
 }
 
-ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candlestick_data(API &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+ContinuousContractKlineCandlestickDataResponse API::continuous_contract_kline_candlestick_data(std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/continuousKlines";
 
     Parameters params;
@@ -972,12 +965,12 @@ ContinuousContractKlineCandlestickDataResponse continuous_contract_kline_candles
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<ContinuousContractKlineCandlestickDataObject>(response);
+    return parse_response<ContinuousContractKlineCandlestickDataObject>(response);
 }
 
-IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+IndexPriceKlineCandlestickDataResponse API::index_price_kline_candlestick_data(std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/indexPriceKlines";
 
     Parameters params;
@@ -987,12 +980,12 @@ IndexPriceKlineCandlestickDataResponse index_price_kline_candlestick_data(API &a
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<IndexPriceKlineCandlestickDataObject>(response);
+    return parse_response<IndexPriceKlineCandlestickDataObject>(response);
 }
 
-MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+MarkPriceKlineCandlestickDataResponse API::mark_price_kline_candlestick_data(std::string const &pair, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/markPriceKlines";
 
     Parameters params;
@@ -1002,12 +995,12 @@ MarkPriceKlineCandlestickDataResponse mark_price_kline_candlestick_data(API &api
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<MarkPriceKlineCandlestickDataObject>(response);
+    return parse_response<MarkPriceKlineCandlestickDataObject>(response);
 }
 
-PremiumIndexKlineDataResponse premium_index_kline_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+PremiumIndexKlineDataResponse API::premium_index_kline_data(std::string const &symbol, std::string const &interval, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/premiumIndexKlines";
 
     Parameters params;
@@ -1017,23 +1010,23 @@ PremiumIndexKlineDataResponse premium_index_kline_data(API &api, std::string con
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<PremiumIndexKlineDataObject>(response);
+    return parse_response<PremiumIndexKlineDataObject>(response);
 }
 
-MarkPriceResponse mark_price(API &api, std::string const &symbol) {
+MarkPriceResponse API::mark_price(std::string const &symbol) {
     std::string const url = "/fapi/v1/premiumIndex";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<MarkPriceObject>(response);
+    return parse_response<MarkPriceObject>(response);
 }
 
-GetFundingRateHistoryResponse get_funding_rate_history(API &api, std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
+GetFundingRateHistoryResponse API::get_funding_rate_history(std::string const &symbol, int64_t const start_time, int64_t const end_time, int16_t const limit) {
     std::string const url = "/fapi/v1/fundingRate";
 
     Parameters params;
@@ -1042,86 +1035,86 @@ GetFundingRateHistoryResponse get_funding_rate_history(API &api, std::string con
     if (end_time != -1) params.emplace_back("endTime", end_time);
     if (limit != -1) params.emplace_back("limit", limit);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<GetFundingRateHistoryObject>(response);
+    return parse_response<GetFundingRateHistoryObject>(response);
 }
 
-GetFundingRateInfoResponse get_funding_rate_info(API &api) {
+GetFundingRateInfoResponse API::get_funding_rate_info() {
     std::string const url = "/fapi/v1/fundingInfo";
 
-    std::string response = api.send_request<API::RequestType::GET>(url);
+    std::string response = send_request<RequestType::GET>(url);
 
-    return api.parse_response<GetFundingRateInfoObject>(response);
+    return parse_response<GetFundingRateInfoObject>(response);
 }
 
-Ticker24hrPriceChangeStatisticsResponse ticker_24hr_price_change_statistics(API &api, std::string const &symbol) {
+Ticker24hrPriceChangeStatisticsResponse API::ticker_24hr_price_change_statistics(std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/24hr";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<Ticker24hrPriceChangeStatisticsObject>(response);
+    return parse_response<Ticker24hrPriceChangeStatisticsObject>(response);
 }
 
-SymbolPriceTickerResponse symbol_price_ticker(API &api, std::string const &symbol) {
+SymbolPriceTickerResponse API::symbol_price_ticker(std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/price";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<SymbolPriceTickerObject>(response);
+    return parse_response<SymbolPriceTickerObject>(response);
 }
 
-SymbolPriceTickerV2Response symbol_price_ticker_v2(API &api, std::string const &symbol) {
+SymbolPriceTickerV2Response API::symbol_price_ticker_v2(std::string const &symbol) {
     std::string const url = "/fapi/v2/ticker/price";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<SymbolPriceTickerV2Object>(response);
+    return parse_response<SymbolPriceTickerV2Object>(response);
 }
 
-SymbolOrderBookTickerResponse symbol_order_book_ticker(API &api, std::string const &symbol) {
+SymbolOrderBookTickerResponse API::symbol_order_book_ticker(std::string const &symbol) {
     std::string const url = "/fapi/v1/ticker/bookTicker";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<SymbolOrderBookTickerObject>(response);
+    return parse_response<SymbolOrderBookTickerObject>(response);
 }
 
-QueryDeliveryPriceResponse query_delivery_price(API &api, std::string const &pair) {
+QueryDeliveryPriceResponse API::query_delivery_price(std::string const &pair) {
     std::string const url = "/futures/data/delivery-price";
 
     Parameters params;
     params.emplace_back("pair", pair);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<QueryDeliveryPriceObject>(response);
+    return parse_response<QueryDeliveryPriceObject>(response);
 }
 
-OpenInterestResponse open_interest(API &api, std::string const &symbol) {
+OpenInterestResponse API::open_interest(std::string const &symbol) {
     std::string const url = "/fapi/v1/openInterest";
 
     Parameters params;
     params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<OpenInterestObject>(response);
+    return parse_response<OpenInterestObject>(response);
 }
 
-OpenInterestStatisticsResponse open_interest_statistics(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+OpenInterestStatisticsResponse API::open_interest_statistics(std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/fapi/v1/openInterestHist";
 
     Parameters params;
@@ -1131,12 +1124,12 @@ OpenInterestStatisticsResponse open_interest_statistics(API &api, std::string co
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<OpenInterestStatisticsObject>(response);
+    return parse_response<OpenInterestStatisticsObject>(response);
 }
 
-TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TopTraderLongShortPositionRatioResponse API::top_trader_long_short_position_ratio(std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortPositionRatio";
 
     Parameters params;
@@ -1146,12 +1139,12 @@ TopTraderLongShortPositionRatioResponse top_trader_long_short_position_ratio(API
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<TopTraderLongShortPositionRatioObject>(response);
+    return parse_response<TopTraderLongShortPositionRatioObject>(response);
 }
 
-TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TopTraderLongShortAccountRatioResponse API::top_trader_long_short_account_ratio(std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/topLongShortAccountRatio";
 
     Parameters params;
@@ -1161,12 +1154,12 @@ TopTraderLongShortAccountRatioResponse top_trader_long_short_account_ratio(API &
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<TopTraderLongShortAccountRatioObject>(response);
+    return parse_response<TopTraderLongShortAccountRatioObject>(response);
 }
 
-LongShortRatioResponse long_short_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+LongShortRatioResponse API::long_short_ratio(std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/globalLongShortAccountRatio";
 
     Parameters params;
@@ -1176,12 +1169,12 @@ LongShortRatioResponse long_short_ratio(API &api, std::string const &symbol, std
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<LongShortRatioObject>(response);
+    return parse_response<LongShortRatioObject>(response);
 }
 
-TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
+TakerBuySellVolumeResponse API::taker_buy_sell_volume(std::string const &symbol, std::string const &period, int16_t const limit, int64_t const start_time, int64_t const end_time) {
     std::string const url = "/futures/data/takerlongshortRatio";
 
     Parameters params;
@@ -1191,12 +1184,12 @@ TakerBuySellVolumeResponse taker_buy_sell_volume(API &api, std::string const &sy
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<TakerBuySellVolumeObject>(response);
+    return parse_response<TakerBuySellVolumeObject>(response);
 }
 
-BasisResponse basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit, int64_t const &start_time, int64_t const &end_time) {
+BasisResponse API::basis(std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit, int64_t const &start_time, int64_t const &end_time) {
     std::string const url = "/futures/data/basis";
 
     Parameters params;
@@ -1207,48 +1200,42 @@ BasisResponse basis(API &api, std::string const &pair, std::string const &contra
     if (start_time != -1) params.emplace_back("startTime", start_time);
     if (end_time != -1) params.emplace_back("endTime", end_time);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<BasisObject>(response);
+    return parse_response<BasisObject>(response);
 }
 
-CompositeIndexSymbolInformationResponse composite_index_symbol_information(API &api, std::string const &symbol) {
+CompositeIndexSymbolInformationResponse API::composite_index_symbol_information(std::string const &symbol) {
     std::string const url = "/fapi/v1/indexInfo";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<CompositeIndexSymbolInformationObject>(response);
+    return parse_response<CompositeIndexSymbolInformationObject>(response);
 }
 
-MultiAssetsModeAssetIndexResponse multi_assets_mode_asset_index(API &api, std::string const &symbol) {
+MultiAssetsModeAssetIndexResponse API::multi_assets_mode_asset_index(std::string const &symbol) {
     std::string const url = "/fapi/v1/assetIndex";
 
     Parameters params;
     if (!symbol.empty()) params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<MultiAssetsModeAssetIndexObject>(response);
+    return parse_response<MultiAssetsModeAssetIndexObject>(response);
 }
 
-QueryIndexPriceConstituentsResponse query_index_price_constituents(API &api, std::string const &symbol) {
+QueryIndexPriceConstituentsResponse API::query_index_price_constituents(std::string const &symbol) {
     std::string const url = "/fapi/v1/constituents";
 
     Parameters params;
     params.emplace_back("symbol", symbol);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<RequestType::GET>(url, params);
 
-    return api.parse_response<QueryIndexPriceConstituentsObject>(response);
+    return parse_response<QueryIndexPriceConstituentsObject>(response);
 }
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-} // namespace MarketData
 
 //------------------------------------------------------------------------------------

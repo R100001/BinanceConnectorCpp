@@ -2,6 +2,7 @@
 #include "convert.hpp"
 
 #include "lib/utils.hpp"
+#include "api.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -93,27 +94,19 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, OrderStatusObject &respons
 
 //------------------------------------------------------------------------------------
 
-namespace Convert {
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-ListAllConvertedPairsResponse list_all_converted_pairs(API &api, std::string const &from_asset, std::string const &to_asset) {
+ListAllConvertedPairsResponse API::list_all_converted_pairs(std::string const &from_asset, std::string const &to_asset) {
     std::string const url = "/fapi/v1/convert/exchangeInfo";
 
     Parameters params;
     if (!from_asset.empty()) params.emplace_back("fromAsset", from_asset);
     if (!to_asset.empty()) params.emplace_back("toAsset", to_asset);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<API::RequestType::GET>(url, params);
 
-    return api.parse_response<ListAllConvertedPairsObject>(response);
+    return parse_response<ListAllConvertedPairsObject>(response);
 }
 
-SendQuoteRequestResponse send_quote_request(API &api, std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
+SendQuoteRequestResponse API::send_quote_request(std::string const &from_asset, std::string const &to_asset, double const from_amount, double const to_amount, std::string const valid_time, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/request";
 
     Parameters params;
@@ -124,39 +117,33 @@ SendQuoteRequestResponse send_quote_request(API &api, std::string const &from_as
     if (!valid_time.empty()) params.emplace_back("validTime", valid_time);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request<API::RequestType::POST>(url, params);
+    std::string response = sign_request<API::RequestType::POST>(url, params);
 
-    return api.parse_response<SendQuoteRequestObject>(response);
+    return parse_response<SendQuoteRequestObject>(response);
 }
 
-AcceptQuoteResponse accept_quote(API &api, std::string const &quote_id, int32_t const recv_window) {
+AcceptQuoteResponse API::accept_quote(std::string const &quote_id, int32_t const recv_window) {
     std::string const url = "/fapi/v1/convert/acceptQuote";
 
     Parameters params;
     params.emplace_back("quoteId", quote_id);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request<API::RequestType::POST>(url, params);
+    std::string response = sign_request<API::RequestType::POST>(url, params);
 
-    return api.parse_response<AcceptQuoteObject>(response);
+    return parse_response<AcceptQuoteObject>(response);
 }
 
-OrderStatusResponse order_status(API &api, std::string const &order_id, std::string const &quote_id) {
+OrderStatusResponse API::order_status(std::string const &order_id, std::string const &quote_id) {
     std::string const url = "/fapi/v1/convert/orderStatus";
 
     Parameters params;
     if (!order_id.empty()) params.emplace_back("orderId", order_id);
     if (!quote_id.empty()) params.emplace_back("quoteId", quote_id);
 
-    std::string response = api.send_request<API::RequestType::GET>(url, params);
+    std::string response = send_request<API::RequestType::GET>(url, params);
 
-    return api.parse_response<OrderStatusObject>(response);
+    return parse_response<OrderStatusObject>(response);
 }
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-} // namespace Convert
 
 //------------------------------------------------------------------------------------

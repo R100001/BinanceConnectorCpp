@@ -4,8 +4,12 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api.hpp"
-#include "error.hpp"
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <cstdint>
+
+#include <api_declarations.hpp>
 
 //------------------------------------------------------------------------------------
 
@@ -174,17 +178,17 @@ struct GetDownloadId {
 struct NewFutureAccountTransferObject {
     std::string tran_id; 
 };
-using NewFutureAccountTransferResponse = API::ResponseOrError<NewFutureAccountTransferObject>;
+using NewFutureAccountTransferResponse = ResponseOrError<NewFutureAccountTransferObject>;
 
 struct FuturesAccountBalanceV3Object {
     std::vector<FuturesAccountBalance> balances;
 };
-using FuturesAccountBalanceV3Response = API::ResponseOrError<FuturesAccountBalanceV3Object>;
+using FuturesAccountBalanceV3Response = ResponseOrError<FuturesAccountBalanceV3Object>;
 
 struct FuturesAccountBalanceObject {
     std::vector<FuturesAccountBalance> balances;
 };
-using FuturesAccountBalanceResponse = API::ResponseOrError<FuturesAccountBalanceObject>;
+using FuturesAccountBalanceResponse = ResponseOrError<FuturesAccountBalanceObject>;
 
 struct AccountInformationV3Object {
     std::string total_initial_margin;
@@ -201,7 +205,7 @@ struct AccountInformationV3Object {
     std::vector<Asset> assets;
     std::vector<Position> positions;
 };
-using AccountInformationV3Response = API::ResponseOrError<AccountInformationV3Object>;
+using AccountInformationV3Response = ResponseOrError<AccountInformationV3Object>;
 
 struct AccountInformationObject {
     int64_t trade_group_id;
@@ -225,20 +229,20 @@ struct AccountInformationObject {
     bool can_withdraw;
     bool multi_assets_margin;
 };
-using AccountInformationResponse = API::ResponseOrError<AccountInformationObject>;
+using AccountInformationResponse = ResponseOrError<AccountInformationObject>;
 
 struct GetFutureAccountTransactionHistoryListObject {
     int32_t total;
     std::vector<Transfer> rows;
 };
-using GetFutureAccountTransactionHistoryListResponse = API::ResponseOrError<GetFutureAccountTransactionHistoryListObject>;
+using GetFutureAccountTransactionHistoryListResponse = ResponseOrError<GetFutureAccountTransactionHistoryListObject>;
 
 struct UserCommissionRateObject {
     std::string symbol;
     std::string maker_commission_rate;
     std::string taker_commission_rate;
 };
-using UserCommissionRateResponse = API::ResponseOrError<UserCommissionRateObject>;
+using UserCommissionRateResponse = ResponseOrError<UserCommissionRateObject>;
 
 struct QueryAccountConfigurationObject {
     int64_t trade_group_id;
@@ -250,112 +254,67 @@ struct QueryAccountConfigurationObject {
     bool dual_side_position;
     bool multi_assets_margin;
 };
-using QueryAccountConfigurationResponse = API::ResponseOrError<QueryAccountConfigurationObject>;
+using QueryAccountConfigurationResponse = ResponseOrError<QueryAccountConfigurationObject>;
 
 struct QuerySymbolConfigurationObject {
     std::vector<SymbolConfiguration> symbols;
 };
-using QuerySymbolConfigurationResponse = API::ResponseOrError<QuerySymbolConfigurationObject>;
+using QuerySymbolConfigurationResponse = ResponseOrError<QuerySymbolConfigurationObject>;
 
 struct QueryOrderRateLimitObject {
     std::vector<RateLimit> rate_limits;
 };
-using QueryOrderRateLimitResponse = API::ResponseOrError<QueryOrderRateLimitObject>;
+using QueryOrderRateLimitResponse = ResponseOrError<QueryOrderRateLimitObject>;
 
 using NotionalAndLeverageBracketsObject = std::variant<SymbolNotionalAndLeverageBrackets, std::vector<SymbolNotionalAndLeverageBrackets>>;
-using NotionalAndLeverageBracketsResponse = API::ResponseOrError<NotionalAndLeverageBracketsObject>;
+using NotionalAndLeverageBracketsResponse = ResponseOrError<NotionalAndLeverageBracketsObject>;
 
 struct GetCurrentMultiAssetsModeObject {
     bool multi_assets_margin;
 };
-using GetCurrentMultiAssetsModeResponse = API::ResponseOrError<GetCurrentMultiAssetsModeObject>;
+using GetCurrentMultiAssetsModeResponse = ResponseOrError<GetCurrentMultiAssetsModeObject>;
 
 struct GetCurrentPositionModeObject {
     bool dual_side_position;
 };
-using GetCurrentPositionModeResponse = API::ResponseOrError<GetCurrentPositionModeObject>;
+using GetCurrentPositionModeResponse = ResponseOrError<GetCurrentPositionModeObject>;
 
 struct GetIncomeHistoryObject {
     std::vector<IncomeHistory> history;
 };
-using GetIncomeHistoryResponse = API::ResponseOrError<GetIncomeHistoryObject>;
+using GetIncomeHistoryResponse = ResponseOrError<GetIncomeHistoryObject>;
 
 struct FuturesTradingQuantitativeRulesIndicatorsObject {
     uint64_t update_time;
     Indicators indicators;
 };
-using FuturesTradingQuantitativeRulesIndicatorsResponse = API::ResponseOrError<FuturesTradingQuantitativeRulesIndicatorsObject>;
+using FuturesTradingQuantitativeRulesIndicatorsResponse = ResponseOrError<FuturesTradingQuantitativeRulesIndicatorsObject>;
 
 using GetDownloadIdForFuturesTransactionHistoryObject = GetDownloadId;
-using GetDownloadIdForFuturesTransactionHistoryResponse = API::ResponseOrError<GetDownloadIdForFuturesTransactionHistoryObject>;
+using GetDownloadIdForFuturesTransactionHistoryResponse = ResponseOrError<GetDownloadIdForFuturesTransactionHistoryObject>;
 
 using GetFuturesTransactionHistoryDownloadLinkByIdObject = DownloadLinkById;
-using GetFuturesTransactionHistoryDownloadLinkByIdResponse = API::ResponseOrError<GetFuturesTransactionHistoryDownloadLinkByIdObject>;
+using GetFuturesTransactionHistoryDownloadLinkByIdResponse = ResponseOrError<GetFuturesTransactionHistoryDownloadLinkByIdObject>;
 
 using GetDownloadIdForFuturesOrderHistoryObject = GetDownloadId;
-using GetDownloadIdForFuturesOrderHistoryResponse = API::ResponseOrError<GetDownloadIdForFuturesOrderHistoryObject>;
+using GetDownloadIdForFuturesOrderHistoryResponse = ResponseOrError<GetDownloadIdForFuturesOrderHistoryObject>;
 
 using GetFuturesOrderHistoryDownloadLinkByIdObject = DownloadLinkById;
-using GetFuturesOrderHistoryDownloadLinkByIdResponse = API::ResponseOrError<GetFuturesOrderHistoryDownloadLinkByIdObject>;
+using GetFuturesOrderHistoryDownloadLinkByIdResponse = ResponseOrError<GetFuturesOrderHistoryDownloadLinkByIdObject>;
 
 using GetDownloadIdForFuturesTradeHistoryObject = GetDownloadId;
-using GetDownloadIdForFuturesTradeHistoryResponse = API::ResponseOrError<GetDownloadIdForFuturesTradeHistoryObject>;
+using GetDownloadIdForFuturesTradeHistoryResponse = ResponseOrError<GetDownloadIdForFuturesTradeHistoryObject>;
 
 using GetFuturesTradeDownloadLinkByIdObject = DownloadLinkById;
-using GetFuturesTradeDownloadLinkByIdResponse = API::ResponseOrError<GetFuturesTradeDownloadLinkByIdObject>;
+using GetFuturesTradeDownloadLinkByIdResponse = ResponseOrError<GetFuturesTradeDownloadLinkByIdObject>;
 
-using ToggleBnbBurnOnFuturesTradeObject = API::ServerMessageResponse;
+using ToggleBnbBurnOnFuturesTradeObject = ServerMessageResponse;
 using ToggleBnbBurnOnFuturesTradeResponse = ToggleBnbBurnOnFuturesTradeObject;
 
 struct GetBnbBurnStatusObject {
     bool fee_burn;
 };
-using GetBnbBurnStatusResponse = API::ResponseOrError<GetBnbBurnStatusObject>;
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-NewFutureAccountTransferResponse                        new_future_account_transfer(API &api, std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
-FuturesAccountBalanceV3Response                         futures_account_balance_v3(API &api, int32_t const recv_window = -1);
-FuturesAccountBalanceResponse                           futures_account_balance(API &api, int32_t const recv_window = -1);
-AccountInformationV3Response                            account_information_v3(API &api, int32_t const recv_window = -1);
-AccountInformationResponse                              account_information(API &api, int32_t const recv_window = -1);
-GetFutureAccountTransactionHistoryListResponse          get_future_account_transaction_history_list(API &api, std::string const &type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const current = -1, int8_t const size = -1, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
-UserCommissionRateResponse                              user_commission_rate(API &api, std::string const &symbol, int32_t const recv_window = -1);
-QueryAccountConfigurationResponse                       query_account_configuration(API &api, int32_t const recv_window = -1);
-QuerySymbolConfigurationResponse                        query_symbol_configuration(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-QueryOrderRateLimitResponse                             query_order_rate_limit(API &api, int32_t const recv_window = -1);
-NotionalAndLeverageBracketsResponse                     notional_and_leverage_brackets(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-GetCurrentMultiAssetsModeResponse                       get_current_multi_assets_mode(API &api, int32_t const recv_window = -1);
-GetCurrentPositionModeResponse                          get_current_position_mode(API &api, int32_t const recv_window = -1);
-GetIncomeHistoryResponse                                get_income_history(API &api, std::string const &symbol = "", std::string const &income_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int32_t const page = -1, int16_t const limit = -1, int32_t const recv_window = -1);
-FuturesTradingQuantitativeRulesIndicatorsResponse       futures_trading_quantitative_rules_indicators(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-GetDownloadIdForFuturesTransactionHistoryResponse       get_download_id_for_futures_transaction_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesTransactionHistoryDownloadLinkByIdResponse    get_futures_transaction_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
-GetDownloadIdForFuturesOrderHistoryResponse             get_download_id_for_futures_order_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesOrderHistoryDownloadLinkByIdResponse          get_futures_order_history_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
-GetDownloadIdForFuturesTradeHistoryResponse             get_download_if_for_futures_trade_history(API &api, int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
-GetFuturesTradeDownloadLinkByIdResponse                 get_futures_trade_download_link_by_id(API &api, std::string const &download_id, int32_t const recv_window = -1);
-ToggleBnbBurnOnFuturesTradeResponse                     toggle_bnb_burn_on_futures_trade(API &api, bool const feeBurn, int32_t const recv_window = -1);
-GetBnbBurnStatusResponse                                get_bnb_burn_status(API &api, int32_t const recv_window = -1);
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-// Websocket API Endpoints
-
-namespace WebsocketAPI {
-
-void futures_account_balance_v2(API &api, int32_t const recv_window = -1);
-void futures_account_balance(API &api, int32_t const recv_window = -1);
-void account_information_v2(API &api, int32_t const recv_window = -1);
-void account_information(API &api, int32_t const recv_window = -1);
-
-} // namespace WebsocketAPI
+using GetBnbBurnStatusResponse = ResponseOrError<GetBnbBurnStatusObject>;
 
 //------------------------------------------------------------------------------------
 

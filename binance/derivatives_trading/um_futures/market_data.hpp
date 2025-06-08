@@ -6,8 +6,9 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api.hpp"
-#include "error.hpp"
+#include <cstdint>
+
+#include "api_declarations.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -265,12 +266,12 @@ struct Constituent {
 // Response Structs
 
 struct TestConnectivityObject {};
-using TestConnectivityResponse = API::ResponseOrError<TestConnectivityObject>;
+using TestConnectivityResponse = ResponseOrError<TestConnectivityObject>;
 
 struct CheckServerTimeObject {
     int64_t server_time;
 };
-using CheckServerTimeResponse = API::ResponseOrError<CheckServerTimeObject>;
+using CheckServerTimeResponse = ResponseOrError<CheckServerTimeObject>;
 
 struct ExchangeInformationObject {
     std::vector<ExchangeFilter> exchange_filters;
@@ -281,7 +282,7 @@ struct ExchangeInformationObject {
     int64_t server_time;
     std::string timezone;
 };
-using ExchangeInformationResponse = API::ResponseOrError<ExchangeInformationObject>;
+using ExchangeInformationResponse = ResponseOrError<ExchangeInformationObject>;
 
 struct OrderBookObject {
     uint64_t last_update_id;
@@ -290,119 +291,119 @@ struct OrderBookObject {
     std::vector<BidAskEntry> bids;
     std::vector<BidAskEntry> asks;
 };
-using OrderBookResponse = API::ResponseOrError<OrderBookObject>;
+using OrderBookResponse = ResponseOrError<OrderBookObject>;
 
 struct RecentTradesListObject {
     std::vector<Trade> trades;
 };
-using RecentTradesListResponse = API::ResponseOrError<RecentTradesListObject>;
+using RecentTradesListResponse = ResponseOrError<RecentTradesListObject>;
 
 struct OldTradesLookupObject {
     std::vector<Trade> trades;
 };
-using OldTradesLookupResponse = API::ResponseOrError<OldTradesLookupObject>;
+using OldTradesLookupResponse = ResponseOrError<OldTradesLookupObject>;
 
 struct CompressedAggregateTradesListObject {
     std::vector<AggregatedTrade> trades;
 };
-using CompressedAggregateTradesListResponse = API::ResponseOrError<CompressedAggregateTradesListObject>;
+using CompressedAggregateTradesListResponse = ResponseOrError<CompressedAggregateTradesListObject>;
 
 struct KlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using KlineCandlestickDataResponse = API::ResponseOrError<KlineCandlestickDataObject>;
+using KlineCandlestickDataResponse = ResponseOrError<KlineCandlestickDataObject>;
 
 struct ContinuousContractKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using ContinuousContractKlineCandlestickDataResponse = API::ResponseOrError<ContinuousContractKlineCandlestickDataObject>;
+using ContinuousContractKlineCandlestickDataResponse = ResponseOrError<ContinuousContractKlineCandlestickDataObject>;
 
 struct IndexPriceKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using IndexPriceKlineCandlestickDataResponse = API::ResponseOrError<IndexPriceKlineCandlestickDataObject>;
+using IndexPriceKlineCandlestickDataResponse = ResponseOrError<IndexPriceKlineCandlestickDataObject>;
 
 struct MarkPriceKlineCandlestickDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using MarkPriceKlineCandlestickDataResponse = API::ResponseOrError<MarkPriceKlineCandlestickDataObject>;
+using MarkPriceKlineCandlestickDataResponse = ResponseOrError<MarkPriceKlineCandlestickDataObject>;
 
 struct PremiumIndexKlineDataObject {
     std::vector<std::array<KlineDataTypes, 12>> klines;
 };
-using PremiumIndexKlineDataResponse = API::ResponseOrError<PremiumIndexKlineDataObject>;
+using PremiumIndexKlineDataResponse = ResponseOrError<PremiumIndexKlineDataObject>;
 
 struct MarkPriceObject {
     MarkPriceData data;
 };
-using MarkPriceResponse = API::ResponseOrError<MarkPriceObject>;
+using MarkPriceResponse = ResponseOrError<MarkPriceObject>;
 
 struct GetFundingRateHistoryObject {
     std::vector<FundingRate> funding_rates;
 };
-using GetFundingRateHistoryResponse = API::ResponseOrError<GetFundingRateHistoryObject>;
+using GetFundingRateHistoryResponse = ResponseOrError<GetFundingRateHistoryObject>;
 
 struct GetFundingRateInfoObject {
     std::vector<FundingRateAdjustments> funding_rate_adjustments;
 };
-using GetFundingRateInfoResponse = API::ResponseOrError<GetFundingRateInfoObject>;
+using GetFundingRateInfoResponse = ResponseOrError<GetFundingRateInfoObject>;
 
 struct Ticker24hrPriceChangeStatisticsObject {
     Ticker24hrPriceChangeStatistics data;
 };
-using Ticker24hrPriceChangeStatisticsResponse = API::ResponseOrError<Ticker24hrPriceChangeStatisticsObject>;
+using Ticker24hrPriceChangeStatisticsResponse = ResponseOrError<Ticker24hrPriceChangeStatisticsObject>;
 
 struct SymbolPriceTickerObject {
     SymbolPriceTicker data;
 };
-using SymbolPriceTickerResponse = API::ResponseOrError<SymbolPriceTickerObject>;
+using SymbolPriceTickerResponse = ResponseOrError<SymbolPriceTickerObject>;
 
 struct SymbolPriceTickerV2Object {
     SymbolPriceTicker data;
 };
-using SymbolPriceTickerV2Response = API::ResponseOrError<SymbolPriceTickerV2Object>;
+using SymbolPriceTickerV2Response = ResponseOrError<SymbolPriceTickerV2Object>;
 
 struct SymbolOrderBookTickerObject {
     SymbolOrderBookTicker data;
 };
-using SymbolOrderBookTickerResponse = API::ResponseOrError<SymbolOrderBookTickerObject>;
+using SymbolOrderBookTickerResponse = ResponseOrError<SymbolOrderBookTickerObject>;
 
 struct QueryDeliveryPriceObject {
     std::vector<DeliveryPrice> delivery_prices;
 };
-using QueryDeliveryPriceResponse = API::ResponseOrError<QueryDeliveryPriceObject>;
+using QueryDeliveryPriceResponse = ResponseOrError<QueryDeliveryPriceObject>;
 
 struct OpenInterestObject {
     std::string open_interest;
     std::string symbol;
     int64_t time;
 };
-using OpenInterestResponse = API::ResponseOrError<OpenInterestObject>;
+using OpenInterestResponse = ResponseOrError<OpenInterestObject>;
 
 struct OpenInterestStatisticsObject {
     std::vector<OpenInterestStatistics> open_interest_statistics;
 };
-using OpenInterestStatisticsResponse = API::ResponseOrError<OpenInterestStatisticsObject>;
+using OpenInterestStatisticsResponse = ResponseOrError<OpenInterestStatisticsObject>;
 
 struct TopTraderLongShortPositionRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using TopTraderLongShortPositionRatioResponse = API::ResponseOrError<TopTraderLongShortPositionRatioObject>;
+using TopTraderLongShortPositionRatioResponse = ResponseOrError<TopTraderLongShortPositionRatioObject>;
 
 struct TopTraderLongShortAccountRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using TopTraderLongShortAccountRatioResponse = API::ResponseOrError<TopTraderLongShortAccountRatioObject>;
+using TopTraderLongShortAccountRatioResponse = ResponseOrError<TopTraderLongShortAccountRatioObject>;
 
 struct LongShortRatioObject {
     std::vector<LongShortRatio> long_short_ratios;
 };
-using LongShortRatioResponse = API::ResponseOrError<LongShortRatioObject>;
+using LongShortRatioResponse = ResponseOrError<LongShortRatioObject>;
 
 struct TakerBuySellVolumeObject {
     std::vector<BuySellVolume> buy_sell_volumes;
 };
-using TakerBuySellVolumeResponse = API::ResponseOrError<TakerBuySellVolumeObject>;
+using TakerBuySellVolumeResponse = ResponseOrError<TakerBuySellVolumeObject>;
 
 struct Basis {
     std::string index_price;
@@ -417,79 +418,24 @@ struct Basis {
 struct BasisObject {
     std::vector<Basis> basis;
 };
-using BasisResponse = API::ResponseOrError<BasisObject>;
+using BasisResponse = ResponseOrError<BasisObject>;
 
 struct CompositeIndexSymbolInformationObject {
     std::vector<CompositeIndexSymbolInformation> composite_index_symbol_information;
 };
-using CompositeIndexSymbolInformationResponse = API::ResponseOrError<CompositeIndexSymbolInformationObject>;
+using CompositeIndexSymbolInformationResponse = ResponseOrError<CompositeIndexSymbolInformationObject>;
 
 struct MultiAssetsModeAssetIndexObject {
     MultiAssetsModeAssetIndexData data;
 };
-using MultiAssetsModeAssetIndexResponse = API::ResponseOrError<MultiAssetsModeAssetIndexObject>;
+using MultiAssetsModeAssetIndexResponse = ResponseOrError<MultiAssetsModeAssetIndexObject>;
 
 struct QueryIndexPriceConstituentsObject {
     std::string symbol;
     std::vector<Constituent> constituents;
     int64_t time;
 };
-using QueryIndexPriceConstituentsResponse = API::ResponseOrError<QueryIndexPriceConstituentsObject>;
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-TestConnectivityResponse                        test_connectivity(API &api);
-CheckServerTimeResponse                         check_server_time(API &api);
-ExchangeInformationResponse                     exchange_information(API &api);
-OrderBookResponse                               order_book(API &api, std::string const &symbol, int16_t const limit = -1);
-RecentTradesListResponse                        recent_trades_list(API &api, std::string const &symbol, int16_t const limit = -1);
-OldTradesLookupResponse                         old_trades_lookup(API &api, std::string const &symbol, int16_t const limit = -1, int64_t const from_id = -1);
-CompressedAggregateTradesListResponse           compressed_aggregate_trades_list(API &api, std::string const &symbol, int64_t const from_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-KlineCandlestickDataResponse                    kline_candlestick_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-ContinuousContractKlineCandlestickDataResponse  continuous_contract_kline_candlestick_data(API &api, std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-IndexPriceKlineCandlestickDataResponse          index_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-MarkPriceKlineCandlestickDataResponse           mark_price_kline_candlestick_data(API &api, std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-PremiumIndexKlineDataResponse                   premium_index_kline_data(API &api, std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-MarkPriceResponse                               mark_price(API &api, std::string const &symbol = "");
-GetFundingRateHistoryResponse                   get_funding_rate_history(API &api, std::string const &symbol = "", int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
-GetFundingRateInfoResponse                      get_funding_rate_info(API &api);
-Ticker24hrPriceChangeStatisticsResponse         ticker_24hr_price_change_statistics(API &api, std::string const &symbol = "");
-SymbolPriceTickerResponse                       symbol_price_ticker(API &api, std::string const &symbol = "");
-SymbolPriceTickerV2Response                     symbol_price_ticker_v2(API &api, std::string const &symbol = "");
-SymbolOrderBookTickerResponse                   symbol_order_book_ticker(API &api, std::string const &symbol = "");
-QueryDeliveryPriceResponse                      query_delivery_price(API &api, std::string const &pair);
-OpenInterestResponse                            open_interest(API &api, std::string const &symbol);
-OpenInterestStatisticsResponse                  open_interest_statistics(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TopTraderLongShortPositionRatioResponse         top_trader_long_short_position_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TopTraderLongShortAccountRatioResponse          top_trader_long_short_account_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-LongShortRatioResponse                          long_short_ratio(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-TakerBuySellVolumeResponse                      taker_buy_sell_volume(API &api, std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
-BasisResponse                                   basis(API &api, std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit = -1, int64_t const &start_time = -1, int64_t const &end_time = -1);
-CompositeIndexSymbolInformationResponse         composite_index_symbol_information(API &api, std::string const &symbol = "");
-MultiAssetsModeAssetIndexResponse               multi_assets_mode_asset_index(API &api, std::string const &symbol = "");
-QueryIndexPriceConstituentsResponse             query_index_price_constituents(API &api, std::string const &symbol);
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-// Websocket API Endpoints
-
-namespace WebsocketAPI {
-
-//------------------------------------------------------------------------------------
-
-void order_book(API &api, std::string const &symbol, int16_t const &limit = -1);
-void symbol_ticker_price(API &api, std::string const &symbol = "");
-void symbol_order_book_ticker(API &api, std::string const &symbol = "");
-
-//------------------------------------------------------------------------------------
-
-} // namespace WebsocketAPI
+using QueryIndexPriceConstituentsResponse = ResponseOrError<QueryIndexPriceConstituentsObject>;
 
 //------------------------------------------------------------------------------------
 

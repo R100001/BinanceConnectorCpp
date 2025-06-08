@@ -2,6 +2,7 @@
 #include "portfolio_margin_endpoints.hpp"
 
 #include "lib/utils.hpp"
+#include "api.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -28,30 +29,16 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, ClassicPortfolioMarginAcco
 
 //------------------------------------------------------------------------------------
 
-namespace PortfolioMarginEndpoints {
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(API &api, std::string const &asset, int32_t const recv_window) {
+ClassicPortfolioMarginAccountInformationResponse API::classic_portfolio_margin_account_information(std::string const &asset, int32_t const recv_window) {
     std::string const url = "/fapi/v1/pmAccountInfo";
 
     Parameters params;
     params.emplace_back("asset", asset);
     if (recv_window != -1) params.emplace_back("recvWindow", recv_window);
 
-    std::string response = api.sign_request<API::RequestType::GET>(url, params);
+    std::string response = sign_request<RequestType::GET>(url, params);
 
-    return api.parse_response<ClassicPortfolioMarginAccountInformationObject>(response);
+    return parse_response<ClassicPortfolioMarginAccountInformationObject>(response);
 }
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-} // namespace PortfolioMarginEndpoints
 
 //------------------------------------------------------------------------------------

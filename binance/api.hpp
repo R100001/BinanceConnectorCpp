@@ -11,12 +11,19 @@
 #include <variant>
 #include <memory>
 
-#include "lib/HTTPClient.hpp"
-#include "lib/WebSocketClient.hpp"
 #include "simdjson.h"
 
-#include "error.hpp"
-#include "lib/utils.hpp"
+#include "api_declarations.hpp"
+
+#include "account.hpp"
+#include "convert.hpp"
+#include "market_data.hpp"
+#include "portfolio_margin_endpoints.hpp"
+#include "trade.hpp"
+
+#include "WebSocketClient.hpp"
+#include "HTTPClient.hpp"
+#include "utils.hpp"
 
 //------------------------------------------------------------------------------------
 //----------------------------------------API-----------------------------------------
@@ -54,10 +61,128 @@ public: // Constructors
         std::string_view private_key_passphrase = ""
     );
 
-public: // REST API request methods
+public: // Rest API
 
-    template <RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
-    template <RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
+    // Account Endpoints
+    Account::NewFutureAccountTransferResponse                        new_future_account_transfer(std::string const &type, std::string const &asset, double const amount, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
+    Account::FuturesAccountBalanceV3Response                         futures_account_balance_v3(int32_t const recv_window = -1);
+    Account::FuturesAccountBalanceResponse                           futures_account_balance(int32_t const recv_window = -1);
+    Account::AccountInformationV3Response                            account_information_v3(int32_t const recv_window = -1);
+    Account::AccountInformationResponse                              account_information(int32_t const recv_window = -1);
+    Account::GetFutureAccountTransactionHistoryListResponse          get_future_account_transaction_history_list(std::string const &type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const current = -1, int8_t const size = -1, std::string const &from_symbol = "", std::string const &to_symbol = "", int32_t const recv_window = -1);
+    Account::UserCommissionRateResponse                              user_commission_rate(std::string const &symbol, int32_t const recv_window = -1);
+    Account::QueryAccountConfigurationResponse                       query_account_configuration(int32_t const recv_window = -1);
+    Account::QuerySymbolConfigurationResponse                        query_symbol_configuration(std::string const &symbol = "", int32_t const recv_window = -1);
+    Account::QueryOrderRateLimitResponse                             query_order_rate_limit(int32_t const recv_window = -1);
+    Account::NotionalAndLeverageBracketsResponse                     notional_and_leverage_brackets(std::string const &symbol = "", int32_t const recv_window = -1);
+    Account::GetCurrentMultiAssetsModeResponse                       get_current_multi_assets_mode(int32_t const recv_window = -1);
+    Account::GetCurrentPositionModeResponse                          get_current_position_mode(int32_t const recv_window = -1);
+    Account::GetIncomeHistoryResponse                                get_income_history(std::string const &symbol = "", std::string const &income_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int32_t const page = -1, int16_t const limit = -1, int32_t const recv_window = -1);
+    Account::FuturesTradingQuantitativeRulesIndicatorsResponse       futures_trading_quantitative_rules_indicators(std::string const &symbol = "", int32_t const recv_window = -1);
+    Account::GetDownloadIdForFuturesTransactionHistoryResponse       get_download_id_for_futures_transaction_history(int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+    Account::GetFuturesTransactionHistoryDownloadLinkByIdResponse    get_futures_transaction_history_download_link_by_id(std::string const &download_id, int32_t const recv_window = -1);
+    Account::GetDownloadIdForFuturesOrderHistoryResponse             get_download_id_for_futures_order_history(int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+    Account::GetFuturesOrderHistoryDownloadLinkByIdResponse          get_futures_order_history_download_link_by_id(std::string const &download_id, int32_t const recv_window = -1);
+    Account::GetDownloadIdForFuturesTradeHistoryResponse             get_download_if_for_futures_trade_history(int64_t const start_time, int64_t const end_time, int32_t const recv_window = -1);
+    Account::GetFuturesTradeDownloadLinkByIdResponse                 get_futures_trade_download_link_by_id(std::string const &download_id, int32_t const recv_window = -1);
+    Account::ToggleBnbBurnOnFuturesTradeResponse                     toggle_bnb_burn_on_futures_trade(bool const feeBurn, int32_t const recv_window = -1);
+    Account::GetBnbBurnStatusResponse                                get_bnb_burn_status(int32_t const recv_window = -1);
+
+    // Convert Endpoints
+    Convert::ListAllConvertedPairsResponse   list_all_converted_pairs(std::string const &from_asset = "", std::string const &to_asset = "");
+    Convert::SendQuoteRequestResponse        send_quote_request(std::string const &from_asset, std::string const &to_asset, double const from_amount = -1, double const to_amount = -1, std::string const valid_time = "", int32_t const recv_window = -1);
+    Convert::AcceptQuoteResponse             accept_quote(std::string const &quote_id, int32_t const recv_window = -1);
+    Convert::OrderStatusResponse             order_status(std::string const &order_id = "", std::string const &quote_id = "");
+
+    // Market Data Endpoints
+    MarketData::TestConnectivityResponse                        test_connectivity();
+    MarketData::CheckServerTimeResponse                         check_server_time();
+    MarketData::ExchangeInformationResponse                     exchange_information();
+    MarketData::OrderBookResponse                               order_book(std::string const &symbol, int16_t const limit = -1);
+    MarketData::RecentTradesListResponse                        recent_trades_list(std::string const &symbol, int16_t const limit = -1);
+    MarketData::OldTradesLookupResponse                         old_trades_lookup(std::string const &symbol, int16_t const limit = -1, int64_t const from_id = -1);
+    MarketData::CompressedAggregateTradesListResponse           compressed_aggregate_trades_list(std::string const &symbol, int64_t const from_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::KlineCandlestickDataResponse                    kline_candlestick_data(std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::ContinuousContractKlineCandlestickDataResponse  continuous_contract_kline_candlestick_data(std::string const &pair, std::string const &contract_type, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::IndexPriceKlineCandlestickDataResponse          index_price_kline_candlestick_data(std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::MarkPriceKlineCandlestickDataResponse           mark_price_kline_candlestick_data(std::string const &pair, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::PremiumIndexKlineDataResponse                   premium_index_kline_data(std::string const &symbol, std::string const &interval, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::MarkPriceResponse                               mark_price(std::string const &symbol = "");
+    MarketData::GetFundingRateHistoryResponse                   get_funding_rate_history(std::string const &symbol = "", int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1);
+    MarketData::GetFundingRateInfoResponse                      get_funding_rate_info();
+    MarketData::Ticker24hrPriceChangeStatisticsResponse         ticker_24hr_price_change_statistics(std::string const &symbol = "");
+    MarketData::SymbolPriceTickerResponse                       symbol_price_ticker(std::string const &symbol = "");
+    MarketData::SymbolPriceTickerV2Response                     symbol_price_ticker_v2(std::string const &symbol = "");
+    MarketData::SymbolOrderBookTickerResponse                   symbol_order_book_ticker(std::string const &symbol = "");
+    MarketData::QueryDeliveryPriceResponse                      query_delivery_price(std::string const &pair);
+    MarketData::OpenInterestResponse                            open_interest(std::string const &symbol);
+    MarketData::OpenInterestStatisticsResponse                  open_interest_statistics(std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+    MarketData::TopTraderLongShortPositionRatioResponse         top_trader_long_short_position_ratio(std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+    MarketData::TopTraderLongShortAccountRatioResponse          top_trader_long_short_account_ratio(std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+    MarketData::LongShortRatioResponse                          long_short_ratio(std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+    MarketData::TakerBuySellVolumeResponse                      taker_buy_sell_volume(std::string const &symbol, std::string const &period, int16_t const limit = -1, int64_t const start_time = -1, int64_t const end_time = -1);
+    MarketData::BasisResponse                                   basis(std::string const &pair, std::string const &contract_type, std::string const &period, int16_t const &limit = -1, int64_t const &start_time = -1, int64_t const &end_time = -1);
+    MarketData::CompositeIndexSymbolInformationResponse         composite_index_symbol_information(std::string const &symbol = "");
+    MarketData::MultiAssetsModeAssetIndexResponse               multi_assets_mode_asset_index(std::string const &symbol = "");
+    MarketData::QueryIndexPriceConstituentsResponse             query_index_price_constituents(std::string const &symbol);
+
+    // Portfolio Margin Endpoints
+    PortfolioMarginEndpoints::ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(std::string const &asset, int32_t const recv_window = -1);
+
+    // Trade Endpoints
+
+    Trade::NewOrderResponse                        new_order(Trade::NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
+    Trade::PlaceMultipleOrdersResponse             place_multiple_orders(std::vector<Trade::NewOrder> const &orders, int32_t const recv_window = -1);
+    Trade::ModifyOrderResponse                     modify_order(Trade::ModifyOrder const &order, int32_t const recv_window = -1);
+    Trade::ModifyMultipleOrdersResponse            modify_multiple_orders(std::vector<Trade::ModifyOrder> const &orders, int32_t const recv_window = -1);
+    Trade::GetOrderModifyHistoryResponse           get_order_modify_history(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int64_t const start_time = -1, int64_t const end_time = -1, int8_t const limit = -1, int32_t const recv_window = -1);
+    Trade::CancelOrderResponse                     cancel_order(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
+    Trade::CancelMultipleOrdersResponse            cancel_multiple_orders(std::string const &symbol, std::vector<int64_t> const &order_ids, std::vector<std::string> const &orig_client_order_ids, int32_t const recv_window = -1);
+    Trade::CancelAllOpenOrdersResponse             cancel_all_open_orders(std::string const &symbol, int32_t const recv_window = -1);
+    Trade::AutoCancelAllOpenOrdersResponse         auto_cancel_all_open_orders(std::string const &symbol, int64_t const countdown_time, int32_t const recv_window = -1);
+    Trade::QueryOrderResponse                      query_order(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
+    Trade::QueryAllOrdersResponse                  query_all_orders(std::string const &symbol, int64_t const order_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1, int32_t const recv_window = -1);
+    Trade::QueryCurrentAllOpenOrdersResponse       query_current_all_open_orders(std::string const &symbol = "", int32_t const recv_window = -1);
+    Trade::QueryCurrentOpenOrderResponse           query_current_open_order(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
+    Trade::QueryUsersForceOrdersResponse           query_users_force_orders(std::string const &symbol = "", std::string const &auto_close_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int8_t const limit = -1, int32_t const recv_window = -1);
+    Trade::QueryAccountTradeListResponse           query_account_trade_list(std::string const &symbol, int64_t const order_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int64_t const from_id = -1, int16_t const limit = -1, int32_t const recv_window = -1);
+    Trade::ChangeMarginTypeResponse                change_margin_type(std::string const &symbol, std::string const &margin_type, int32_t const recv_window = -1);
+    Trade::ChangePositionModeResponse              change_position_mode(std::string const &dual_side_position, int32_t const recv_window = -1);
+    Trade::ChangeInitialLeverageResponse           change_initial_leverage(std::string const &symbol, int8_t const leverage, int32_t const recv_window = -1);
+    Trade::ChangeMultiAssetsModeResponse           change_multi_assets_mode(std::string const &multi_assets_margin, int32_t const recv_window = -1);
+    Trade::ModifyIsolatedPositionMarginResponse    modify_isolated_position_margin(std::string const &symbol, double const amount, int8_t const type, std::string const &position_side, int32_t const recv_window = -1);
+    Trade::PositionInformationV2Response           position_information_v2(std::string const &symbol = "", int32_t const recv_window = -1);
+    Trade::PositionInformationV3Response           position_information_v3(std::string const &symbol = "", int32_t const recv_window = -1);
+    Trade::PositionAdlQuantileEstimationResponse   position_adl_quantile_estimation(std::string const &symbol = "", int32_t const recv_window = -1);
+    Trade::GetPositionMarginChangeHistoryResponse  get_position_margin_change_history(std::string const &symbol, int8_t const type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const limit = -1, int32_t const recv_window = -1);
+    Trade::TestNewOrderResponse                    test_new_order(Trade::NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
+
+
+public: // Websocket Streams
+
+    // Account Streams
+    void futures_account_balance_v2_stream(int32_t const recv_window = -1);
+    void futures_account_balance_stream(int32_t const recv_window = -1);
+    void account_information_v2_stream(int32_t const recv_window = -1);
+    void account_information_stream(int32_t const recv_window = -1);
+
+    // Convert Streams
+
+    // Market Data Streams
+    void order_book_stream(std::string const &symbol, int16_t const &limit = -1);
+    void symbol_ticker_price_stream(std::string const &symbol = "");
+    void symbol_order_book_ticker_stream(std::string const &symbol = "");
+
+    // Portfolio Margin Streams
+    
+    // Trade Streams
+    void new_order_stream(Trade::NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
+    void modify_order_stream(Trade::ModifyOrder const &order, int32_t const recv_window = -1);
+    void cancel_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
+    void query_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
+    void position_information_v2_stream(std::string const &symbol = "", int32_t const recv_window = -1);
+    void position_information_stream(std::string const &symbol = "", int32_t const recv_window = -1);
+
 
 public: // WebSocket API
 
@@ -87,18 +212,16 @@ public: // Websocket User Data Streams
     void ws_user_data_streams_message_callback(MsgCallbackT callback);
     void ws_user_data_streams_error_callback(ErrCallbackT callback);
 
+public: // REST API request methods
+
+    template <RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
+    template <RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
+
 public: // Public message parsing
 
     /*----- Parsing Tags -----*/
     struct ArrayErrors {};
     struct ResponseIsServerMessage {};
-
-    /*----- Parsing Responses -----*/
-    template <typename JsonResponseStructured> 
-    using ResponseOrError = std::variant<JsonResponseStructured, ServerMessage>;
-    template <typename JsonResponseStructured>
-    using ArrayErrorsResponse = ResponseOrError<std::vector<ResponseOrError<JsonResponseStructured>>>;
-    using ServerMessageResponse = ServerMessage;
 
     /*----- Parsing Functions -----*/
     template <typename JsonResponseStructured> 
@@ -153,7 +276,7 @@ private: // Parsing variables
 //------------------------------------------------------------------------------------
 
 template <typename JsonResponseStructured>
-API::ResponseOrError<JsonResponseStructured> API::parse_response(std::string &response) {
+ResponseOrError<JsonResponseStructured> API::parse_response(std::string &response) {
     
     auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
@@ -178,7 +301,7 @@ API::ResponseOrError<JsonResponseStructured> API::parse_response(std::string &re
 //------------------------------------------------------------------------------------
 
 template <typename JsonResponseStructured>
-API::ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string &response, ArrayErrors const) {
+ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string &response, ArrayErrors const) {
 
     auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());

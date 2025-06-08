@@ -4,8 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api.hpp"
-#include "error.hpp"
+#include "api_declarations.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -171,7 +170,7 @@ struct NewOrderObject {
     bool price_protect;
     bool close_position;
 };
-using NewOrderResponse = API::ResponseOrError<NewOrderObject>;
+using NewOrderResponse = ResponseOrError<NewOrderObject>;
 
 struct PlaceMultipleOrdersObject {
     std::string client_order_id;
@@ -200,8 +199,8 @@ struct PlaceMultipleOrdersObject {
     bool reduce_only;
     bool price_protect;
 };
-using PlaceMultipleOrdersObjectOrError = API::ResponseOrError<PlaceMultipleOrdersObject>;
-using PlaceMultipleOrdersResponse = API::ArrayErrorsResponse<PlaceMultipleOrdersObject>;
+using PlaceMultipleOrdersObjectOrError = ResponseOrError<PlaceMultipleOrdersObject>;
+using PlaceMultipleOrdersResponse = ArrayErrorsResponse<PlaceMultipleOrdersObject>;
 
 struct ModifyOrderObject {
     int64_t order_id;
@@ -230,16 +229,16 @@ struct ModifyOrderObject {
     bool close_position;
     bool price_protect;
 };
-using ModifyOrderResponse = API::ResponseOrError<ModifyOrderObject>;
+using ModifyOrderResponse = ResponseOrError<ModifyOrderObject>;
 
 using ModifyMultipleOrdersObject = ModifyOrderObject;
-using ModifyMultipleOrdersObjectOrError = API::ResponseOrError<ModifyMultipleOrdersObject>;
-using ModifyMultipleOrdersResponse = API::ArrayErrorsResponse<ModifyMultipleOrdersObject>;
+using ModifyMultipleOrdersObjectOrError = ResponseOrError<ModifyMultipleOrdersObject>;
+using ModifyMultipleOrdersResponse = ArrayErrorsResponse<ModifyMultipleOrdersObject>;
 
 struct GetOrderModifyHistoryObject {
     std::vector<OrderModificationInfo> order_modification_info;
 };
-using GetOrderModifyHistoryResponse = API::ResponseOrError<GetOrderModifyHistoryObject>;
+using GetOrderModifyHistoryResponse = ResponseOrError<GetOrderModifyHistoryObject>;
 
 struct CancelOrderObject {
     std::string client_order_id;
@@ -268,20 +267,20 @@ struct CancelOrderObject {
     bool close_position;
     bool price_protect;
 };
-using CancelOrderResponse = API::ResponseOrError<CancelOrderObject>;
+using CancelOrderResponse = ResponseOrError<CancelOrderObject>;
 
 using CancelMultipleOrdersObject = CancelOrderObject;
-using CancelMultipleOrdersObjectOrError = API::ResponseOrError<CancelMultipleOrdersObject>;
-using CancelMultipleOrdersResponse = API::ArrayErrorsResponse<CancelMultipleOrdersObject>;
+using CancelMultipleOrdersObjectOrError = ResponseOrError<CancelMultipleOrdersObject>;
+using CancelMultipleOrdersResponse = ArrayErrorsResponse<CancelMultipleOrdersObject>;
 
-using CancelAllOpenOrdersObject = API::ServerMessageResponse;
+using CancelAllOpenOrdersObject = ServerMessageResponse;
 using CancelAllOpenOrdersResponse = CancelAllOpenOrdersObject;
 
 struct AutoCancelAllOpenOrdersObject {
     std::string symbol;
     int64_t countdown_time;
 };
-using AutoCancelAllOpenOrdersResponse = API::ResponseOrError<AutoCancelAllOpenOrdersObject>;
+using AutoCancelAllOpenOrdersResponse = ResponseOrError<AutoCancelAllOpenOrdersObject>;
 
 struct QueryOrderObject {
     std::string avg_price;
@@ -311,37 +310,37 @@ struct QueryOrderObject {
     bool close_position;
     bool price_protect;
 };
-using QueryOrderResponse = API::ResponseOrError<QueryOrderObject>;
+using QueryOrderResponse = ResponseOrError<QueryOrderObject>;
 
 struct QueryAllOrdersObject {
     std::vector<QueryOrderObject> orders;
 };
-using QueryAllOrdersResponse = API::ResponseOrError<QueryAllOrdersObject>;
+using QueryAllOrdersResponse = ResponseOrError<QueryAllOrdersObject>;
 
 struct QueryCurrentAllOpenOrdersObject {
     std::vector<QueryOrderObject> orders;
 };
-using QueryCurrentAllOpenOrdersResponse = API::ResponseOrError<QueryCurrentAllOpenOrdersObject>;
+using QueryCurrentAllOpenOrdersResponse = ResponseOrError<QueryCurrentAllOpenOrdersObject>;
 
 struct QueryCurrentOpenOrderObject {
     QueryOrderObject order;
 };
-using QueryCurrentOpenOrderResponse = API::ResponseOrError<QueryCurrentOpenOrderObject>;
+using QueryCurrentOpenOrderResponse = ResponseOrError<QueryCurrentOpenOrderObject>;
 
 struct QueryUsersForceOrdersObject {
     std::vector<ForceOrder> force_orders;
 };
-using QueryUsersForceOrdersResponse = API::ResponseOrError<QueryUsersForceOrdersObject>;
+using QueryUsersForceOrdersResponse = ResponseOrError<QueryUsersForceOrdersObject>;
 
 struct QueryAccountTradeListObject {
     std::vector<AccountTrade> trades;
 };
-using QueryAccountTradeListResponse = API::ResponseOrError<QueryAccountTradeListObject>;
+using QueryAccountTradeListResponse = ResponseOrError<QueryAccountTradeListObject>;
 
-using ChangeMarginTypeObject = API::ServerMessageResponse;
+using ChangeMarginTypeObject = ServerMessageResponse;
 using ChangeMarginTypeResponse = ChangeMarginTypeObject;
 
-using ChangePositionModeObject = API::ServerMessageResponse;
+using ChangePositionModeObject = ServerMessageResponse;
 using ChangePositionModeResponse = ChangePositionModeObject;
 
 struct ChangeInitialLeverageObject {
@@ -349,42 +348,42 @@ struct ChangeInitialLeverageObject {
     std::string symbol;
     int16_t leverage;
 };
-using ChangeInitialLeverageResponse = API::ResponseOrError<ChangeInitialLeverageObject>;
+using ChangeInitialLeverageResponse = ResponseOrError<ChangeInitialLeverageObject>;
 
-using ChangeMultiAssetsModeObject = API::ServerMessageResponse;
+using ChangeMultiAssetsModeObject = ServerMessageResponse;
 using ChangeMultiAssetsModeResponse = ChangeMarginTypeObject;
 
 struct ModifyIsolatedPositionMarginObject {
-    API::ServerMessageResponse message;
+    ServerMessageResponse message;
     double amount;
     int32_t type;
 };
-using ModifyIsolatedPositionMarginResponse = API::ResponseOrError<ModifyIsolatedPositionMarginObject>;
+using ModifyIsolatedPositionMarginResponse = ResponseOrError<ModifyIsolatedPositionMarginObject>;
 
 struct PositionInformationV2Object {
     std::vector<PositionInfoV2> positions;
 };
-using PositionInformationV2Response = API::ResponseOrError<PositionInformationV2Object>;
+using PositionInformationV2Response = ResponseOrError<PositionInformationV2Object>;
 
 struct PositionInformationV3Object {
     std::vector<PositionInfoV3> positions;
 };
-using PositionInformationV3Response = API::ResponseOrError<PositionInformationV3Object>;
+using PositionInformationV3Response = ResponseOrError<PositionInformationV3Object>;
 
 struct PositionAdlQuantileEstimationObject {
     std::vector<AdlQuantileEstimation> adl_quantile_estimations;
 };
-using PositionAdlQuantileEstimationResponse = API::ResponseOrError<PositionAdlQuantileEstimationObject>;
+using PositionAdlQuantileEstimationResponse = ResponseOrError<PositionAdlQuantileEstimationObject>;
 
 struct GetPositionMarginChangeHistoryObject {
     std::vector<PositionMarginChange> position_margin_changes;
 };
-using GetPositionMarginChangeHistoryResponse = API::ResponseOrError<GetPositionMarginChangeHistoryObject>;
+using GetPositionMarginChangeHistoryResponse = ResponseOrError<GetPositionMarginChangeHistoryObject>;
 
 struct TestNewOrderObject {
     NewOrderObject order;
 };
-using TestNewOrderResponse = API::ResponseOrError<TestNewOrderObject>;
+using TestNewOrderResponse = ResponseOrError<TestNewOrderObject>;
 
 //------------------------------------------------------------------------------------
 
@@ -421,56 +420,7 @@ struct ModifyOrder {
     std::string price_match = "";
 };
 
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-NewOrderResponse                        new_order(API &api, NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
-PlaceMultipleOrdersResponse             place_multiple_orders(API &api, std::vector<NewOrder> const &orders, int32_t const recv_window = -1);
-ModifyOrderResponse                     modify_order(API &api, ModifyOrder const &order, int32_t const recv_window = -1);
-ModifyMultipleOrdersResponse            modify_multiple_orders(API &api, std::vector<ModifyOrder> const &orders, int32_t const recv_window = -1);
-GetOrderModifyHistoryResponse           get_order_modify_history(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int64_t const start_time = -1, int64_t const end_time = -1, int8_t const limit = -1, int32_t const recv_window = -1);
-CancelOrderResponse                     cancel_order(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
-CancelMultipleOrdersResponse            cancel_multiple_orders(API &api, std::string const &symbol, std::vector<int64_t> const &order_ids, std::vector<std::string> const &orig_client_order_ids, int32_t const recv_window = -1);
-CancelAllOpenOrdersResponse             cancel_all_open_orders(API &api, std::string const &symbol, int32_t const recv_window = -1);
-AutoCancelAllOpenOrdersResponse         auto_cancel_all_open_orders(API &api, std::string const &symbol, int64_t const countdown_time, int32_t const recv_window = -1);
-QueryOrderResponse                      query_order(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
-QueryAllOrdersResponse                  query_all_orders(API &api, std::string const &symbol, int64_t const order_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int16_t const limit = -1, int32_t const recv_window = -1);
-QueryCurrentAllOpenOrdersResponse       query_current_all_open_orders(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-QueryCurrentOpenOrderResponse           query_current_open_order(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
-QueryUsersForceOrdersResponse           query_users_force_orders(API &api, std::string const &symbol = "", std::string const &auto_close_type = "", int64_t const start_time = -1, int64_t const end_time = -1, int8_t const limit = -1, int32_t const recv_window = -1);
-QueryAccountTradeListResponse           query_account_trade_list(API &api, std::string const &symbol, int64_t const order_id = -1, int64_t const start_time = -1, int64_t const end_time = -1, int64_t const from_id = -1, int16_t const limit = -1, int32_t const recv_window = -1);
-ChangeMarginTypeResponse                change_margin_type(API &api, std::string const &symbol, std::string const &margin_type, int32_t const recv_window = -1);
-ChangePositionModeResponse              change_position_mode(API &api, std::string const &dual_side_position, int32_t const recv_window = -1);
-ChangeInitialLeverageResponse           change_initial_leverage(API &api, std::string const &symbol, int8_t const leverage, int32_t const recv_window = -1);
-ChangeMultiAssetsModeResponse           change_multi_assets_mode(API &api, std::string const &multi_assets_margin, int32_t const recv_window = -1);
-ModifyIsolatedPositionMarginResponse    modify_isolated_position_margin(API &api, std::string const &symbol, double const amount, int8_t const type, std::string const &position_side, int32_t const recv_window = -1);
-PositionInformationV2Response           position_information_v2(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-PositionInformationV3Response           position_information_v3(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-PositionAdlQuantileEstimationResponse   position_adl_quantile_estimation(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-GetPositionMarginChangeHistoryResponse  get_position_margin_change_history(API &api, std::string const &symbol, int8_t const type, int64_t const start_time = -1, int64_t const end_time = -1, int32_t const limit = -1, int32_t const recv_window = -1);
-TestNewOrderResponse                    test_new_order(API &api, NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-// Websocket API Endpoints
-
-namespace WebsocketAPI {
-
-void new_order(API &api, NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1);
-void modify_order(API &api, ModifyOrder const &order, int32_t const recv_window = -1);
-void cancel_order(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
-void query_order(API &api, std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1);
-void position_information_v2(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-void position_information(API &api, std::string const &symbol = "", int32_t const recv_window = -1);
-
-} // namespace WebsocketAPI
-
-//------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 
 } // namespace Trade
 

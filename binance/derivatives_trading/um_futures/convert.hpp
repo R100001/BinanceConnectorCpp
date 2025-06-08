@@ -4,8 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api.hpp"
-#include "error.hpp"
+#include "api_declarations.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -31,7 +30,7 @@ struct ConvertPairs {
 struct ListAllConvertedPairsObject {
     std::vector<ConvertPairs> pairs;
 };
-using ListAllConvertedPairsResponse = API::ResponseOrError<ListAllConvertedPairsObject>;
+using ListAllConvertedPairsResponse = ResponseOrError<ListAllConvertedPairsObject>;
 
 struct SendQuoteRequestObject {
     std::string quote_id;
@@ -41,14 +40,14 @@ struct SendQuoteRequestObject {
     std::string to_amount;
     int64_t valid_timestamp;
 };
-using SendQuoteRequestResponse = API::ResponseOrError<SendQuoteRequestObject>;
+using SendQuoteRequestResponse = ResponseOrError<SendQuoteRequestObject>;
 
 struct AcceptQuoteObject {
     std::string order_id;
     std::string order_status;
     int64_t create_time;
 };
-using AcceptQuoteResponse = API::ResponseOrError<AcceptQuoteObject>;
+using AcceptQuoteResponse = ResponseOrError<AcceptQuoteObject>;
 
 struct OrderStatusObject {
     int64_t order_id;
@@ -61,30 +60,7 @@ struct OrderStatusObject {
     std::string inverse_ratio;
     int64_t create_time;
 };
-using OrderStatusResponse = API::ResponseOrError<OrderStatusObject>;
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-ListAllConvertedPairsResponse   list_all_converted_pairs(API &api, std::string const &from_asset = "", std::string const &to_asset = "");
-SendQuoteRequestResponse        send_quote_request(API &api, std::string const &from_asset, std::string const &to_asset, double const from_amount = -1, double const to_amount = -1, std::string const valid_time = "", int32_t const recv_window = -1);
-AcceptQuoteResponse             accept_quote(API &api, std::string const &quote_id, int32_t const recv_window = -1);
-OrderStatusResponse             order_status(API &api, std::string const &order_id = "", std::string const &quote_id = "");
-
-} // namespace RestAPI
-
-//------------------------------------------------------------------------------------
-
-// Websocket API Endpoints
-
-namespace WebsocketAPI {
-
-
-
-} // namespace WebsocketAPI
+using OrderStatusResponse = ResponseOrError<OrderStatusObject>;
 
 //------------------------------------------------------------------------------------
 

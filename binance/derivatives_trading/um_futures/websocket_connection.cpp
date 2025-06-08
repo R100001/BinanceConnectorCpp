@@ -2,113 +2,104 @@
 //------------------------------------------------------------------------------------
 
 #include "websocket_connection.hpp"
+#include "api.hpp"
 
 //------------------------------------------------------------------------------------
-
-namespace WebsocketAPI {
-
+//--------------------------------WebSocket API Methods-------------------------------
 //------------------------------------------------------------------------------------
 
-void connect(API &api) {
-    api.ws_api_connect();
+void API::ws_api_connect() {
+    _websocket_api->connect();
 }
 
 //------------------------------------------------------------------------------------
 
-void disconnect(API &api) {
-    api.ws_api_disconnect();
+void API::ws_api_disconnect() {
+    _websocket_api->disconnect();
 }
 
 //------------------------------------------------------------------------------------
 
-void set_on_message_callback(API &api, API::MsgCallbackT callback) {
-    api.ws_api_message_callback(callback);
+void API::ws_api_send_message(std::string_view message) {
+    _websocket_api->send_message(message);
 }
 
 //------------------------------------------------------------------------------------
 
-void set_on_error_callback(API &api, API::ErrCallbackT callback) {
-    api.ws_api_error_callback(callback);
+void API::ws_api_message_callback(MsgCallbackT callback) {
+    _websocket_api->set_on_message_callback(std::move(callback));
 }
 
 //------------------------------------------------------------------------------------
 
-} // namespace WebsocketAPI
+void API::ws_api_error_callback(ErrCallbackT callback) {
+    _websocket_api->set_on_error_callback(std::move(callback));
+}
 
 //------------------------------------------------------------------------------------
-
-namespace WebsocketMarketStreams {
-
+//--------------------------WebSocket Market Streams Methods--------------------------
 //------------------------------------------------------------------------------------
 
-void subscribe(API &api, std::string const &stream_name) {
-    api.ws_market_streams_subscribe(stream_name);
+void API::ws_market_streams_subscribe(std::string const &stream_name) {
+    _websocket_market_streams->subscribe_to_stream(stream_name);
 }
 
 //------------------------------------------------------------------------------------
 
-void subscribe(API &api, std::vector<std::string> const &stream_names) {
-    api.ws_market_streams_subscribe(stream_names);
+void API::ws_market_streams_subscribe(std::vector<std::string> const &stream_names) {
+    _websocket_market_streams->subscribe_to_stream(stream_names);
 }
 
 //------------------------------------------------------------------------------------
 
-void unsubscribe(API &api, std::string const &stream_name) {
-    api.ws_market_streams_unsubscribe(stream_name);
+void API::ws_market_streams_unsubscribe(std::string const &stream_name) {
+    _websocket_market_streams->unsubscribe_from_stream(stream_name);
 }
 
 //------------------------------------------------------------------------------------
 
-void unsubscribe(API &api, std::vector<std::string> const &stream_names) {
-    api.ws_market_streams_unsubscribe(stream_names);
+void API::ws_market_streams_unsubscribe(std::vector<std::string> const &stream_names) {
+    _websocket_market_streams->unsubscribe_from_stream(stream_names);
 }
 
 //------------------------------------------------------------------------------------
 
-void set_on_message_callback(API &api, API::MsgCallbackT callback) {
-    api.ws_user_data_streams_message_callback(callback);
+void API::ws_market_streams_message_callback(MsgCallbackT callback) {
+    _websocket_market_streams->set_on_message_callback_for_all_streams(std::move(callback));
 }
 
 //------------------------------------------------------------------------------------
 
-void set_on_error_callback(API &api, API::ErrCallbackT callback) {
-    api.ws_user_data_streams_error_callback(callback);
+void API::ws_market_streams_error_callback(ErrCallbackT callback) {
+    _websocket_market_streams->set_on_error_callback_for_all_streams(std::move(callback));
+}
+
+//------------------------------------------------------------------------------------
+//-------------------------WebSocket User Data Streams Methods------------------------
+//------------------------------------------------------------------------------------
+
+void API::ws_user_data_streams_start() {
+    _websocket_user_data_streams->start();
 }
 
 //------------------------------------------------------------------------------------
 
-} // namespace WebsocketMarketStreams
-
-//------------------------------------------------------------------------------------
-
-namespace WebsocketUserDataStreams {
-
-//------------------------------------------------------------------------------------
-
-void start(API &api) {
-    api.ws_user_data_streams_start();
+void API::ws_user_data_streams_stop() {
+    _websocket_user_data_streams->stop();
 }
 
 //------------------------------------------------------------------------------------
 
-void stop(API &api) {
-    api.ws_user_data_streams_stop();
-}
-
-//------------------------------------------------------------------------------------
-    
-void set_on_message_callback(API &api, API::MsgCallbackT callback) {
-    api.ws_user_data_streams_message_callback(callback);
+void API::ws_user_data_streams_message_callback(MsgCallbackT callback) {
+    _websocket_user_data_streams->set_on_message_callback(std::move(callback));
 }
 
 //------------------------------------------------------------------------------------
 
-void set_on_error_callback(API &api, API::ErrCallbackT callback) {
-    api.ws_user_data_streams_error_callback(callback);
+void API::ws_user_data_streams_error_callback(ErrCallbackT callback) {
+    _websocket_user_data_streams->set_on_error_callback(std::move(callback));
 }
 
 //------------------------------------------------------------------------------------
-
-} // namespace WebsocketUserDataStreams
-
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

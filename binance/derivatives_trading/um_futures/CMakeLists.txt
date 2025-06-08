@@ -1,9 +1,9 @@
 add_library(umfutures
-    market_data.cpp
-    convert.cpp
-    trade.cpp
     account.cpp
+    convert.cpp
+    market_data.cpp
     portfolio_margin_endpoints.cpp
+    trade.cpp
     websocket_connection.cpp
 )
 

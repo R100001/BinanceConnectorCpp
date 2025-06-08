@@ -4,8 +4,7 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api.hpp"
-#include "error.hpp"
+#include "api_declarations.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -20,18 +19,7 @@ struct ClassicPortfolioMarginAccountInformationObject {
     std::string asset;
     std::string max_withdrawal_amount;
 };
-using ClassicPortfolioMarginAccountInformationResponse = API::ResponseOrError<ClassicPortfolioMarginAccountInformationObject>;
-
-//------------------------------------------------------------------------------------
-
-// REST API Endpoints
-
-namespace RestAPI {
-
-ClassicPortfolioMarginAccountInformationResponse classic_portfolio_margin_account_information(API &api, std::string const &asset, int32_t const recv_window = -1);
-
-} // namespace RestAPI
-
+using ClassicPortfolioMarginAccountInformationResponse = ResponseOrError<ClassicPortfolioMarginAccountInformationObject>;
 
 //-------------------------------------------------------------------------------------
 
