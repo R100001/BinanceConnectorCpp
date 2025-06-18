@@ -11,7 +11,7 @@
 #include <chrono>
 #include <functional>
 
-#include "HTTPClient.hpp"
+#include "http_client.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -28,8 +28,9 @@ using ErrCallbackT = std::function<void(std::string_view)>;
 class WebSocketAPIClient : public std::enable_shared_from_this<WebSocketAPIClient> {
 
 private: // Constants
-    static constexpr std::string_view WS_API_URL = "wss://ws-fapi.binance.com/ws-fapi/v1";
-    static constexpr std::string_view WS_API_TESTNET_URL = "wss://testnet.binancefuture.com/ws-fapi/v1";
+    static constexpr std::string_view WS_API_HOST = "ws-fapi.binance.com";
+    static constexpr std::string_view WS_API_TESTNET_HOST = "testnet.binancefuture.com";
+    static constexpr std::string_view WS_API_ENDPOINT = "/ws-fapi/v1";
 
 public:
     WebSocketAPIClient();
@@ -37,7 +38,11 @@ public:
 
     void connect();
     void disconnect();
-    
+
+    void session_logon(std::string const &hmac_api_key, std::string const &private_key, std::string const &private_key_passphrase = "");
+    void session_status();
+    void session_logout();
+
     void send_message(std::string_view message);
 
     void set_on_message_callback(MsgCallbackT callback);
@@ -64,17 +69,19 @@ public:
     using StreamIdT = uint64_t;
 
 private: // Constants
-    static constexpr std::string_view WS_MARKET_STREAMS_URL = "wss://fstream.binance.com/ws/";
-    static constexpr std::string_view WS_MARKET_STREAMS_COMBINED_STREAMS_URL = "wss://fstream.binance.com/stream?streams=";
+    static constexpr std::string_view WS_MARKET_STREAMS_HOST = "fstream.binance.com";
+    static constexpr std::string_view WS_MARKET_STREAMS_ENDPOINT = "/ws";
+    static constexpr std::string_view WS_MARKET_STREAMS_COMBINED_STREAMS_ENDPOINT = "/stream?streams=";
 
 public:
     WebSocketMarketStreamsClient();
     ~WebSocketMarketStreamsClient();
 
-    void subscribe_to_stream(std::string const &stream_name);
-    void subscribe_to_stream(std::vector<std::string> const &stream_names);
-    void unsubscribe_from_stream(std::string const &stream_name);
-    void unsubscribe_from_stream(std::vector<std::string> const &stream_names);
+    void connect();
+    void disconnect();
+    void subscribe_to_stream(std::string const &stream_name, std::string const &id);
+    void unsubscribe_from_stream(std::string const &stream_name, std::string const &id);
+    void list_subscriptions(std::string const &id);
 #if 0 // Until queues are ready
     void unsubscribe_from_all_streams();
     void set_on_message_callback_for_stream(StreamIdT const stream_id, MsgCallbackT callback);
@@ -105,22 +112,24 @@ private:
 class WebSocketUserDataStreamsClient : public std::enable_shared_from_this<WebSocketUserDataStreamsClient> {
 
 private: // Constants
-    static constexpr std::string_view REST_API_USER_DATA_STREAMS_URL = "https://fapi.binance.com";
-    static constexpr std::string_view WS_USER_DATA_STREAMS_URL = "wss://fstream.binance.com/ws/";
+    static constexpr std::string_view REST_API_USER_DATA_STREAMS_HOST = "https://fapi.binance.com";
+    static constexpr std::string_view WS_USER_DATA_STREAMS_HOST = "fstream.binance.com";
+    static constexpr std::string_view WS_USER_DATA_STREAMS_ENDPOINT = "/ws";
 
     static constexpr std::string_view LISTEN_KEY_ENDPOINT = "/fapi/v1/listenKey";
 
-    static constexpr std::string_view LISTEN_KEY_JSON_PREFIX = R"("listenKey":")";
+    static constexpr std::string_view LISTEN_KEY_JSON_PREFIX = R"("listenKey": ")";
     static constexpr size_t LISTEN_KEY_JSON_PREFIX_LENGTH = LISTEN_KEY_JSON_PREFIX.size();
     static constexpr size_t LISTEN_KEY_LENGTH = 64;
-    static constexpr size_t WS_URL_LENGTH = WS_USER_DATA_STREAMS_URL.size();
+    static constexpr size_t WS_HOST_LENGTH = WS_USER_DATA_STREAMS_HOST.size();
+    static constexpr size_t WS_ENDPOINT_LENGTH = WS_USER_DATA_STREAMS_ENDPOINT.size();
 
 public:
-    WebSocketUserDataStreamsClient(std::string_view api_key);
+    WebSocketUserDataStreamsClient(std::string_view hmac_api_key);
     ~WebSocketUserDataStreamsClient();
 
-    void start();
-    void stop();
+    void connect();
+    void disconnect();
     void set_on_message_callback(MsgCallbackT callback);
     void set_on_error_callback(ErrCallbackT callback);
 

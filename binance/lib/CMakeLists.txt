@@ -4,14 +4,14 @@ add_library(openssllib STATIC
 target_link_libraries(openssllib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
 add_library(httplib STATIC
-    HTTPClient.cpp
+    http_client.cpp
 )
 target_link_libraries(httplib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto)
 
 add_library(websocketlib STATIC
-    WebSocketClient.cpp
+    websocket_client.cpp
 )
-target_link_libraries(websocketlib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto simdjson::simdjson)
+target_link_libraries(websocketlib PRIVATE Boost::system OpenSSL::SSL OpenSSL::Crypto simdjson::simdjson openssllib)
 
 add_library(utils STATIC
     utils.cpp

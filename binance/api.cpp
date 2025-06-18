@@ -9,8 +9,7 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/beast/websocket/ssl.hpp>
 
-#include "lib/utils.hpp"
-#include "lib/authentication.hpp"
+#include "utils.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -19,37 +18,29 @@ namespace net = boost::asio;
 //------------------------------------------------------------------------------------
 
 API::API(
-    std::string_view key,
-    std::string_view secret,
+    std::string_view hmac_api_key,
+    std::string_view hmac_api_secret,
+    std::string_view ed25519_api_key,
+    std::string_view ed25519_private_key,
+    std::string_view ed25519_private_key_passphrase,
     int32_t const timeout,
     std::string_view proxy,
     bool const show_limit_usage,
-    bool const show_header,
-    std::string_view private_key,
-    std::string_view private_key_passphrase)
-    : _key(key),
-      _secret(secret),
+    bool const show_header
+    )
+    : _hmac_api_key(hmac_api_key),
+      _hmac_api_secret(hmac_api_secret),
+      _ed25519_api_key(ed25519_api_key),
+      _ed25519_private_key(ed25519_private_key),
+      _ed25519_private_key_passphrase(ed25519_private_key_passphrase),
       _timeout(timeout),
       _proxy(proxy),
       _show_limit_usage(show_limit_usage),
       _show_header(show_header),
-      _private_key(private_key),
-      _private_key_passphrase(private_key_passphrase),
-      _rest_api(HTTPClient(key)),
+      _rest_api(HTTPClient(hmac_api_key)),
       _websocket_api(std::make_shared<WebSocketAPIClient>()),
       _websocket_market_streams(std::make_shared<WebSocketMarketStreamsClient>()),
-      _websocket_user_data_streams(std::make_shared<WebSocketUserDataStreamsClient>(key)) {}
-
-//------------------------------------------------------------------------------------
-
-std::string API::sign_message(std::string_view message) const
-{
-    if(this->_private_key.empty()) {
-        return hmac_hashing(this->_secret, message);
-    } else {
-        return rsa_signature(this->_private_key, message, this->_private_key_passphrase);
-    }
-}
+      _websocket_user_data_streams(std::make_shared<WebSocketUserDataStreamsClient>(hmac_api_key)) {}
 
 //------------------------------------------------------------------------------------
 

@@ -4,7 +4,9 @@ add_library(umfutures
     market_data.cpp
     portfolio_margin_endpoints.cpp
     trade.cpp
-    websocket_connection.cpp
+    websocket_api.cpp
+    websocket_market_streams.cpp
+    websocket_user_data_streams.cpp
 )
 
 target_include_directories(umfutures PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

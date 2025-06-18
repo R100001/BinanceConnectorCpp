@@ -182,10 +182,8 @@ std::string prepare_query_string(Parameters const &params)
             break;
         case ParameterTypeIndex::STRING: {
             std::string_view str_value = std::get<std::string>(value);
-            buffer[pos++] = '"';
             std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
             pos += str_value.size();
-            buffer[pos++] = '"';
             break;
             }
         case ParameterTypeIndex::VECTOR_STRING: {
@@ -211,7 +209,7 @@ std::string prepare_query_string(Parameters const &params)
 
 //------------------------------------------------------------------------------------
 
-std::string prepare_json_string(Parameters const &params)
+std::string prepare_json_string(Parameters const &params, bool const no_quotes_in_params)
 {
     constexpr size_t buffer_size = 4096;
     std::array<char, buffer_size> buffer;
@@ -260,11 +258,25 @@ std::string prepare_json_string(Parameters const &params)
             append_number(buffer.data(), pos, std::get<double>(value));
             break;
         case ParameterTypeIndex::STRING: {
-            buffer[pos++] = '"';
+            if(!no_quotes_in_params || name != "params") buffer[pos++] = '"';
             std::string_view str_value = std::get<std::string>(value);
             std::memcpy(buffer.data() + pos, str_value.data(), str_value.size());
             pos += str_value.size();
-            buffer[pos++] = '"';
+            if(!no_quotes_in_params || name != "params") buffer[pos++] = '"';
+            break;
+            }
+        case ParameterTypeIndex::VECTOR_STRING: {
+            const auto &vec_value = std::get<std::vector<std::string>>(value);
+            buffer[pos++] = '[';
+            for (const auto& str : vec_value) {
+                buffer[pos++] = '"';
+                std::memcpy(buffer.data() + pos, str.data(), str.size());
+                pos += str.size();
+                buffer[pos++] = '"';
+                buffer[pos++] = ',';
+            }
+            if (!vec_value.empty()) --pos;
+            buffer[pos++] = ']';
             break;
             }
         }

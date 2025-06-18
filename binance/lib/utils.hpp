@@ -10,7 +10,22 @@
 #include "simdjson.h"
 
 //------------------------------------------------------------------------------------
-using Parameter = std::variant<bool, int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t, double, std::string, std::vector<std::string>>;
+
+using Parameter = std::variant<
+    bool,
+    int8_t,
+    int16_t,
+    int32_t,
+    int64_t,
+    uint8_t,
+    uint16_t,
+    uint32_t,
+    uint64_t,
+    double,
+    std::string,
+    std::vector<std::string>
+>;
+
 using Parameters = std::vector<std::pair<std::string, Parameter>>;
 
 enum class ParameterTypeIndex {
@@ -29,7 +44,7 @@ enum class ParameterTypeIndex {
 };
 
 std::string prepare_query_string(Parameters const &params);
-std::string prepare_json_string(Parameters const &params);
+std::string prepare_json_string(Parameters const &params, bool const no_quotes_in_params = false);
 
 //------------------------------------------------------------------------------------
 

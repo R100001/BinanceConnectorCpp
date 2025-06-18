@@ -1,5 +1,5 @@
 
-#include "HTTPClient.hpp"
+#include "http_client.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -114,8 +114,8 @@ private:
     boost::beast::http::fields _default_headers;
 };
 
-HTTPClient::HTTPClient(std::string_view api_key) 
-    : _impl(std::make_unique<HTTPClientImpl>(api_key)) {}
+HTTPClient::HTTPClient(std::string_view hmac_api_key) 
+    : _impl(std::make_unique<HTTPClientImpl>(hmac_api_key)) {}
 
 HTTPClient::~HTTPClient() = default;
 

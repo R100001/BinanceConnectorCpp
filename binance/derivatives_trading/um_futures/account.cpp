@@ -874,34 +874,3 @@ GetBnbBurnStatusResponse API::get_bnb_burn_status(int32_t const recv_window) {
 }
 
 //---------------------------------------------------------------------------------------
-
-void API::futures_account_balance_v2_stream(int32_t const recv_window) {
-    std::string const method = "v2/account.balance";
-
-    Parameters params{
-        {"apiKey", api_key()},
-        {"timestamp", get_timestamp()}
-    };
-
-    // api.ws_api_send_message()
-}
-
-//---------------------------------------------------------------------------------------
-
-void API::futures_account_balance_stream(int32_t const recv_window) {
-    std::string const method = "v1/account.balance";
-}
-
-//---------------------------------------------------------------------------------------
-
-void API::account_information_v2_stream(int32_t const recv_window) {
-    std::string const method = "v2/account.status";
-}
-
-//---------------------------------------------------------------------------------------
-
-void API::account_information_stream(int32_t const recv_window) {
-    std::string const method = "v1/account.status";
-}
-
-//---------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 
 //---------------------------------------------------------------------------------------
 
-#include "WebSocketClient.hpp"
+#include "websocket_client.hpp"
 
 #include <iostream>
 #include <queue>
@@ -12,6 +12,7 @@
 #include <boost/beast/websocket/ssl.hpp>
 
 #include "utils.hpp"
+#include "authentication.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -107,7 +108,7 @@ private: // Constants
 
 public:
     WebSocketClientImpl(std::shared_ptr<net::io_context> ioc, std::shared_ptr<net::ssl::context> ctx, 
-                    std::string_view host, std::string_view port = "443",
+                    std::string_view host, std::string_view endpoint, std::string_view port = "443",
                     std::chrono::milliseconds initial_reconnect_delay = std::chrono::milliseconds(default_initial_reconnect_delay),
                     std::chrono::milliseconds max_reconnect_delay = std::chrono::milliseconds(default_max_reconnect_delay));
     ~WebSocketClientImpl();
@@ -163,6 +164,7 @@ private:
     beast::flat_buffer _buffer;
     net::steady_timer _reconnect_timer;
 
+    bool _connected;
     std::chrono::milliseconds _initial_reconnect_delay;
     std::chrono::milliseconds _max_reconnect_delay;
     std::chrono::milliseconds _current_reconnect_delay;
@@ -185,6 +187,7 @@ namespace ws     = beast::websocket;
 WebSocketClientImpl::WebSocketClientImpl(std::shared_ptr<net::io_context> ioc,
                                          std::shared_ptr<net::ssl::context> ctx,
                                          std::string_view host,
+                                         std::string_view endpoint,
                                          std::string_view port,
                                          std::chrono::milliseconds initial_reconnect_delay,
                                          std::chrono::milliseconds max_reconnect_delay)
@@ -192,8 +195,10 @@ WebSocketClientImpl::WebSocketClientImpl(std::shared_ptr<net::io_context> ioc,
       _ssl_ctx(ctx),
       _resolver(*ioc),
       _host(host),
+      _endpoint(endpoint),
       _port(port),
       _reconnect_timer(*ioc),
+      _connected(false),
       _initial_reconnect_delay(initial_reconnect_delay),
       _max_reconnect_delay(max_reconnect_delay),
       _current_reconnect_delay(initial_reconnect_delay),
@@ -223,6 +228,7 @@ void WebSocketClientImpl::connect() {
 //---------------------------------------------------------------------------------------
 
 void WebSocketClientImpl::send(std::string_view message) {
+    if(!_connected) return;
     _wss->async_write(net::buffer(message),
         [this](beast::error_code ec, std::size_t) {
             if (ec) on_error(ec);
@@ -337,8 +343,6 @@ void WebSocketClientImpl::do_connect() {
     _wss = std::make_unique<ws::stream<ssl::stream<beast::tcp_stream>>>(
         net::make_strand(*_ioc), *_ssl_ctx);
 
-    // SSL_set_tlsext_host_name(_wss->next_layer().native_handle(), _host.c_str());
-
     _wss->control_callback(
         [this](ws::frame_type type, beast::string_view payload) {
             if (type == ws::frame_type::ping) {
@@ -357,6 +361,7 @@ void WebSocketClientImpl::do_connect() {
                 do_reconnect();
                 return;
             }
+            std::cout << "Resolved " << _host << ":" << _port << std::endl;
             _wss->next_layer().next_layer().async_connect(results,
                 [this](beast::error_code ec, tcp::endpoint ep) {
                     if (ec) {
@@ -379,6 +384,7 @@ void WebSocketClientImpl::do_connect() {
                                         return;
                                     }
                                     _current_reconnect_delay = _initial_reconnect_delay;
+                                    _connected = true;
                                     do_read();
                                     _reconnect_timer.expires_after(std::chrono::hours(23));
                                     _reconnect_timer.async_wait(
@@ -456,12 +462,17 @@ WebSocketAPIClient::WebSocketAPIClient() {
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
     
-    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_URL);
+    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_HOST, WS_API_ENDPOINT);
 }
 
 //---------------------------------------------------------------------------------------
 
-WebSocketAPIClient::~WebSocketAPIClient() = default;
+WebSocketAPIClient::~WebSocketAPIClient() {
+    if (_client) {
+        _client->close();
+    }
+    _client.reset();
+}
 
 //---------------------------------------------------------------------------------------
 
@@ -478,7 +489,45 @@ void WebSocketAPIClient::disconnect() {
 
 //---------------------------------------------------------------------------------------
 
+void WebSocketAPIClient::session_logon(std::string const &ed25519_api_key, std::string const &ed25519_private_key, std::string const &ed25519_private_key_passphrase) {
+    Parameters sign_params{
+        {"apiKey", ed25519_api_key},
+        {"timestamp", get_timestamp()}
+    };
+    sign_params.emplace_back("signature", ed25519_signature(ed25519_private_key, prepare_query_string(sign_params), ed25519_private_key_passphrase));
+
+    Parameters const request_params{
+        {"id", "slon"},
+        {"method", "session.logon"},
+        {"params", prepare_json_string(sign_params)}
+    };
+    send_message(prepare_json_string(request_params, true));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::session_status() {
+    Parameters const request_params{
+        {"id", "ss"},
+        {"method", "session.status"},
+    };
+    send_message(prepare_json_string(request_params));
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketAPIClient::session_logout() {
+    Parameters const request_params{
+        {"id", "slout"},
+        {"method", "session.logout"},
+    };
+    send_message(prepare_json_string(request_params));
+}
+
+//---------------------------------------------------------------------------------------
+
 void WebSocketAPIClient::send_message(std::string_view message) {
+    std::cout << "Sending message: " << message << std::endl;
     _client->send(message);
 }
 
@@ -545,50 +594,67 @@ WebSocketMarketStreamsClient::WebSocketMarketStreamsClient() {
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
 
-    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_MARKET_STREAMS_COMBINED_STREAMS_URL);
+    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_MARKET_STREAMS_HOST, WS_MARKET_STREAMS_ENDPOINT);
+}
 
+//---------------------------------------------------------------------------------------
+
+WebSocketMarketStreamsClient::~WebSocketMarketStreamsClient() {
+    if (_client) {
+        _client->close();
+    }
+    _client.reset();
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::connect() {
     _client->connect();
     _client->run();
 }
 
 //---------------------------------------------------------------------------------------
 
-WebSocketMarketStreamsClient::~WebSocketMarketStreamsClient() = default;
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketMarketStreamsClient::subscribe_to_stream(std::string const &stream_name) {
-    subscribe_to_stream(std::vector<std::string>{stream_name});
+void WebSocketMarketStreamsClient::disconnect() {
+    _client->close();
 }
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketMarketStreamsClient::subscribe_to_stream(std::vector<std::string> const &stream_names) {
+void WebSocketMarketStreamsClient::subscribe_to_stream(std::string const &stream_name, std::string const &id) {
 
     Parameters const params{
         {"method", "SUBSCRIBE"},
-        {"params", stream_names},
-        {"id", 1}
+        {"params", std::vector<std::string>{stream_name}},
+        {"id", id}
     };
+
+    std::string const message = prepare_json_string(params);
+    std::cout << "Sending message: " << message << std::endl;
+    _client->send(message);
+}
+
+//---------------------------------------------------------------------------------------
+
+void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::string const &stream_name, std::string const &id) {
+    Parameters const params{
+        {"method", "UNSUBSCRIBE"},
+        {"params", std::vector<std::string>{stream_name}},
+        {"id", id}
+    };
+
     std::string const message = prepare_json_string(params);
     _client->send(message);
 }
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::string const &stream_name) {
-    unsubscribe_from_stream(std::vector<std::string>{stream_name});
-}
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::vector<std::string> const &stream_names) {
-
+void WebSocketMarketStreamsClient::list_subscriptions(std::string const &id) {
     Parameters const params{
-        {"method", "UNSUBSCRIBE"},
-        {"params", stream_names},
-        {"id", 2}
+        {"method", "LIST_SUBSCRIPTIONS"},
+        {"id", id}
     };
+
     std::string const message = prepare_json_string(params);
     _client->send(message);
 }
@@ -613,8 +679,8 @@ void WebSocketMarketStreamsClient::set_on_error_callback_for_all_streams(ErrCall
 //---------------------------WebSocketUserDataStreamsClient------------------------------
 //---------------------------------------------------------------------------------------
 
-WebSocketUserDataStreamsClient::WebSocketUserDataStreamsClient(std::string_view api_key)
-    : _rest_api(HTTPClient(api_key)),
+WebSocketUserDataStreamsClient::WebSocketUserDataStreamsClient(std::string_view hmac_api_key)
+    : _rest_api(HTTPClient(hmac_api_key)),
       _timer(nullptr),
       _on_message_callback(nullptr),
       _on_error_callback(nullptr) {}
@@ -625,22 +691,23 @@ WebSocketUserDataStreamsClient::~WebSocketUserDataStreamsClient() = default;
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketUserDataStreamsClient::start() {
+void WebSocketUserDataStreamsClient::connect() {
 
     std::string const listen_key_json = _rest_api.post(LISTEN_KEY_ENDPOINT);
     std::string_view listen_key_json_view(listen_key_json);
-
     std::string_view listen_key = listen_key_json_view.substr(LISTEN_KEY_JSON_PREFIX_LENGTH, LISTEN_KEY_LENGTH);
 
-    char websocket_url[WS_URL_LENGTH + LISTEN_KEY_LENGTH + 1];
-    snprintf(websocket_url, sizeof(websocket_url), "%s%s", WS_USER_DATA_STREAMS_URL.data(), listen_key.data());
+    char websocket_host[WS_HOST_LENGTH + 1];
+    snprintf(websocket_host, sizeof(websocket_host), "%s", WS_USER_DATA_STREAMS_HOST.data());
+    char websocket_endpoint[WS_ENDPOINT_LENGTH + 1 + LISTEN_KEY_LENGTH + 1];
+    snprintf(websocket_endpoint, sizeof(websocket_endpoint), "%s/%s", WS_USER_DATA_STREAMS_ENDPOINT.data(), listen_key.data());
 
     auto ioc = std::make_shared<net::io_context>();
     auto ctx = std::make_shared<net::ssl::context>(net::ssl::context::tlsv12_client);
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
 
-    _client = std::make_unique<WebSocketClientImpl>(ioc, ctx, websocket_url);
+    _client = std::make_unique<WebSocketClientImpl>(ioc, ctx, websocket_host, websocket_endpoint);
     _timer = std::make_shared<InvokeTimer>(ioc);
 
     if( _on_message_callback ) {
@@ -658,7 +725,7 @@ void WebSocketUserDataStreamsClient::start() {
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketUserDataStreamsClient::stop() {
+void WebSocketUserDataStreamsClient::disconnect() {
 
     _rest_api.del(LISTEN_KEY_ENDPOINT);
 
@@ -677,8 +744,8 @@ void WebSocketUserDataStreamsClient::ping() {
     std::string const response = _rest_api.put(LISTEN_KEY_ENDPOINT);
 
     if ( response.substr(0, LISTEN_KEY_JSON_PREFIX_LENGTH) != LISTEN_KEY_JSON_PREFIX ) {
-        stop();
-        start();
+        disconnect();
+        connect();
     }
 }
 

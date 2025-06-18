@@ -17,7 +17,7 @@ private: // Constants
     static constexpr std::string_view REST_API_TESTNET_URL = "https://testnet.binancefuture.com";
 
 public:
-    HTTPClient(std::string_view api_key);
+    HTTPClient(std::string_view hmac_api_key);
     ~HTTPClient();
 
     std::string get(std::string_view const endpoint, int32_t const timeout = 60, std::string_view const proxy = "") const;

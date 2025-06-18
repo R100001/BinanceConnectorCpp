@@ -58,22 +58,16 @@ BIO *createBIOForPrivateKey(std::string_view private_key) {
 EVP_PKEY* loadPrivateKeyFromBIO(BIO* bio, std::string_view private_key_pass) {
     EVP_PKEY* pkey = nullptr;
     
-    if (private_key_pass.empty()) {
-        pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, nullptr);
-    } else {
-        pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, const_cast<char*>(private_key_pass.data()));
-    }
-    
-    BIO_free(bio);
+    pkey = PEM_read_bio_PrivateKey(bio, nullptr, nullptr, private_key_pass.empty() ? nullptr : const_cast<char*>(private_key_pass.data()));
     
     if (!pkey) {
         throw std::runtime_error("Failed to load RSA private key");
     }
     
-    // Verify that the key is actually an RSA key (optional but recommended)
-    if (EVP_PKEY_get_base_id(pkey) != EVP_PKEY_RSA) {
+    // Verify that the key is actually an ED25519 key (optional but recommended)
+    if (EVP_PKEY_get_base_id(pkey) != EVP_PKEY_ED25519) {
         EVP_PKEY_free(pkey);
-        throw std::runtime_error("Loaded key is not an RSA key");
+        throw std::runtime_error("Loaded key is not an ED25519 key");
     }
     
     return pkey;
@@ -108,35 +102,33 @@ std::string signPayload(EVP_PKEY* pkey, std::string_view payload) {
     }
 
     // Initialize the signing operation
-    if (EVP_DigestSignInit(md_ctx, nullptr, EVP_sha256(), nullptr, pkey) != 1) {
+    if (EVP_DigestSignInit(md_ctx, nullptr, nullptr, nullptr, pkey) != 1) {
         EVP_MD_CTX_free(md_ctx);
         throw std::runtime_error("Failed to initialize signing");
     }
 
-    // Provide the hash to sign
-    if (EVP_DigestSignUpdate(md_ctx, payload.data(), payload.size()) != 1) {
-        EVP_MD_CTX_free(md_ctx);
-        throw std::runtime_error("Failed to update signing context");
-    }
-
-    // Get the signature size
+    // Get signature size (first call with nullptr)
     size_t sig_len;
-    if (EVP_DigestSignFinal(md_ctx, nullptr, &sig_len) != 1) {
+    if (EVP_DigestSign(md_ctx, nullptr, &sig_len, 
+                       reinterpret_cast<const unsigned char*>(payload.data()), 
+                       payload.size()) != 1) {
         EVP_MD_CTX_free(md_ctx);
         throw std::runtime_error("Failed to get signature length");
     }
 
-    // Allocate space for the signature
+    // Allocate space and create the signature
     std::vector<unsigned char> signature(sig_len);
-    if (EVP_DigestSignFinal(md_ctx, signature.data(), &sig_len) != 1) {
+    if (EVP_DigestSign(md_ctx, signature.data(), &sig_len,
+                       reinterpret_cast<const unsigned char*>(payload.data()),
+                       payload.size()) != 1) {
         EVP_MD_CTX_free(md_ctx);
-        throw std::runtime_error("RSA signing failed");
+        throw std::runtime_error("Failed to sign payload");
     }
 
     // Clean up
     EVP_MD_CTX_free(md_ctx);
 
-    // Resize signature to actual length
+    // Resize to actual signature length
     signature.resize(sig_len);
 
     // Return base64-encoded signature
@@ -145,14 +137,19 @@ std::string signPayload(EVP_PKEY* pkey, std::string_view payload) {
 
 //------------------------------------------------------------------------------------
 
-std::string rsa_signature(std::string_view private_key, std::string_view payload, 
+#include <iostream>
+std::string ed25519_signature(std::string_view private_key, std::string_view payload, 
                           std::string_view private_key_passphrase = "") {
+
+    std::cout << "Payload to sign: " << payload << std::endl;
 
     BIO* bio = createBIOForPrivateKey(private_key);
 
     EVP_PKEY* pkey = loadPrivateKeyFromBIO(bio, private_key_passphrase);
     
-    std::string signature = signPayload(pkey, payload);
+    BIO_free(bio);
+    
+    std::string const signature = signPayload(pkey, payload);
 
     EVP_PKEY_free(pkey);
 
