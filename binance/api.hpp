@@ -177,27 +177,27 @@ public: // Websocket API Streams
     void ws_api_error_callback(ErrCallbackT callback);
 
     // Account Streams
-    void futures_account_balance_v2_stream(int32_t const recv_window = -1, std::string const &id = "");
-    void futures_account_balance_stream(int32_t const recv_window = -1, std::string const &id = "");
-    void account_information_v2_stream(int32_t const recv_window = -1, std::string const &id = "");
-    void account_information_stream(int32_t const recv_window = -1, std::string const &id = "");
+    void futures_account_balance_v2_stream(int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void futures_account_balance_stream(int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void account_information_v2_stream(int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void account_information_stream(int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
 
     // Convert Streams
 
     // Market Data Streams
-    void order_book_stream(std::string const &symbol, int16_t const &limit = -1, std::string const &id = "");
-    void symbol_price_ticker_stream(std::string const &symbol = "", std::string const &id = "");
-    void symbol_order_book_ticker_stream(std::string const &symbol = "", std::string const &id = "");
+    void order_book_stream(std::string const &symbol, int16_t const &limit = -1);
+    void symbol_price_ticker_stream(std::string const &symbol = "");
+    void symbol_order_book_ticker_stream(std::string const &symbol = "");
 
     // Portfolio Margin Streams
     
     // Trade Streams
-    void new_order_stream(Trade::NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1, std::string const &id = "");
-    void modify_order_stream(Trade::ModifyOrder const &order, int32_t const recv_window = -1, std::string const &id = "");
-    void cancel_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1, std::string const &id = "");
-    void query_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1, std::string const &id = "");
-    void position_information_v2_stream(std::string const &symbol = "", int32_t const recv_window = -1, std::string const &id = "");
-    void position_information_stream(std::string const &symbol = "", int32_t const recv_window = -1, std::string const &id = "");
+    void new_order_stream(Trade::NewOrder const &order, bool const close_position = false, int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void modify_order_stream(Trade::ModifyOrder const &order, int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void cancel_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void query_order_stream(std::string const &symbol, int64_t const order_id = -1, std::string const orig_client_order_id = "", int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void position_information_v2_stream(std::string const &symbol = "", int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
+    void position_information_stream(std::string const &symbol = "", int32_t const recv_window = -1, std::string const &hmac_api_key = "", std::string const &hmac_api_secret = "");
 
 public: // Websocket Market Streams
 
@@ -206,26 +206,26 @@ public: // Websocket Market Streams
     void ws_market_streams_message_callback(MsgCallbackT callback);
     void ws_market_streams_error_callback(ErrCallbackT callback);
 
-    void aggregate_trade_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void mark_price_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, uint8_t const update_speed = 3, std::string const &id = "");
-    void mark_price_stream_for_all_market(WebsocketMarketStreamsMethod const wsms_method, uint8_t const update_speed = 3, std::string const &id = "");
-    void kline_candlestick_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &interval, std::string const &id = "");
-    void continuous_contract_kline_candlestick_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &pair, std::string const &contract_type, std::string const &interval, std::string const &id = "");
-    void individual_symbol_mini_ticker_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void all_market_mini_ticker_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &id = "");
-    void individual_symbol_ticker_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void all_market_ticker_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &id = "");
-    void individual_symbol_book_ticker_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void all_book_tickers_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &id = "");
-    void liquidation_order_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void all_market_liquidation_order_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &id = "");
-    void partial_book_depth_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, int16_t const levels, uint16_t const update_speed = 250, std::string const &id = "");
-    void diff_book_depth_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, uint16_t const update_speed = 250, std::string const &id = "");
-    void composite_index_symbol_information_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &id = "");
-    void contract_info_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &id = "");
-    void multi_assets_mode_asset_index(WebsocketMarketStreamsMethod const wsms_method, std::string const &asset_symbol = "", std::string const &id = "");
-    void ws_market_streams_multiple_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &streams, std::string const &id = "");
-    void ws_market_streams_list_subscriptions(std::string const &id = "") const;
+    void aggregate_trade_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void mark_price_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, uint8_t const update_speed = 3);
+    void mark_price_stream_for_all_market(WebsocketMarketStreamsMethod const wsms_method, uint8_t const update_speed = 3);
+    void kline_candlestick_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, std::string const &interval);
+    void continuous_contract_kline_candlestick_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &pair, std::string const &contract_type, std::string const &interval);
+    void individual_symbol_mini_ticker_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void all_market_mini_ticker_streams(WebsocketMarketStreamsMethod const wsms_method);
+    void individual_symbol_ticker_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void all_market_ticker_streams(WebsocketMarketStreamsMethod const wsms_method);
+    void individual_symbol_book_ticker_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void all_book_tickers_stream(WebsocketMarketStreamsMethod const wsms_method);
+    void liquidation_order_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void all_market_liquidation_order_streams(WebsocketMarketStreamsMethod const wsms_method);
+    void partial_book_depth_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, int16_t const levels, uint16_t const update_speed = 250);
+    void diff_book_depth_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol, uint16_t const update_speed = 250);
+    void composite_index_symbol_information_stream(WebsocketMarketStreamsMethod const wsms_method, std::string const &symbol);
+    void contract_info_stream(WebsocketMarketStreamsMethod const wsms_method);
+    void multi_assets_mode_asset_index(WebsocketMarketStreamsMethod const wsms_method, std::string const &asset_symbol = "");
+    void ws_market_streams_multiple_streams(WebsocketMarketStreamsMethod const wsms_method, std::string const &streams);
+    void ws_market_streams_list_subscriptions() const;
 
 public: // Websocket User Data Streams
 
@@ -367,7 +367,7 @@ template <API::RequestType req_type>
 std::string API::sign_request(std::string_view endpoint, Parameters &payload)
 {
     payload.emplace_back(std::make_pair("timestamp", std::to_string(get_timestamp())));
-    payload.emplace_back(std::make_pair("signature", hmac_hashing(hmac_api_secret(), prepare_query_string(payload))));
+    payload.emplace_back(std::make_pair("signature", hmac_signature(hmac_api_secret(), prepare_query_string(payload))));
     return this->send_request<req_type>(endpoint, payload);
 }
 

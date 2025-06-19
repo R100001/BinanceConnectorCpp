@@ -27,7 +27,7 @@ static std::string to_hex_string(unsigned char const * data, size_t const length
 
 //------------------------------------------------------------------------------------
 
-std::string hmac_hashing(std::string_view secret, std::string_view payload) {
+std::string hmac_signature(std::string_view secret, std::string_view payload) {
     unsigned char digest[SHA256_DIGEST_LENGTH];
     unsigned int digest_len;
 

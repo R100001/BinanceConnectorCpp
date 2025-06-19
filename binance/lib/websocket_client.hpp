@@ -39,10 +39,6 @@ public:
     void connect();
     void disconnect();
 
-    void session_logon(std::string const &hmac_api_key, std::string const &private_key, std::string const &private_key_passphrase = "");
-    void session_status();
-    void session_logout();
-
     void send_message(std::string_view message);
 
     void set_on_message_callback(MsgCallbackT callback);
@@ -79,9 +75,8 @@ public:
 
     void connect();
     void disconnect();
-    void subscribe_to_stream(std::string const &stream_name, std::string const &id);
-    void unsubscribe_from_stream(std::string const &stream_name, std::string const &id);
-    void list_subscriptions(std::string const &id);
+
+    void send_message(std::string_view message);
 #if 0 // Until queues are ready
     void unsubscribe_from_all_streams();
     void set_on_message_callback_for_stream(StreamIdT const stream_id, MsgCallbackT callback);
@@ -89,8 +84,8 @@ public:
     void set_on_error_callback_for_stream(StreamIdT const stream_id, ErrCallbackT callback);
     void set_on_error_callback_for_stream(std::string_view stream_name, ErrCallbackT callback);
 #endif // Until queues are ready
-    void set_on_message_callback_for_all_streams(MsgCallbackT callback);
-    void set_on_error_callback_for_all_streams(ErrCallbackT callback);
+    void set_on_message_callback(MsgCallbackT callback);
+    void set_on_error_callback(ErrCallbackT callback);
     
 #if 0 // Until queues are ready
     bool any_message() const;

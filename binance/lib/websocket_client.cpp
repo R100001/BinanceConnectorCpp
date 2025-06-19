@@ -487,47 +487,10 @@ void WebSocketAPIClient::disconnect() {
     _client->close();
 }
 
-//---------------------------------------------------------------------------------------
-
-void WebSocketAPIClient::session_logon(std::string const &ed25519_api_key, std::string const &ed25519_private_key, std::string const &ed25519_private_key_passphrase) {
-    Parameters sign_params{
-        {"apiKey", ed25519_api_key},
-        {"timestamp", get_timestamp()}
-    };
-    sign_params.emplace_back("signature", ed25519_signature(ed25519_private_key, prepare_query_string(sign_params), ed25519_private_key_passphrase));
-
-    Parameters const request_params{
-        {"id", "slon"},
-        {"method", "session.logon"},
-        {"params", prepare_json_string(sign_params)}
-    };
-    send_message(prepare_json_string(request_params, true));
-}
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketAPIClient::session_status() {
-    Parameters const request_params{
-        {"id", "ss"},
-        {"method", "session.status"},
-    };
-    send_message(prepare_json_string(request_params));
-}
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketAPIClient::session_logout() {
-    Parameters const request_params{
-        {"id", "slout"},
-        {"method", "session.logout"},
-    };
-    send_message(prepare_json_string(request_params));
-}
 
 //---------------------------------------------------------------------------------------
 
 void WebSocketAPIClient::send_message(std::string_view message) {
-    std::cout << "Sending message: " << message << std::endl;
     _client->send(message);
 }
 
@@ -621,53 +584,19 @@ void WebSocketMarketStreamsClient::disconnect() {
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketMarketStreamsClient::subscribe_to_stream(std::string const &stream_name, std::string const &id) {
-
-    Parameters const params{
-        {"method", "SUBSCRIBE"},
-        {"params", std::vector<std::string>{stream_name}},
-        {"id", id}
-    };
-
-    std::string const message = prepare_json_string(params);
-    std::cout << "Sending message: " << message << std::endl;
+void WebSocketMarketStreamsClient::send_message(std::string_view message) {
     _client->send(message);
 }
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketMarketStreamsClient::unsubscribe_from_stream(std::string const &stream_name, std::string const &id) {
-    Parameters const params{
-        {"method", "UNSUBSCRIBE"},
-        {"params", std::vector<std::string>{stream_name}},
-        {"id", id}
-    };
-
-    std::string const message = prepare_json_string(params);
-    _client->send(message);
-}
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketMarketStreamsClient::list_subscriptions(std::string const &id) {
-    Parameters const params{
-        {"method", "LIST_SUBSCRIPTIONS"},
-        {"id", id}
-    };
-
-    std::string const message = prepare_json_string(params);
-    _client->send(message);
-}
-
-//---------------------------------------------------------------------------------------
-
-void WebSocketMarketStreamsClient::set_on_message_callback_for_all_streams(MsgCallbackT callback) {
+void WebSocketMarketStreamsClient::set_on_message_callback(MsgCallbackT callback) {
     _client->set_on_message_callback(std::move(callback));
 }
 
 //---------------------------------------------------------------------------------------
 
-void WebSocketMarketStreamsClient::set_on_error_callback_for_all_streams(ErrCallbackT callback) {
+void WebSocketMarketStreamsClient::set_on_error_callback(ErrCallbackT callback) {
     _client->set_on_error_callback(std::move(callback));
 }
 
