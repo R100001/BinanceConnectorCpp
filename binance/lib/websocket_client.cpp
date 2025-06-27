@@ -462,7 +462,7 @@ WebSocketAPIClient::WebSocketAPIClient() {
     ctx->set_verify_mode(net::ssl::verify_peer);
     ctx->set_default_verify_paths();
     
-    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_HOST, WS_API_ENDPOINT);
+    _client = std::make_unique<WebSocketClientImpl>(std::move(ioc), std::move(ctx), WS_API_HOST, std::string(WS_API_ENDPOINT) + std::string(WS_API_DISABLE_RATE_LIMITS) );
 }
 
 //---------------------------------------------------------------------------------------

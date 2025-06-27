@@ -97,10 +97,7 @@ error_code simdjson_get_value_field_name(ondemand::object &obj, std::string_view
     if (unordered_search) field = obj.find_field_unordered(field_name);
     else field = obj.find_field(field_name);
 
-    if (field.error()) {
-        std::cout << error_message(field.error()) << std::endl;
-        return field.error();
-    }
+    if (field.error()) return field.error();
     
     if (auto error = field.get(value)) return error;
 

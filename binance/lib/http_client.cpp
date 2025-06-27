@@ -53,8 +53,6 @@ public:
                                int32_t const timeout = 60, std::string_view const proxy = "") {
 
         Url const parsed_url = parse_url(url, endpoint);
-        std::cout << "Parsed URL: " << parsed_url.protocol << " "
-                  << parsed_url.host << " " << parsed_url.port << " " << parsed_url.target << "\n";
 
         boost::asio::io_context ioc;
         boost::asio::ip::tcp::resolver resolver(ioc);
@@ -95,6 +93,11 @@ public:
 
             boost::beast::error_code ec;
             stream.shutdown(ec);
+            // std::cout << std::endl;
+            // for(const auto& header : res.base()) {
+            //     std::cout << header.name_string() << ": " << header.value() << "\n";
+            // }
+            // std::cout << std::endl;
             return res.body();
         } else {
             boost::beast::tcp_stream stream(ioc);

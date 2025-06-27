@@ -235,12 +235,13 @@ public: // Websocket User Data Streams
     void ws_user_data_streams_message_callback(MsgCallbackT callback);
     void ws_user_data_streams_error_callback(ErrCallbackT callback);
 
-public: // REST API request methods
+private: // REST API request methods
 
     template <RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
     template <RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
+    template<RequestType req_type> std::string dispatch_request(std::string_view const endpoint, std::string const &payload) const;
 
-public: // Public message parsing
+private: // RestAPI Message Parsing
 
     /*----- Parsing Tags -----*/
     struct ArrayErrors {};
@@ -255,14 +256,16 @@ public: // Public message parsing
 
     ServerMessageResponse parse_response(std::string &response, ResponseIsServerMessage const);
 
+public:
+
     static std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj);
+
+private: // Websockets Message Parsing
+
+    void ws_api_parse_response(std::string &response);
 
 private:
     simdjson::ondemand::parser &parser() { return this->_parser; }
-
-private: // Private methods
-
-    template<RequestType req_type> std::string dispatch_request(std::string_view const endpoint, std::string const &payload) const;
 
 public: // Setters Getters
 
@@ -302,24 +305,46 @@ private: // Parsing variables
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 
+namespace simdjson {
+
+//------------------------------------------------------------------------------------
+
+template <typename simdjson_value>
+auto tag_invoke(deserialize_tag, simdjson_value &val, ServerMessageResponse &response) {
+    
+    ondemand::object obj;
+    if (auto error = val.get_object().get(obj)) return error;
+
+    if (auto error = simdjson_get_value_field_name(obj, "code", response.code)) return error;
+    if (auto error = simdjson_get_value_field_name(obj, "msg", response.msg)) return error;
+
+    return SUCCESS;
+}
+
+//------------------------------------------------------------------------------------
+
+} // namespace simdjson
+
+//------------------------------------------------------------------------------------
+
 template <typename JsonResponseStructured>
 ResponseOrError<JsonResponseStructured> API::parse_response(std::string &response) {
     
     auto doc = parser().iterate(response);
     DEBUG_ASSERT(!doc.error());
 
-    auto obj = doc.get_object();
-    if (!obj.error()) {
-        std::optional<ServerMessageResponse> const res = read_server_message(obj.value_unsafe());
-
-        if(res.has_value()) return res.value();
+    std::optional<ServerMessageResponse> server_message;
+    auto error = doc.get<std::optional<ServerMessageResponse>>().get(server_message);
+    if(!error) {
+        DEBUG_ASSERT(server_message.has_value());
+        return server_message.value();
     }
+    DEBUG_ASSERT(error == simdjson::error_code::NO_SUCH_FIELD);
 
     doc.rewind();
     
     JsonResponseStructured response_struct;
-    auto error = doc.get(response_struct);
-    std::cout << "Error: " << simdjson::error_message(error) << std::endl;
+    error = doc.get(response_struct);
     DEBUG_ASSERT(!error);
 
     return response_struct;
@@ -338,23 +363,24 @@ ArrayErrorsResponse<JsonResponseStructured> API::parse_response(std::string &res
     doc.rewind();
 #endif
 
-    auto obj = doc.get_object();
-    if(!obj.error()) {
-        std::optional<ServerMessageResponse> const res = read_server_message(obj.value_unsafe());
-        DEBUG_ASSERT(res.has_value());
-
-        return res.value();
+    std::optional<ServerMessageResponse> server_message;
+    auto error = doc.get<std::optional<ServerMessageResponse>>().get(server_message);
+    if(!error) {
+        DEBUG_ASSERT(server_message.has_value());
+        return server_message.value();
     }
+    DEBUG_ASSERT(error == simdjson::error_code::NO_SUCH_FIELD);
+
     doc.rewind();
 
     simdjson::ondemand::array arr;
-    auto error = doc.get_array().get(arr);
+    error = doc.get_array().get(arr);
     DEBUG_ASSERT(!error);
 
     std::vector<ResponseOrError<JsonResponseStructured>> response_structs;
     for(simdjson::ondemand::value item : arr) {
         response_structs.emplace_back();
-        auto error = item.get(response_structs.back());
+        error = item.get(response_structs.back());
         DEBUG_ASSERT(!error);
     }
     

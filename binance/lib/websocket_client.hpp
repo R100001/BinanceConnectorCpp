@@ -31,6 +31,7 @@ private: // Constants
     static constexpr std::string_view WS_API_HOST = "ws-fapi.binance.com";
     static constexpr std::string_view WS_API_TESTNET_HOST = "testnet.binancefuture.com";
     static constexpr std::string_view WS_API_ENDPOINT = "/ws-fapi/v1";
+    static constexpr std::string_view WS_API_DISABLE_RATE_LIMITS = "?returnRateLimits=false";
 
 public:
     WebSocketAPIClient();
