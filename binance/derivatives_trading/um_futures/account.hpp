@@ -316,6 +316,14 @@ struct GetBnbBurnStatusObject {
 };
 using GetBnbBurnStatusResponse = ResponseOrError<GetBnbBurnStatusObject>;
 
+
+// Websocket API
+using FuturesAccountBalanceStreamObject = Account::FuturesAccountBalanceObject;
+
+using AccountInformationV3StreamObject = Account::AccountInformationV3Object;
+
+using AccountInformationStreamObject = Account::AccountInformationObject;
+
 //------------------------------------------------------------------------------------
 
 } // namespace Account

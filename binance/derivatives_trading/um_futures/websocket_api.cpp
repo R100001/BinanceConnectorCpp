@@ -6,139 +6,11 @@
 #include "api.hpp"
 #include "authentication.hpp"
 
-//------------------------------------------------------------------------------------
-//----------------------------------Simdjson Parsing----------------------------------
-//------------------------------------------------------------------------------------
-
-namespace simdjson {
-
-using namespace Trade;
-
-// ---------- Session Responses ----------
-template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, SessionObject &response) {
-    
-    ondemand::object obj;
-    if (auto error = val.get_object().get(obj)) return error;
-
-    if (auto error = simdjson_get_value_field_name(obj, "apiKey", response.api_key)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "authorizedSince", response.authorized_since)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "connectedSince", response.connected_since)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "returnRateLimits", response.return_rate_limits)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "serverTime", response.server_time)) return error;
-
-    return SUCCESS;
-}
-// ---------------------------------------
-
-// ---------- New Order Stream ----------
-template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, NewOrderStreamObject &response) {
-
-    ondemand::object obj;
-    if (auto error = val.get_object().get(obj)) return error;
-
-    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", response.avg_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQty", response.cum_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", response.cum_quote)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "closePosition", response.close_position)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", response.price_match)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", response.self_trade_prevention_mode)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", response.good_till_date)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
-    
-    return SUCCESS;
-}
-// --------------------------------------
-
-// ---------- Modify Order Stream ----------
-template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, ModifyOrderStreamObject &response) {
-
-    ondemand::object obj;
-    if (auto error = val.get_object().get(obj)) return error;
-
-    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", response.avg_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQty", response.cum_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", response.cum_quote)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "closePosition", response.close_position)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceMatch", response.price_match)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "selfTradePreventionMode", response.self_trade_prevention_mode)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "goodTillDate", response.good_till_date)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
-
-    return SUCCESS;
-}
-// -----------------------------------------
-
-// ---------- Query Order Stream ----------
-template <typename simdjson_value>
-auto tag_invoke(deserialize_tag, simdjson_value &val, QueryOrderStreamObject &response) {
-
-    ondemand::object obj;
-    if (auto error = val.get_object().get(obj)) return error;
-
-    if (auto error = simdjson_get_value_field_name(obj, "avgPrice", response.avg_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "clientOrderId", response.client_order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "cumQuote", response.cum_quote)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "executedQty", response.executed_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "orderId", response.order_id)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origQty", response.orig_qty)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "origType", response.orig_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "price", response.price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "reduceOnly", response.reduce_only)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "side", response.side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "positionSide", response.position_side)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "status", response.status)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "stopPrice", response.stop_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "closePosition", response.close_position)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "symbol", response.symbol)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "time", response.time)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "timeInForce", response.time_in_force)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "type", response.type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "activatePrice", response.activate_price)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceRate", response.price_rate)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "updateTime", response.update_time)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "workingType", response.working_type)) return error;
-    if (auto error = simdjson_get_value_field_name(obj, "priceProtect", response.price_protect)) return error;
-
-    return SUCCESS;
-}
-// ----------------------------------------
-
-} // namespace simdjson
+#include "account_parsing_simdjson.hpp"
+#include "convert_parsing_simdjson.hpp"
+#include "market_data_parsing_simdjson.hpp"
+#include "portfolio_margin_endpoints_parsing_simdjson.hpp"
+#include "trade_parsing_simdjson.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -156,7 +28,7 @@ void API::ws_api_parse_response(std::string &response) {
     uint16_t status = 0;
     {auto error = simdjson_get_value_field_name(obj, "status", status); DEBUG_ASSERT(!error);}
     if(status != 200) {
-        std::optional<ServerMessageResponse> server_message;
+        std::optional<ServerMessageResponse> server_message;    
         {auto error = obj.find_field("error").get<std::optional<ServerMessageResponse>>().get(server_message); DEBUG_ASSERT(!error);}
         //DO SOMETHING WITH THE SERVER MESSAGE
     }
@@ -166,45 +38,45 @@ void API::ws_api_parse_response(std::string &response) {
         case 's':
         case 'o':
         {
-            SessionObject session_response;
-            {auto error = obj.find_field("result").get<SessionObject>().get(session_response); DEBUG_ASSERT(!error);}
-            break;            
+            SessionStreamObject session_response;
+            {auto error = obj.find_field("result").get<SessionStreamObject>().get(session_response); DEBUG_ASSERT(!error);}
+            break;
         }
         case '0':
         case '1':
         {
-            Account::FuturesAccountBalanceObject futures_account_balance_response;
-            {auto error = obj.find_field("result").get<Account::FuturesAccountBalanceObject>().get(futures_account_balance_response); DEBUG_ASSERT(!error);}
+            Account::FuturesAccountBalanceStreamObject futures_account_balance_response;
+            {auto error = obj.find_field("result").get<Account::FuturesAccountBalanceStreamObject>().get(futures_account_balance_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '2':
         {
-            Account::AccountInformationV3Object account_information_v3_response;
-            {auto error = obj.find_field("result").get<Account::AccountInformationV3Object>().get(account_information_v3_response); DEBUG_ASSERT(!error);}
+            Account::AccountInformationV3StreamObject account_information_v3_response;
+            {auto error = obj.find_field("result").get<Account::AccountInformationV3StreamObject>().get(account_information_v3_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '3':
         {
-            Account::AccountInformationObject account_information_response;
-            {auto error = obj.find_field("result").get<Account::AccountInformationObject>().get(account_information_response); DEBUG_ASSERT(!error);}
+            Account::AccountInformationStreamObject account_information_response;
+            {auto error = obj.find_field("result").get<Account::AccountInformationStreamObject>().get(account_information_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '4':
         {
-            MarketData::OrderBookObject order_book_response;
-            {auto error = obj.find_field("result").get<MarketData::OrderBookObject>().get(order_book_response); DEBUG_ASSERT(!error);}
+            MarketData::OrderBookStreamObject order_book_response;
+            {auto error = obj.find_field("result").get<MarketData::OrderBookStreamObject>().get(order_book_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '5':
         {
-            MarketData::SymbolPriceTickerObject symbol_price_ticker_response;
-            {auto error = obj.find_field("result").get<MarketData::SymbolPriceTickerObject>().get(symbol_price_ticker_response); DEBUG_ASSERT(!error);}
+            MarketData::SymbolPriceTickerStreamObject symbol_price_ticker_response;
+            {auto error = obj.find_field("result").get<MarketData::SymbolPriceTickerStreamObject>().get(symbol_price_ticker_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '6':
         {
-            MarketData::SymbolOrderBookTickerObject symbol_order_book_ticker_response;
-            {auto error = obj.find_field("result").get<MarketData::SymbolOrderBookTickerObject>().get(symbol_order_book_ticker_response); DEBUG_ASSERT(!error);}
+            MarketData::SymbolOrderBookTickerStreamObject symbol_order_book_ticker_response;
+            {auto error = obj.find_field("result").get<MarketData::SymbolOrderBookTickerStreamObject>().get(symbol_order_book_ticker_response); DEBUG_ASSERT(!error);}
             break;
         }
         case '7':
@@ -221,8 +93,8 @@ void API::ws_api_parse_response(std::string &response) {
         }
         case '9':
         {
-            Trade::CancelOrderObject cancel_order_response;
-            {auto error = obj.find_field("result").get<Trade::CancelOrderObject>().get(cancel_order_response); DEBUG_ASSERT(!error);}
+            Trade::CancelOrderStreamObject cancel_order_response;
+            {auto error = obj.find_field("result").get<Trade::CancelOrderStreamObject>().get(cancel_order_response); DEBUG_ASSERT(!error);}
             break;
         }
         case 'a':
@@ -233,14 +105,14 @@ void API::ws_api_parse_response(std::string &response) {
         }
         case 'b':
         {
-            Trade::PositionInformationV3Object position_information_v2_response;
-            {auto error = obj.find_field("result").get<Trade::PositionInformationV3Object>().get(position_information_v2_response); DEBUG_ASSERT(!error);}
+            Trade::PositionInformationV2StreamObject position_information_v2_response;
+            {auto error = obj.find_field("result").get<Trade::PositionInformationV2StreamObject>().get(position_information_v2_response); DEBUG_ASSERT(!error);}
             break;
         }
         case 'c':
         {
-            Trade::PositionInformationV2Object position_information_response;
-            {auto error = obj.find_field("result").get<Trade::PositionInformationV2Object>().get(position_information_response); DEBUG_ASSERT(!error);}
+            Trade::PositionInformationStreamObject position_information_response;
+            {auto error = obj.find_field("result").get<Trade::PositionInformationStreamObject>().get(position_information_response); DEBUG_ASSERT(!error);}
             break;
         }
         default:

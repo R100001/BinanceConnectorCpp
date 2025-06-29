@@ -437,6 +437,14 @@ struct QueryIndexPriceConstituentsObject {
 };
 using QueryIndexPriceConstituentsResponse = ResponseOrError<QueryIndexPriceConstituentsObject>;
 
+// Websocket API
+
+using OrderBookStreamObject = MarketData::OrderBookObject;
+
+using SymbolPriceTickerStreamObject = MarketData::SymbolPriceTickerObject;
+
+using SymbolOrderBookTickerStreamObject = MarketData::SymbolOrderBookTickerObject;
+
 //------------------------------------------------------------------------------------
 
 } // namespace MarketData

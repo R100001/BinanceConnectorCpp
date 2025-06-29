@@ -41,16 +41,66 @@ public: // Typedefs
     using MsgCallbackT = std::function<void(std::string_view)>;
     using ErrCallbackT = std::function<void(std::string_view)>;
 
-    enum class RequestType {
+    enum class RequestType : uint8_t {
         GET,
         POST,
         PUT,
         DELETE
     };
 
-    enum class RequestFormat {
+    enum class RequestFormat : uint8_t {
         QueryString,
         JSON
+    };
+
+    enum class WebsocketAPIResponseTypes : uint8_t {
+        SERVER_MESSAGE,
+        ORDER_BOOK,
+        SYMBOL_PRICE_TICKER,
+        SYMBOL_ORDER_BOOK_TICKER,
+        NEW_ORDER,
+        MODIFY_ORDER,
+        CANCEL_ORDER,
+        QUERY_ORDER,
+        POSITION_INFORMATION_V2,
+        POSITION_INFORMATION,
+        FUTURES_ACCOUNT_BALANCE_V2,
+        FUTURES_ACCOUNT_BALANCE,
+        ACCOUNT_INFORMATION_V2,
+        ACCOUNT_INFORMATION
+    };
+
+    enum class MarketDataStreamEventTypes : uint8_t {
+        AGG_TRADE,
+        MARK_PRICE_UPDATE,
+        MARK_PRICE_UPDATE_ALL,
+        KLINE,
+        CONTINUOUS_KLINE,
+        MINI_TICKER_24H,
+        MINI_TICKER_24H_ALL,
+        TICKER_24H,
+        TICKER_24H_ALL,
+        BOOK_TICKER,
+        BOOK_TICKER_ALL,
+        FORCE_ORDER,
+        FORCE_ORDER_ALL, // Is this needed? The response looks the same as FORCE_ORDER
+        DEPTH_UPDATE_PARTIAL,
+        DEPTH_UPDATE_DIFF,
+        COMPOSITE_INDEX,
+        CONTRACT_INFO,
+        ASSET_INDEX_UPDATE
+    };
+
+    enum class UserDataStreamEventTypes : uint8_t {
+        LISTEN_KEY_EXPIRED,
+        ACCOUNT_UPDATE,
+        MARGIN_CALL,
+        ORDER_TRADE_UPDATE,
+        TRADE_LITE,
+        ACCOUNT_CONFIG_UPDATE,
+        STRATEGY_UPDATE,
+        GRID_UPDATE,
+        CONDITIONAL_ORDER_TRIGGER_REJECT
     };
 
 public: // Constructors
@@ -237,8 +287,8 @@ public: // Websocket User Data Streams
 
 private: // REST API request methods
 
-    template <RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
-    template <RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
+    template<RequestType req_type> std::string sign_request(std::string_view endpoint, Parameters &payload);
+    template<RequestType req_type> std::string send_request(std::string_view endpoint, Parameters const &payload = {}); 
     template<RequestType req_type> std::string dispatch_request(std::string_view const endpoint, std::string const &payload) const;
 
 private: // RestAPI Message Parsing
