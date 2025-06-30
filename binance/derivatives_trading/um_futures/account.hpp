@@ -318,9 +318,11 @@ using GetBnbBurnStatusResponse = ResponseOrError<GetBnbBurnStatusObject>;
 
 
 // Websocket API
+using FuturesAccountBalanceV2StreamObject = Account::FuturesAccountBalanceObject;
+
 using FuturesAccountBalanceStreamObject = Account::FuturesAccountBalanceObject;
 
-using AccountInformationV3StreamObject = Account::AccountInformationV3Object;
+using AccountInformationV2StreamObject = Account::AccountInformationV3Object;
 
 using AccountInformationStreamObject = Account::AccountInformationObject;
 

@@ -55,22 +55,43 @@ public: // Typedefs
 
     enum class WebsocketAPIResponseTypes : uint8_t {
         SERVER_MESSAGE,
-        ORDER_BOOK,
-        SYMBOL_PRICE_TICKER,
-        SYMBOL_ORDER_BOOK_TICKER,
-        NEW_ORDER,
-        MODIFY_ORDER,
-        CANCEL_ORDER,
-        QUERY_ORDER,
-        POSITION_INFORMATION_V2,
-        POSITION_INFORMATION,
-        FUTURES_ACCOUNT_BALANCE_V2,
-        FUTURES_ACCOUNT_BALANCE,
-        ACCOUNT_INFORMATION_V2,
-        ACCOUNT_INFORMATION
+        FUTURES_ACCOUNT_BALANCE_V2 = '1',
+        FUTURES_ACCOUNT_BALANCE = '2',
+        ACCOUNT_INFORMATION_V2 = '3',
+        ACCOUNT_INFORMATION = '4',
+        ORDER_BOOK = '5',
+        SYMBOL_PRICE_TICKER = '6',
+        SYMBOL_ORDER_BOOK_TICKER = '7',
+        NEW_ORDER = '8',
+        MODIFY_ORDER = '9',
+        CANCEL_ORDER = 'a',
+        QUERY_ORDER = 'b',
+        POSITION_INFORMATION_V2 = 'c',
+        POSITION_INFORMATION = 'd',
+        SESSION_LOGON = 'i',
+        SESSION_STATUS = 's',
+        SESSION_LOGOUT = 'o'
     };
+    using WebsocketAPIResponse = std::variant<
+        ServerMessageResponse,
+        Account::FuturesAccountBalanceV2StreamObject,
+        Account::FuturesAccountBalanceStreamObject,
+        Account::AccountInformationV2StreamObject,
+        Account::AccountInformationStreamObject,
+        MarketData::OrderBookStreamObject,
+        MarketData::SymbolPriceTickerStreamObject,
+        MarketData::SymbolOrderBookTickerStreamObject,
+        Trade::NewOrderStreamObject,
+        Trade::ModifyOrderStreamObject,
+        Trade::CancelOrderStreamObject,
+        Trade::QueryOrderStreamObject,
+        Trade::PositionInformationV2StreamObject,
+        Trade::PositionInformationStreamObject,
+        SessionStreamObject
+    >;
 
     enum class MarketDataStreamEventTypes : uint8_t {
+        SERVER_MESSAGE,
         AGG_TRADE,
         MARK_PRICE_UPDATE,
         MARK_PRICE_UPDATE_ALL,
@@ -81,15 +102,36 @@ public: // Typedefs
         TICKER_24H,
         TICKER_24H_ALL,
         BOOK_TICKER,
-        BOOK_TICKER_ALL,
+        BOOK_TICKER_ALL, // Is this needed?
         FORCE_ORDER,
-        FORCE_ORDER_ALL, // Is this needed? The response looks the same as FORCE_ORDER
+        FORCE_ORDER_ALL, // Is this needed?
         DEPTH_UPDATE_PARTIAL,
-        DEPTH_UPDATE_DIFF,
+        DEPTH_UPDATE_DIFF, // Is this needed?
         COMPOSITE_INDEX,
         CONTRACT_INFO,
         ASSET_INDEX_UPDATE
     };
+    using MarketDataStreamResponse = std::variant<
+        ServerMessageResponse,
+        WebsocketMarketStreams::AggregateTradeStreamObject,
+        WebsocketMarketStreams::MarkPriceStreamObject,
+        WebsocketMarketStreams::MarkPriceStreamForAllMarketStreamObject,
+        WebsocketMarketStreams::KLineStreamObject,
+        WebsocketMarketStreams::ContinuousKLineStreamObject,
+        WebsocketMarketStreams::MiniTicker24hrStreamObject,
+        WebsocketMarketStreams::MiniTickerAll24hrStreamObject,
+        WebsocketMarketStreams::Ticker24hrStreamObject,
+        WebsocketMarketStreams::TickerAll24hrStreamObject,
+        WebsocketMarketStreams::BookTickerStreamObject,
+        WebsocketMarketStreams::BookTickerAllStreamObject,
+        WebsocketMarketStreams::ForceOrderStreamObject,
+        WebsocketMarketStreams::ForceOrderAllStreamObject, // Is this needed? The response looks the same as FORCE_ORDER
+        WebsocketMarketStreams::DepthUpdatePartialStreamObject,
+        WebsocketMarketStreams::DepthUpdateDiffStreamObject,
+        WebsocketMarketStreams::CompositeIndexStreamObject,
+        WebsocketMarketStreams::ContractInfoStreamObject,
+        WebsocketMarketStreams::AssetIndexUpdateStreamObject
+    >;
 
     enum class UserDataStreamEventTypes : uint8_t {
         LISTEN_KEY_EXPIRED,
@@ -102,6 +144,17 @@ public: // Typedefs
         GRID_UPDATE,
         CONDITIONAL_ORDER_TRIGGER_REJECT
     };
+    using UserDataStreamResponse = std::variant<
+        WebsocketUserDataStreams::ListenKeyExpiredStreamObject,
+        WebsocketUserDataStreams::AccountUpdateStreamObject,
+        WebsocketUserDataStreams::MarginCallStreamObject,
+        WebsocketUserDataStreams::OrderTradeUpdateStreamObject,
+        WebsocketUserDataStreams::TradeLiteStreamObject,
+        WebsocketUserDataStreams::AccountConfigUpdateStreamObject,
+        WebsocketUserDataStreams::StrategyUpdateStreamObject,
+        WebsocketUserDataStreams::GridUpdateStreamObject,
+        WebsocketUserDataStreams::ConditionalOrderTriggerRejectStreamObject
+    >;
 
 public: // Constructors
 
@@ -306,13 +359,15 @@ private: // RestAPI Message Parsing
 
     ServerMessageResponse parse_response(std::string &response, ResponseIsServerMessage const);
 
-public:
+public: // Server Message Parsing
 
     static std::optional<ServerMessageResponse> read_server_message(simdjson::ondemand::object &obj);
 
 private: // Websockets Message Parsing
 
-    void ws_api_parse_response(std::string &response);
+    WebsocketAPIResponse ws_api_parse_response(std::string &response);
+    MarketDataStreamResponse ws_market_streams_parse_response(std::string &response);
+    UserDataStreamResponse ws_user_data_streams_parse_response(std::string &response);
 
 private:
     simdjson::ondemand::parser &parser() { return this->_parser; }

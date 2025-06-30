@@ -6,11 +6,8 @@
 
 //------------------------------------------------------------------------------------
 
-#include "api_declarations.hpp"
-
-#include "account.hpp"
-#include "market_data.hpp"
-#include "trade.hpp"
+#include <cstdint>
+#include <string>
 
 //------------------------------------------------------------------------------------
 

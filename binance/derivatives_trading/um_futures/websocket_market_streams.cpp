@@ -2,8 +2,209 @@
 //------------------------------------------------------------------------------------
 
 #include "websocket_market_streams.hpp"
+#include "websocket_market_streams_parsing_simdjson.hpp"
 
 #include "api.hpp"
+
+//------------------------------------------------------------------------------------
+//------------------------Handle Websocket Market Stream Event------------------------
+//------------------------------------------------------------------------------------
+
+static API::MarketDataStreamEventTypes ws_market_streams_detect_event_type(simdjson::ondemand::value val) {
+
+    bool const is_array = (val.type() == simdjson::ondemand::json_type::array);
+    simdjson::ondemand::object obj;
+    if (is_array) {
+        simdjson::ondemand::array arr;
+        {auto error = val.get_array().get(arr); DEBUG_ASSERT(!error);}
+        for (auto item : arr) {
+            {auto error = item.get_object().get(obj); DEBUG_ASSERT(!error);}
+            break;
+        }
+    }
+    else {
+        {auto error = val.get_object().get(obj); DEBUG_ASSERT(!error);}
+    }
+
+    std::string_view event_type;
+    auto error = obj.find_field("e").get_string().get(event_type);
+    if (error) return API::MarketDataStreamEventTypes::SERVER_MESSAGE;
+
+    if (event_type == "aggTrade") {
+        return API::MarketDataStreamEventTypes::AGG_TRADE;
+    }
+    else if (event_type == "markPriceUpdate") {
+        return is_array ? API::MarketDataStreamEventTypes::MARK_PRICE_UPDATE_ALL : API::MarketDataStreamEventTypes::MARK_PRICE_UPDATE;
+    }
+    else if (event_type == "kline") {
+        return API::MarketDataStreamEventTypes::KLINE;
+    }
+    else if (event_type == "continuous_kline") {
+        return API::MarketDataStreamEventTypes::CONTINUOUS_KLINE;
+    }
+    else if (event_type == "24hrMiniTicker") {
+        return is_array ? API::MarketDataStreamEventTypes::MINI_TICKER_24H_ALL : API::MarketDataStreamEventTypes::MINI_TICKER_24H;
+    }
+    else if (event_type == "24hrTicker") {
+        return is_array ? API::MarketDataStreamEventTypes::TICKER_24H_ALL : API::MarketDataStreamEventTypes::TICKER_24H;
+    }
+    else if (event_type == "bookTicker") {
+        return API::MarketDataStreamEventTypes::BOOK_TICKER;
+    }
+    else if (event_type == "forceOrder") {
+        return API::MarketDataStreamEventTypes::FORCE_ORDER;
+    }
+    else if (event_type == "depthUpdate") {
+        return API::MarketDataStreamEventTypes::DEPTH_UPDATE_PARTIAL;
+    }
+    else if (event_type == "compositeIndex") {
+        return API::MarketDataStreamEventTypes::COMPOSITE_INDEX;
+    }
+    else if (event_type == "contractInfo") {
+        return API::MarketDataStreamEventTypes::CONTRACT_INFO;
+    }
+    else if (event_type == "assetIndexUpdate") {
+        return API::MarketDataStreamEventTypes::ASSET_INDEX_UPDATE;
+    }
+    else {
+        return API::MarketDataStreamEventTypes::SERVER_MESSAGE;
+    }
+}
+
+//------------------------------------------------------------------------------------
+
+API::MarketDataStreamResponse API::ws_market_streams_parse_response(std::string &response) {
+
+    simdjson::ondemand::document doc;
+    {auto error = _parser.iterate(response).get(doc); DEBUG_ASSERT(!error);}
+
+    MarketDataStreamEventTypes const event_type = ws_market_streams_detect_event_type(doc);
+    doc.rewind();
+
+    switch (event_type) {
+    case MarketDataStreamEventTypes::SERVER_MESSAGE: 
+    {
+        ServerMessageResponse server_message;
+        {auto error = doc.get(server_message); DEBUG_ASSERT(!error);}
+        return server_message;
+    }
+    case MarketDataStreamEventTypes::AGG_TRADE: 
+    {
+        AggregateTradeStreamObject agg_trade;
+        {auto error = doc.get(agg_trade); DEBUG_ASSERT(!error);}
+        return agg_trade;
+    }
+    case MarketDataStreamEventTypes::MARK_PRICE_UPDATE: 
+    {
+        MarkPriceStreamObject mark_price;
+        {auto error = doc.get(mark_price); DEBUG_ASSERT(!error);}
+        return mark_price;
+    }
+    case MarketDataStreamEventTypes::MARK_PRICE_UPDATE_ALL: 
+    {
+        MarkPriceStreamForAllMarketStreamObject mark_price_all;
+        {auto error = doc.get(mark_price_all); DEBUG_ASSERT(!error);}
+        return mark_price_all;
+    }
+    case MarketDataStreamEventTypes::KLINE: 
+    {
+        KLineStreamObject kline;
+        {auto error = doc.get(kline); DEBUG_ASSERT(!error);}
+        return kline;
+    }
+    case MarketDataStreamEventTypes::CONTINUOUS_KLINE: 
+    {
+        ContinuousKLineStreamObject continuous_kline;
+        {auto error = doc.get(continuous_kline); DEBUG_ASSERT(!error);}
+        return continuous_kline;
+    }
+    case MarketDataStreamEventTypes::MINI_TICKER_24H: 
+    {
+        MiniTicker24hrStreamObject mini_ticker;
+        {auto error = doc.get(mini_ticker); DEBUG_ASSERT(!error);}
+        return mini_ticker;
+    }
+    case MarketDataStreamEventTypes::MINI_TICKER_24H_ALL: 
+    {
+        MiniTickerAll24hrStreamObject mini_ticker_all;
+        {auto error = doc.get(mini_ticker_all); DEBUG_ASSERT(!error);}
+        return mini_ticker_all;
+    }
+    case MarketDataStreamEventTypes::TICKER_24H: 
+    {
+        Ticker24hrStreamObject ticker;
+        {auto error = doc.get(ticker); DEBUG_ASSERT(!error);}
+        return ticker;
+    }
+    case MarketDataStreamEventTypes::TICKER_24H_ALL: 
+    {
+        TickerAll24hrStreamObject ticker_all;
+        {auto error = doc.get(ticker_all); DEBUG_ASSERT(!error);}
+        return ticker_all;
+    }
+    case MarketDataStreamEventTypes::BOOK_TICKER: 
+    {
+        BookTickerStreamObject book_ticker;
+        {auto error = doc.get(book_ticker); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::BOOK_TICKER)>, std::move(book_ticker));
+    }
+    case MarketDataStreamEventTypes::BOOK_TICKER_ALL: 
+    {
+        BookTickerAllStreamObject book_ticker_all;
+        {auto error = doc.get(book_ticker_all); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::BOOK_TICKER_ALL)>, std::move(book_ticker_all));
+    }
+    case MarketDataStreamEventTypes::FORCE_ORDER: 
+    {
+        ForceOrderStreamObject force_order;
+        {auto error = doc.get(force_order); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::FORCE_ORDER)>, std::move(force_order));
+    }
+    case MarketDataStreamEventTypes::FORCE_ORDER_ALL: 
+    {
+        ForceOrderAllStreamObject force_order_all;
+        {auto error = doc.get(force_order_all); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::FORCE_ORDER_ALL)>, std::move(force_order_all));
+    }
+    case MarketDataStreamEventTypes::DEPTH_UPDATE_PARTIAL: 
+    {
+        DepthUpdatePartialStreamObject depth_update_partial;
+        {auto error = doc.get(depth_update_partial); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::DEPTH_UPDATE_PARTIAL)>, std::move(depth_update_partial));
+    }
+    case MarketDataStreamEventTypes::DEPTH_UPDATE_DIFF: 
+    {
+        DepthUpdateDiffStreamObject depth_update_diff;
+        {auto error = doc.get(depth_update_diff); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::DEPTH_UPDATE_DIFF)>, std::move(depth_update_diff));
+    }
+    case MarketDataStreamEventTypes::COMPOSITE_INDEX: 
+    {
+        CompositeIndexStreamObject composite_index;
+        {auto error = doc.get(composite_index); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::COMPOSITE_INDEX)>, std::move(composite_index));
+    }
+    case MarketDataStreamEventTypes::CONTRACT_INFO: 
+    {
+        ContractInfoStreamObject contract_info;
+        {auto error = doc.get(contract_info); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::CONTRACT_INFO)>, std::move(contract_info));
+    }
+    case MarketDataStreamEventTypes::ASSET_INDEX_UPDATE: 
+    {
+        AssetIndexUpdateStreamObject asset_index_update;
+        {auto error = doc.get(asset_index_update); DEBUG_ASSERT(!error);}
+        return MarketDataStreamResponse(std::in_place_index<static_cast<uint8_t>(MarketDataStreamEventTypes::ASSET_INDEX_UPDATE)>, std::move(asset_index_update));
+    }
+    default: 
+    {
+        ServerMessageResponse server_message;
+        server_message.code = -1; // Unknown event type
+        server_message.msg = "Unknown market data stream event type";
+        return server_message;
+    }
+    }
+}
 
 //------------------------------------------------------------------------------------
 //-------------------------WebSocket Market Streams Handling--------------------------

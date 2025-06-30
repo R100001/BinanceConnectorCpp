@@ -9,7 +9,7 @@
 #include "portfolio_margin_endpoints.hpp"
 #include "utils.hpp"
 
-//------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 namespace simdjson {
     
@@ -35,3 +35,5 @@ auto tag_invoke(deserialize_tag, simdjson_value &val, ClassicPortfolioMarginAcco
 //-----------------------------------------------------------------------------
 
 #endif // PORTFOLIO_MARGIN_ENDPOINTS_PARSING_SIMDJSON_HPP
+
+//-----------------------------------------------------------------------------

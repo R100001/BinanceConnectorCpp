@@ -13,8 +13,10 @@
 #include "trade_parsing_simdjson.hpp"
 
 //------------------------------------------------------------------------------------
+//----------------------------Handle WebSocket API Response---------------------------
+//------------------------------------------------------------------------------------
 
-void API::ws_api_parse_response(std::string &response) {
+API::WebsocketAPIResponse API::ws_api_parse_response(std::string &response) {
 
     simdjson::ondemand::document doc;
     {auto error = _parser.iterate(response).get(doc); DEBUG_ASSERT(!error);}
@@ -28,9 +30,9 @@ void API::ws_api_parse_response(std::string &response) {
     uint16_t status = 0;
     {auto error = simdjson_get_value_field_name(obj, "status", status); DEBUG_ASSERT(!error);}
     if(status != 200) {
-        std::optional<ServerMessageResponse> server_message;    
-        {auto error = obj.find_field("error").get<std::optional<ServerMessageResponse>>().get(server_message); DEBUG_ASSERT(!error);}
-        //DO SOMETHING WITH THE SERVER MESSAGE
+        ServerMessageResponse server_message;
+        {auto error = obj.find_field("error").get<ServerMessageResponse>().get(server_message); DEBUG_ASSERT(!error);}
+        return server_message;
     }
 
     switch(id) {
@@ -40,83 +42,89 @@ void API::ws_api_parse_response(std::string &response) {
         {
             SessionStreamObject session_response;
             {auto error = obj.find_field("result").get<SessionStreamObject>().get(session_response); DEBUG_ASSERT(!error);}
-            break;
+            return session_response;
         }
-        case '0':
         case '1':
         {
-            Account::FuturesAccountBalanceStreamObject futures_account_balance_response;
-            {auto error = obj.find_field("result").get<Account::FuturesAccountBalanceStreamObject>().get(futures_account_balance_response); DEBUG_ASSERT(!error);}
-            break;
+            Account::FuturesAccountBalanceV2StreamObject futures_account_balance_response;
+            {auto error = obj.find_field("result").get<Account::FuturesAccountBalanceV2StreamObject>().get(futures_account_balance_response); DEBUG_ASSERT(!error);}
+            return WebsocketAPIResponse(std::in_place_index<static_cast<uint8_t>(WebsocketAPIResponseTypes::FUTURES_ACCOUNT_BALANCE_V2)-'0'>, std::move(futures_account_balance_response));
         }
         case '2':
         {
-            Account::AccountInformationV3StreamObject account_information_v3_response;
-            {auto error = obj.find_field("result").get<Account::AccountInformationV3StreamObject>().get(account_information_v3_response); DEBUG_ASSERT(!error);}
-            break;
+            Account::FuturesAccountBalanceStreamObject futures_account_balance_response;
+            {auto error = obj.find_field("result").get<Account::FuturesAccountBalanceStreamObject>().get(futures_account_balance_response); DEBUG_ASSERT(!error);}
+            return WebsocketAPIResponse(std::in_place_index<static_cast<uint8_t>(WebsocketAPIResponseTypes::FUTURES_ACCOUNT_BALANCE)-'0'>, std::move(futures_account_balance_response));
         }
         case '3':
         {
-            Account::AccountInformationStreamObject account_information_response;
-            {auto error = obj.find_field("result").get<Account::AccountInformationStreamObject>().get(account_information_response); DEBUG_ASSERT(!error);}
-            break;
+            Account::AccountInformationV2StreamObject account_information_v3_response;
+            {auto error = obj.find_field("result").get<Account::AccountInformationV2StreamObject>().get(account_information_v3_response); DEBUG_ASSERT(!error);}
+            return account_information_v3_response;
         }
         case '4':
         {
-            MarketData::OrderBookStreamObject order_book_response;
-            {auto error = obj.find_field("result").get<MarketData::OrderBookStreamObject>().get(order_book_response); DEBUG_ASSERT(!error);}
-            break;
+            Account::AccountInformationStreamObject account_information_response;
+            {auto error = obj.find_field("result").get<Account::AccountInformationStreamObject>().get(account_information_response); DEBUG_ASSERT(!error);}
+            return account_information_response;
         }
         case '5':
         {
-            MarketData::SymbolPriceTickerStreamObject symbol_price_ticker_response;
-            {auto error = obj.find_field("result").get<MarketData::SymbolPriceTickerStreamObject>().get(symbol_price_ticker_response); DEBUG_ASSERT(!error);}
-            break;
+            MarketData::OrderBookStreamObject order_book_response;
+            {auto error = obj.find_field("result").get<MarketData::OrderBookStreamObject>().get(order_book_response); DEBUG_ASSERT(!error);}
+            return order_book_response;
         }
         case '6':
         {
-            MarketData::SymbolOrderBookTickerStreamObject symbol_order_book_ticker_response;
-            {auto error = obj.find_field("result").get<MarketData::SymbolOrderBookTickerStreamObject>().get(symbol_order_book_ticker_response); DEBUG_ASSERT(!error);}
-            break;
+            MarketData::SymbolPriceTickerStreamObject symbol_price_ticker_response;
+            {auto error = obj.find_field("result").get<MarketData::SymbolPriceTickerStreamObject>().get(symbol_price_ticker_response); DEBUG_ASSERT(!error);}
+            return symbol_price_ticker_response;
         }
         case '7':
         {
-            Trade::NewOrderStreamObject new_order_response;
-            {auto error = obj.find_field("result").get<Trade::NewOrderStreamObject>().get(new_order_response); DEBUG_ASSERT(!error);}
-            break;
+            MarketData::SymbolOrderBookTickerStreamObject symbol_order_book_ticker_response;
+            {auto error = obj.find_field("result").get<MarketData::SymbolOrderBookTickerStreamObject>().get(symbol_order_book_ticker_response); DEBUG_ASSERT(!error);}
+            return symbol_order_book_ticker_response;
         }
         case '8':
         {
-            Trade::ModifyOrderStreamObject modify_order_response;
-            {auto error = obj.find_field("result").get<Trade::ModifyOrderStreamObject>().get(modify_order_response); DEBUG_ASSERT(!error);}
-            break;
+            Trade::NewOrderStreamObject new_order_response;
+            {auto error = obj.find_field("result").get<Trade::NewOrderStreamObject>().get(new_order_response); DEBUG_ASSERT(!error);}
+            return new_order_response;
         }
         case '9':
         {
-            Trade::CancelOrderStreamObject cancel_order_response;
-            {auto error = obj.find_field("result").get<Trade::CancelOrderStreamObject>().get(cancel_order_response); DEBUG_ASSERT(!error);}
-            break;
+            Trade::ModifyOrderStreamObject modify_order_response;
+            {auto error = obj.find_field("result").get<Trade::ModifyOrderStreamObject>().get(modify_order_response); DEBUG_ASSERT(!error);}
+            return modify_order_response;
         }
         case 'a':
         {
-            Trade::QueryOrderStreamObject query_order_response;
-            {auto error = obj.find_field("result").get<Trade::QueryOrderStreamObject>().get(query_order_response); DEBUG_ASSERT(!error);}
-            break;
+            Trade::CancelOrderStreamObject cancel_order_response;
+            {auto error = obj.find_field("result").get<Trade::CancelOrderStreamObject>().get(cancel_order_response); DEBUG_ASSERT(!error);}
+            return cancel_order_response;
         }
         case 'b':
         {
-            Trade::PositionInformationV2StreamObject position_information_v2_response;
-            {auto error = obj.find_field("result").get<Trade::PositionInformationV2StreamObject>().get(position_information_v2_response); DEBUG_ASSERT(!error);}
-            break;
+            Trade::QueryOrderStreamObject query_order_response;
+            {auto error = obj.find_field("result").get<Trade::QueryOrderStreamObject>().get(query_order_response); DEBUG_ASSERT(!error);}
+            return query_order_response;
         }
         case 'c':
         {
+            Trade::PositionInformationV2StreamObject position_information_v2_response;
+            {auto error = obj.find_field("result").get<Trade::PositionInformationV2StreamObject>().get(position_information_v2_response); DEBUG_ASSERT(!error);}
+            return position_information_v2_response;
+        }
+        case 'd':
+        {
             Trade::PositionInformationStreamObject position_information_response;
             {auto error = obj.find_field("result").get<Trade::PositionInformationStreamObject>().get(position_information_response); DEBUG_ASSERT(!error);}
-            break;
+            return position_information_response;
         }
         default:
-            break;
+            DEBUG_ASSERT(false && "Unknown WebSocket API response ID");
+            return ServerMessageResponse{0, "Unknown WebSocket API response ID"};
     }
 }
 
@@ -202,7 +210,7 @@ void API::futures_account_balance_v2_stream(int32_t const recv_window, std::stri
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", '0'},
+        {"id", '1'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -224,7 +232,7 @@ void API::futures_account_balance_stream(int32_t const recv_window, std::string 
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
     
     Parameters const request_params{
-        {"id", '1'},
+        {"id", '2'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -246,7 +254,7 @@ void API::account_information_v2_stream(int32_t const recv_window, std::string c
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
     
     Parameters const request_params{
-        {"id", '2'},
+        {"id", '3'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -268,7 +276,7 @@ void API::account_information_stream(int32_t const recv_window, std::string cons
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", '3'},
+        {"id", '4'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -288,7 +296,7 @@ void API::order_book_stream(std::string const &symbol, int16_t const &limit) {
     params.emplace_back("symbol", symbol);
 
     Parameters const request_params{
-        {"id", '4'},
+        {"id", '5'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -305,7 +313,7 @@ void API::symbol_price_ticker_stream(std::string const &symbol) {
     if(!symbol.empty()) params.emplace_back("symbol", symbol);
 
     Parameters const request_params{
-        {"id", '5'},
+        {"id", '6'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -322,7 +330,7 @@ void API::symbol_order_book_ticker_stream(std::string const &symbol) {
     if(!symbol.empty()) params.emplace_back("symbol", symbol);
 
     Parameters const request_params{
-        {"id", '6'},
+        {"id", '7'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -366,7 +374,7 @@ void API::new_order_stream(Trade::NewOrder const &order, bool const close_positi
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", '7'},
+        {"id", '8'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -396,7 +404,7 @@ void API::modify_order_stream(Trade::ModifyOrder const &order, int32_t const rec
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", '8'},
+        {"id", '9'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -422,7 +430,7 @@ void API::cancel_order_stream(std::string const &symbol, int64_t const order_id,
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", '9'},
+        {"id", 'a'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -448,7 +456,7 @@ void API::query_order_stream(std::string const &symbol, int64_t const order_id, 
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", 'a'},
+        {"id", 'b'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -472,7 +480,7 @@ void API::position_information_v2_stream(std::string const &symbol, int32_t cons
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", 'b'},
+        {"id", 'c'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
@@ -496,7 +504,7 @@ void API::position_information_stream(std::string const &symbol, int32_t const r
     if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
 
     Parameters const request_params{
-        {"id", 'c'},
+        {"id", 'd'},
         {"method", method},
         {"params", prepare_json_string(params)}
     };
