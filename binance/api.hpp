@@ -125,7 +125,7 @@ public: // Typedefs
         WebsocketMarketStreams::BookTickerStreamObject,
         WebsocketMarketStreams::BookTickerAllStreamObject,
         WebsocketMarketStreams::ForceOrderStreamObject,
-        WebsocketMarketStreams::ForceOrderAllStreamObject, // Is this needed? The response looks the same as FORCE_ORDER
+        WebsocketMarketStreams::ForceOrderAllStreamObject, // Is this needed?
         WebsocketMarketStreams::DepthUpdatePartialStreamObject,
         WebsocketMarketStreams::DepthUpdateDiffStreamObject,
         WebsocketMarketStreams::CompositeIndexStreamObject,
