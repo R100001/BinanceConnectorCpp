@@ -5,11 +5,13 @@ build/
 # Ignore main file
 main.cpp
 
-# Ignore vscode settings
-.vscode/settings.json
+# Ignore vscode files
+.vscode/
 
 # Ignore cmake extra files
 CMakeUserPresets.json
 
 # Ignore Configuration files
 binance/config
+
+# Ignore 
