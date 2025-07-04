@@ -52,19 +52,43 @@ git clone https://github.com/R100001/BinanceConnectorCpp.git
 ```bash
 conda create -n binanceconnectorcpp python
 conda activate binanceconnectorcpp
-pip install conan
 ```
 
 **Setup Conan:**
 
+Conan can be installed into the conda environment we created and activated with:
+
 ```bash
-conan profile detect --name binanceconnectorcpp
+pip install conan
 ```
 
-Change compiler.cppstd=gnuXX to compiler.cppstd=gnu23 from ~/.conan2/profiles/binanceconnectorcpp
+To use Conan we need a profile!
+There is a Conan profile in *config* folder. This profile is specifically for the *Linux* os.
+For different os you can copy the profile and change the settings based on your needs.
+Different profiles will be tested and be included in the future.
+You can contribute your profiles too!
 
-Run only the first time:
-conan install . --output-folder=build -s build_type=Debug --build=missing --profile:host binanceconnectorcpp --profile:build=binanceconnectorcpp
+To run Conan using the profile use:
+
+```bash
+conan install . --output-folder=build --build=missing --profile=./config/binanceconnectorcpp
+```
+
+**Build and Run:**
+
+To build the project using CMAKE run:
+
+```bash
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+```
+
+Then you can run it with:
+
+```bash
+./BinanceConnectorCpp
+```
 
 **Create HMAC and Ed25519 Keys:**
 

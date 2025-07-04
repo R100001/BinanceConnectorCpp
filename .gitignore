@@ -11,7 +11,5 @@ main.cpp
 # Ignore cmake extra files
 CMakeUserPresets.json
 
-# Ignore Configuration files
-binance/config
-
-# Ignore 
+# Ignore Catch2 files
+Catch/

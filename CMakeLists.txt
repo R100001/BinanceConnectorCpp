@@ -14,7 +14,7 @@ find_package(OpenSSL REQUIRED)
 find_package(simdjson REQUIRED)
 
 add_subdirectory(binance)
-add_subdirectory(Catch)
+# add_subdirectory(Catch)
 
 add_executable(BinanceConnectorCpp main.cpp)
 

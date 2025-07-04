@@ -24,3 +24,6 @@ class BinanceConnectorCppConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def build_requirements(self):
+        self.tool_requires("cmake/4.0.3")
