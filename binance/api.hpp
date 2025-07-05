@@ -392,6 +392,7 @@ private: // Private variables
     std::string _proxy;
     bool _show_limit_usage;
     bool _show_header;
+    bool _is_session_logon_active;
 
 private: // HTTP Client and WebSocket Client
 

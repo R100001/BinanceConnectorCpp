@@ -103,32 +103,126 @@ The are examples of how to use these keys below!
 
 ## Examples
 
-### HMAC and Ed25519 keys
+### Read HMAC, Ed25519 keys and construct the API
 
-```bash
+```C++
+
+#include <iostream>
+#include <string>
+#include <filesystem>
+#include <fstream>
+
+#include "api.hpp"
+
+static std::string readFile(std::string const &filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file " << filename << std::endl;
+        exit(1);
+    }
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    return content;
+}
+
+int main() {
+
+    std::cout << "BinanceConnectorCpp\n";
+
+    std::filesystem::path const config_path = std::filesystem::path("..") / "config";
+    std::string const hmac_api_key = readFile(config_path / "hmacapikey");
+    std::string const hmac_api_secret = readFile(config_path / "hmacapisecret");
+    std::string const ed25519_api_key = readFile(config_path / "ed25519apikey");
+    std::string const ed25519_private_key = readFile(config_path / "ed25519privatekey");
+    std::string ed25519_passphrase;
+    std::cout << "ED25519 Passphrase (press Enter for no passphrase): ";
+    std::getline(std::cin, ed25519_passphrase);
+
+    API api(hmac_api_key, hmac_api_secret, ed25519_api_key, ed25519_private_key, ed25519_passphrase);
+
+    return 0;
+}
 
 ```
 
 ### REST API
 
-```bash
+```C++
+void print_server_time(API &api) {
 
+    MarketData::CheckServerTimeResponse server_time = api.check_server_time();
+    if (std::holds_alternative<ServerMessage>(server_time)) {
+        ServerMessage error = std::get<ServerMessage>(server_time);
+        std::cout << error.code << " " << error.msg << "\n";
+    } else {
+        auto obj = std::get<MarketData::CheckServerTimeObject>(server_time);
+        std::cout << "Server Time: " << obj.server_time << "\n";
+    }
+}
 ```
 
 ### Websocket API
 
-```bash
+```C++
+void get_order_book_from_stream(API &api) {
 
+    api.ws_api_connect();
+    api.ws_api_message_callback([](std::string_view message) {
+        std::cout << "API Message: " << message << "\n";
+    });
+    api.ws_api_error_callback([](std::string_view error) {
+        std::cerr << "API Error: " << error << "\n";
+    });
+    api.ws_api_session_logon();
+    api.order_book_stream("btcusdt", 5);
+    api.ws_api_session_logout();
+}
 ```
 
 ### Websocket Market Data Streams
 
-```bash
+```C++
+void connect_to_websocket_market_data_streams(API &api) {
+    
+    api.ws_market_streams_connect();
+    api.ws_market_streams_message_callback([](std::string_view message) {
+        std::cout << "Received message: " << message << "\n";
+    });
+    api.ws_market_streams_error_callback([](std::string_view error) {
+        std::cerr << "Error: " << error << "\n";
+    });
 
+    api.kline_candlestick_streams(WebsocketMarketStreamsMethod::SUBSCRIBE, "btcusdt", "1m");
+    api.ws_market_streams_disconnect();
+}
 ```
 
 ### Websocket User Data Streams
 
-```bash
+```C++
+
+void handle_websocket_user_data_streams(API &api) {
+
+    api.ws_user_data_streams_message_callback([](std::string_view message) {
+        std::cout << "User Data Stream Message: " << message << "\n";
+    });
+    api.ws_user_data_streams_error_callback([](std::string_view error) {
+        std::cerr << "User Data Stream Error: " << error << "\n";
+    });
+
+    api.ws_user_data_streams_connect();
+    api.ws_user_data_streams_disconnect();
+
+}
 
 ```
+
+---
+
+## Important Note
+
+The current REST API implementation returns a std::variant object that holds either the expected response or an error message.
+All Websocket Streams implementations return a std::string_view.
+All of these are subject to change.
+
+This is an early version. The library will change and evolve. You should expect many changes that will break probably any code build on top.

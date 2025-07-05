@@ -158,6 +158,7 @@ void API::ws_api_session_logon() {
         {"params", prepare_json_string(sign_params)}
     };
     _websocket_api->send_message(prepare_json_string(request_params, true));
+    _is_session_logon_active = true;
 }
 
 //------------------------------------------------------------------------------------
@@ -180,6 +181,7 @@ void API::ws_api_session_logout() {
         {"method", "session.logout"},
     };
     _websocket_api->send_message(prepare_json_string(request_params));
+    _is_session_logon_active = false;
 }
 
 //------------------------------------------------------------------------------------
@@ -201,13 +203,13 @@ void API::ws_api_error_callback(ErrCallbackT callback) {
 void API::futures_account_balance_v2_stream(int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "v2/account.balance";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     params.emplace_back("timestamp", get_timestamp());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", '1'},
@@ -223,13 +225,13 @@ void API::futures_account_balance_v2_stream(int32_t const recv_window, std::stri
 void API::futures_account_balance_stream(int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "v1/account.balance";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
     
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     params.emplace_back("timestamp", get_timestamp());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
     
     Parameters const request_params{
         {"id", '2'},
@@ -245,13 +247,13 @@ void API::futures_account_balance_stream(int32_t const recv_window, std::string 
 void API::account_information_v2_stream(int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "v2/account.status";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     params.emplace_back("timestamp", get_timestamp());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
     
     Parameters const request_params{
         {"id", '3'},
@@ -267,13 +269,13 @@ void API::account_information_v2_stream(int32_t const recv_window, std::string c
 void API::account_information_stream(int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "v1/account.status";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     params.emplace_back("timestamp", get_timestamp());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", '4'},
@@ -345,11 +347,11 @@ void API::symbol_order_book_ticker_stream(std::string const &symbol) {
 void API::new_order_stream(Trade::NewOrder const &order, bool const close_position, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "order.place";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
     if(order.activation_price != -1) params.emplace_back("activationPrice", order.activation_price);
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(order.callback_rate != -1) params.emplace_back("callbackRate", order.callback_rate);
     params.emplace_back("closePosition", close_position);
     if(order.good_till_date != -1) params.emplace_back("goodTillDate", order.good_till_date);
@@ -371,7 +373,7 @@ void API::new_order_stream(Trade::NewOrder const &order, bool const close_positi
     params.emplace_back("type", order.type);
     if(!order.working_type.empty()) params.emplace_back("workingType", order.working_type);
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", '8'},
@@ -387,10 +389,10 @@ void API::new_order_stream(Trade::NewOrder const &order, bool const close_positi
 void API::modify_order_stream(Trade::ModifyOrder const &order, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "order.modify";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(order.order_id != -1) params.emplace_back("orderId", order.order_id);
     if(!order.orig_client_order_id.empty()) params.emplace_back("origClientOrderId", order.orig_client_order_id);
     if(order.price != -1) params.emplace_back("price", order.price);
@@ -401,7 +403,7 @@ void API::modify_order_stream(Trade::ModifyOrder const &order, int32_t const rec
     params.emplace_back("symbol", order.symbol);
     params.emplace_back("timestamp", get_timestamp());
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", '9'},
@@ -417,17 +419,17 @@ void API::modify_order_stream(Trade::ModifyOrder const &order, int32_t const rec
 void API::cancel_order_stream(std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "order.cancel";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(order_id != -1) params.emplace_back("orderId", order_id);
     if(!orig_client_order_id.empty()) params.emplace_back("origClientOrderId", orig_client_order_id);
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
     params.emplace_back("symbol", symbol);
     params.emplace_back("timestamp", get_timestamp());
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", 'a'},
@@ -443,17 +445,17 @@ void API::cancel_order_stream(std::string const &symbol, int64_t const order_id,
 void API::query_order_stream(std::string const &symbol, int64_t const order_id, std::string const orig_client_order_id, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "order.status";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(order_id != -1) params.emplace_back("orderId", order_id);
     if(!orig_client_order_id.empty()) params.emplace_back("origClientOrderId", orig_client_order_id);
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
     params.emplace_back("symbol", symbol);
     params.emplace_back("timestamp", get_timestamp());
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", 'b'},
@@ -469,15 +471,15 @@ void API::query_order_stream(std::string const &symbol, int64_t const order_id, 
 void API::position_information_v2_stream(std::string const &symbol, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "v2/account.position";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
     if(!symbol.empty()) params.emplace_back("symbol", symbol);
     params.emplace_back("timestamp", get_timestamp());
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", 'c'},
@@ -493,15 +495,15 @@ void API::position_information_v2_stream(std::string const &symbol, int32_t cons
 void API::position_information_stream(std::string const &symbol, int32_t const recv_window, std::string const &hmac_api_key, std::string const &hmac_api_secret) {
     std::string const method = "account.position";
 
-    bool const ad_hoc_request = !hmac_api_key.empty() && !hmac_api_secret.empty();
+    bool const ad_hoc_request = !_is_session_logon_active;
 
     Parameters params;
-    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key);
+    if(ad_hoc_request) params.emplace_back("apiKey", hmac_api_key.size() ? hmac_api_key : this->hmac_api_key());
     if(recv_window != -1) params.emplace_back("recvWindow", recv_window);
     if(!symbol.empty()) params.emplace_back("symbol", symbol);
     params.emplace_back("timestamp", get_timestamp());
 
-    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret, prepare_query_string(params)));
+    if(ad_hoc_request) params.emplace_back("signature", hmac_signature(hmac_api_secret.size() ? hmac_api_secret : this->hmac_api_secret(), prepare_query_string(params)));
 
     Parameters const request_params{
         {"id", 'd'},

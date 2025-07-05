@@ -37,6 +37,7 @@ API::API(
       _proxy(proxy),
       _show_limit_usage(show_limit_usage),
       _show_header(show_header),
+      _is_session_logon_active(false),
       _rest_api(HTTPClient(hmac_api_key)),
       _websocket_api(std::make_shared<WebSocketAPIClient>()),
       _websocket_market_streams(std::make_shared<WebSocketMarketStreamsClient>()),
